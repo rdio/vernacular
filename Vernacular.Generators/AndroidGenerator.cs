@@ -26,6 +26,7 @@
 
 using System;
 using System.Xml;
+using System.Xml.Linq;
 using System.Text;
 
 using Vernacular.Parsers;
@@ -36,14 +37,12 @@ namespace Vernacular.Generators
     {
         protected override void Generate ()
         {
-            using (var xml = new XmlTextWriter (Writer)) {
-                WriteDocument (xml, () => {
+            using (var writer = new XmlTextWriter (Writer)) {
+                WriteDocument (writer, parent => {
                     foreach (var localized_string in Strings) {
                         foreach (var resource_string in GetResourceStrings (localized_string)) {
                             if (!HasResourceStringBeenGenerated (resource_string)) {
-                                xml.WriteComment (String.Format (" Untranslated: {0} ",
-                                    resource_string.Untranslated.Replace ("--", "\\-\\-")));
-                                WriteString (xml, resource_string.Id, resource_string.Translated);
+                                WriteString (parent, resource_string.Id, resource_string.Translated);
                                 MarkResourceStringAsGenerated (resource_string);
                             }
                         }
@@ -52,26 +51,22 @@ namespace Vernacular.Generators
             }
         }
 
-        private void WriteDocument (XmlTextWriter xml, Action bodyBuilder)
+        private void WriteDocument (XmlTextWriter xml, Action<XElement> bodyBuilder)
         {
             xml.Formatting = Formatting.Indented;
             xml.Indentation = 2;
 
-            xml.WriteStartDocument ();
-            xml.WriteStartElement ("resources");
+            var resources = new XElement ("resources");
+            bodyBuilder (resources);
 
-            bodyBuilder ();
-
-            xml.WriteEndElement ();
-            xml.WriteEndDocument ();
+            new XDocument (resources).WriteTo (xml);
         }
 
-        private void WriteString (XmlTextWriter xml, string name, string value)
+        private void WriteString (XElement parent, string name, string value)
         {
-            xml.WriteStartElement ("string");
-            xml.WriteAttributeString ("name", name);
-            xml.WriteValue (value.Replace ("'", "\\'"));
-            xml.WriteEndElement ();
+            var string_element = XElement.Parse ("<string>" + value.Replace ("'", "\\'") + "</string>");
+            string_element.SetAttributeValue ("name", name);
+            parent.Add (string_element);
         }
 
         public void LocalizeManualStringsXml (string unlocalizedPath, string localizedPath)
@@ -80,11 +75,11 @@ namespace Vernacular.Generators
             parser.Add (unlocalizedPath);
 
             using (var xml = new XmlTextWriter (localizedPath, Encoding.UTF8)) {
-                WriteDocument (xml, () => {
+                WriteDocument (xml, parent => {
                     foreach (var @string in parser.Parse ()) {
                         foreach (var localized_string in Strings) {
                             if (localized_string.UntranslatedSingularValue == @string.UntranslatedSingularValue) {
-                                WriteString (xml, @string.Name, @localized_string.TranslatedValues[0]);
+                                WriteString (parent, @string.Name, @localized_string.TranslatedValues[0]);
                             }
                         }
                     }
