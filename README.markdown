@@ -37,3 +37,10 @@ Not Complete
 While Vernacular is currently very useful, it is still under development.
 There are certainly some bugs, and this documentation is nowhere near
 complete.
+
+License
+-------
+
+Vernacular is licensed under the
+[MIT X11 license](http://www.github.com/rdio/vernacular/LICENSE).
+Copyright 2012 Rdio, Inc.
