@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
@@ -51,8 +52,20 @@ namespace Vernacular.Parsers
             xml_paths.Add (path);
         }
 
-        private static string DecodeString (string value)
+        private static string DecodeElement (XElement element)
         {
+            StringBuilder builder = null;
+
+            foreach (var node in element.Nodes ()) {
+                if (builder == null) {
+                    builder = new StringBuilder (node.ToString ());
+                } else {
+                    builder.Append (node.ToString ());
+                }
+            }
+
+            var value = builder.ToString ();
+
             return Regex.Replace (value
                 .Replace ("\n", " ")
                 .Replace ("\r", " ")
@@ -73,7 +86,7 @@ namespace Vernacular.Parsers
                        References = new [] {
                            String.Format ("{0}:{1}", xml_path, ((IXmlLineInfo)@string).LineNumber)
                        },
-                       UntranslatedSingularValue = DecodeString (@string.Value)
+                       UntranslatedSingularValue = DecodeElement (@string)
                    };
         }
     }
