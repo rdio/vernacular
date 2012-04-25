@@ -42,5 +42,5 @@ License
 -------
 
 Vernacular is licensed under the
-[MIT X11 license](http://www.github.com/rdio/vernacular/LICENSE).
+[MIT X11 license](https://github.com/rdio/vernacular/blob/master/LICENSE).
 Copyright 2012 Rdio, Inc.
