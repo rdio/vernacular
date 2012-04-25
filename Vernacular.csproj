@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FA2384C6-90E1-4419-A3AB-FD3318354B8D}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Vernacular</RootNamespace>
+    <AssemblyName>Vernacular</AssemblyName>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;LINQ;VERNACULAR_TOOL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <NoWarn>1685</NoWarn>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <DefineConstants>LINQ;VERNACULAR_TOOL</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>Mono.Cecil\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>Mono.Cecil\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="Mono.Cecil">
+      <HintPath>Mono.Cecil\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Mono.Options\Options.cs" />
+    <Compile Include="Vernacular.Generators\PoGenerator.cs" />
+    <Compile Include="Vernacular.Parsers\AggregateParser.cs" />
+    <Compile Include="Vernacular.Generators\AndroidGenerator.cs" />
+    <Compile Include="Vernacular.Parsers\AndroidResourceParser.cs" />
+    <Compile Include="Vernacular.Parsers\AssemblyParser.cs" />
+    <Compile Include="Vernacular.Parsers\CecilExtensions.cs" />
+    <Compile Include="Vernacular.Parsers\PoLexer.cs" />
+    <Compile Include="Vernacular.Parsers\PoParser.cs" />
+    <Compile Include="Vernacular.Tool\Entry.cs" />
+    <Compile Include="Vernacular.Tool\LocalizedString.cs" />
+    <Compile Include="Vernacular.Tool\StringExtensions.cs" />
+    <Compile Include="Vernacular\AndroidCatalog.cs" />
+    <Compile Include="Vernacular.Generators\Generator.cs" />
+    <Compile Include="Vernacular.Generators\IosGenerator.cs" />
+    <Compile Include="Vernacular.Parsers\Parser.cs" />
+    <Compile Include="Vernacular.Analyzers\StringAnalyzer.cs" />
+    <Compile Include="Vernacular.Generators\ResxGenerator.cs" />
+    <Compile Include="Vernacular.Parsers\XamlParser.cs" />
+    <Compile Include="Vernacular\Catalog.cs" />
+    <Compile Include="Vernacular\FieldReflectionResourceCatalog.cs" />
+    <Compile Include="Vernacular\GoogleTranslateCatalog.cs" />
+    <Compile Include="Vernacular\LanguageGender.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,184 @@
+﻿using System;
+using System.Text;
+using System.Collections.Generic;
+
+namespace Vernacular.Tool
+{
+    public struct LocalizedString
+    {
+        public string Name { get; set; }
+        public string UntranslatedSingularValue { get; set; }
+        public string UntranslatedPluralValue { get; set; }
+        public string [] TranslatedValues { get; set; }
+
+        public string StringFormatHint { get; set; }
+        public string [] References { get; set; }
+        public string DeveloperComments { get; set; }
+        public string TranslatorComments { get; set; }
+        public LanguageGender Gender { get; set; }
+
+        public void AddReference (string path, int line)
+        {
+            if (path != null) {
+                if (line >= 0) {
+                    path += String.Format (":{0}", line);
+                }
+                if (References == null) {
+                    References = new [] { path };
+                } else {
+                    References = new List<string> (References) { path }.ToArray ();
+                }
+            }
+        }
+
+        public void StripMetadata ()
+        {
+            StringFormatHint = null;
+            References = null;
+            DeveloperComments = null;
+            TranslatorComments = null;
+        }
+
+        private bool IsPopulated (string [] array)
+        {
+            return array != null && array.Length > 0 && array [0] != null;
+        }
+
+        public bool IsDefined {
+            get { return UntranslatedSingularValue != null; }
+        }
+
+        public bool HasReferences {
+            get { return IsPopulated (References); }
+        }
+
+        public bool UntranslatedEquals (LocalizedString other)
+        {
+            return UntranslatedSingularValue == other.UntranslatedSingularValue &&
+                UntranslatedPluralValue == other.UntranslatedPluralValue;
+        }
+
+        private static string Join (string a, string b)
+        {
+            var a_null = String.IsNullOrWhiteSpace (a);
+            var b_null = String.IsNullOrWhiteSpace (b);
+
+            if (a_null && b_null) {
+                return null;
+            } else if (!a_null && b_null) {
+                return a;
+            } else if (a_null && !b_null) {
+                return b;
+            } else {
+                return String.Join ("; ", a, b);
+            }
+        }
+
+        public static LocalizedString Merge (LocalizedString a, LocalizedString b)
+        {
+            if (!a.UntranslatedEquals (b)) {
+                throw new Exception ("Cannot merge two strings with different untranslated values");
+            }/*
+                FIXME: don't enforce gender merging because gender isn't properly handled
+                anywhere else. Need to figure out how to generate PO strings that differentiate
+                gender... until then, don't enforce this.
+                else if (a.Gender != b.Gender) {
+                throw new Exception ("Cannot merge two strings with different genders");
+            }*/
+
+            var merged = new LocalizedString {
+                UntranslatedSingularValue = a.UntranslatedSingularValue,
+                UntranslatedPluralValue = a.UntranslatedPluralValue,
+                Gender = a.Gender,
+                StringFormatHint = a.StringFormatHint ?? b.StringFormatHint,
+                DeveloperComments = Join (a.DeveloperComments, b.DeveloperComments),
+                TranslatorComments = Join (a.TranslatorComments, b.TranslatorComments)
+            };
+
+            var a_translated = new List<string> (a.TranslatedValues ?? new string [0]);
+            var b_translated = new List<string> (b.TranslatedValues ?? new string [0]);
+
+            if (b_translated.Count >= a_translated.Count) {
+                a_translated = b_translated;
+            }
+
+            if (a_translated.Count > 0) {
+                merged.TranslatedValues = a_translated.ToArray ();
+            }
+
+            var a_references = new List<string> (a.References ?? new string [0]);
+            var b_references = new List<string> (b.References ?? new string [0]);
+
+            foreach (var reference in b_references) {
+                if (!a_references.Contains (reference)) {
+                    a_references.Add (reference);
+                }
+            }
+
+            if (a_references.Count > 0) {
+                merged.References = a_references.ToArray ();
+            }
+
+            return merged;
+        }
+
+        private static string Escape (string str)
+        {
+            return str.Replace ("\"", "\\\"").Replace ("\\", "\\\\");
+        }
+
+        public override string ToString ()
+        {
+            var builder = new StringBuilder ();
+
+            Action<string, string> serialize_string = (key, value) => {
+                if (!String.IsNullOrWhiteSpace (value)) {
+                    builder.AppendFormat ("  \"{0}\": \"{1}\",\n", key, Escape (value));
+                }
+            };
+
+            Action<string, string []> serialize_array = (key, array) => {
+                if (array == null || array.Length == 0) {
+                    return;
+                }
+
+                builder.AppendFormat ("  \"{0}\": [\n", key);
+                for (int i = 0, n = array.Length; i < n; i++) {
+                    builder.AppendFormat ("    \"{0}\"", Escape (array [i].ToString ()));
+                    if (i < array.Length - 1) {
+                        builder.Append (',');
+                    }
+                    builder.Append ('\n');
+                }
+                builder.Append ("  ],\n");
+            };
+
+            serialize_string ("translatorComments", TranslatorComments);
+            serialize_string ("developerComments", DeveloperComments);
+            serialize_string ("stringFormatHint", StringFormatHint);
+            if (Gender != LanguageGender.Neutral) {
+                serialize_string ("gender", Gender.ToString ());
+            }
+            serialize_array ("references", References);
+            serialize_string ("untranslatedSingularValue", UntranslatedSingularValue);
+            serialize_string ("untranslatedPluralValue", UntranslatedPluralValue);
+            serialize_array ("translatedValues", TranslatedValues);
+
+            if (builder.Length > 0) {
+                builder.Length--;
+                if (builder [builder.Length - 1] == ',') {
+                    builder.Length--;
+                }
+
+                builder.Insert (0, "{\n");
+                builder.Append ('\n');
+            } else {
+                builder.Insert (0, "{");
+            }
+
+            builder.Append ("}\n");
+
+            return builder.ToString ();
+        }
+    }
+}
