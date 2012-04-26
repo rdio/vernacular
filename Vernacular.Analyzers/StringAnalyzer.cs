@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
@@ -35,6 +36,19 @@ namespace Vernacular.Analyzers
     public class StringAnalyzer
     {
         private List<LocalizedString> localized_strings = new List<LocalizedString> ();
+        private List<string> illegal_words = new List<string> ();
+
+        public StringAnalyzer (string illegalWordsPath = null)
+        {
+            if (illegalWordsPath != null) {
+                using (var reader = new StreamReader (illegalWordsPath)) {
+                    string line;
+                    while ((line = reader.ReadLine ()) != null) {
+                        illegal_words.Add (line.Trim ().ToLower ());
+                    }
+                }
+            }
+        }
 
         public void Add (LocalizedString localizedString)
         {
@@ -126,7 +140,15 @@ namespace Vernacular.Analyzers
                 return false;
             }
 
-            return value.ToLower ().Contains ("rdio");
+            value = value.ToLower ();
+
+            foreach (var word in illegal_words) {
+                if (value.Contains (word)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

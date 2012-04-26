@@ -48,6 +48,7 @@ namespace Vernacular.Tool
             string reduce_retain_path = null;
             string android_input_strings_xml = null;
             string android_output_strings_xml = null;
+            string illegal_words_path = null;
             bool analyze = false;
             bool log = false;
             bool verbose = false;
@@ -70,6 +71,8 @@ namespace Vernacular.Tool
                     "for preserving hand-maintained string resources", v => android_input_strings_xml = v },
                 { "android-output-strings-xml=", "Output file of localized Android Strings.xml " +
                     "for preserving hand-maintained string resources", v => android_output_strings_xml = v },
+                { "illegal-words-path=", "Path to a file containing words that should never " +
+                    "appear in localized strings (one word per line); use with --analyze", v => illegal_words_path = v },
                 { "l|log", "Display logging", v => log = v != null },
                 { "v|verbose", "Verbose logging", v => verbose = v != null },
                 { "h|help", "Show this help message and exit", v => show_help = v != null }
@@ -135,7 +138,7 @@ namespace Vernacular.Tool
             StringAnalyzer analyzer = null;
 
             if (analyze) {
-                analyzer = new StringAnalyzer ();
+                analyzer = new StringAnalyzer (illegal_words_path);
             }
 
             foreach (var input_path in input_paths) {
