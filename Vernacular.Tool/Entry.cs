@@ -48,7 +48,7 @@ namespace Vernacular.Tool
             string reduce_retain_path = null;
             string android_input_strings_xml = null;
             string android_output_strings_xml = null;
-            string illegal_words_path = null;
+            string analyer_config_path = null;
             bool analyze = false;
             bool log = false;
             bool verbose = false;
@@ -63,6 +63,7 @@ namespace Vernacular.Tool
                 { "g|generator=", String.Format ("Generator to use ({0})",
                     String.Join ("|", Generator.GeneratorNames)), v => generator_name = v },
                 { "a|analyze", "Run the string analyzer after generation", v => analyze = v != null },
+                { "analyzer-config=", "Path to a configuration file for the analyzer; use with --analyze", v => analyer_config_path = v },
                 { "reduce-master=", "Reduce a master localized PO file, " +
                     "keeping only strings defined by another unlocalized PO[T] file", v => reduce_master_path = v },
                 { "reduce-retain=", "An unlocalized PO[T] file used to " +
@@ -71,8 +72,6 @@ namespace Vernacular.Tool
                     "for preserving hand-maintained string resources", v => android_input_strings_xml = v },
                 { "android-output-strings-xml=", "Output file of localized Android Strings.xml " +
                     "for preserving hand-maintained string resources", v => android_output_strings_xml = v },
-                { "illegal-words-path=", "Path to a file containing words that should never " +
-                    "appear in localized strings (one word per line); use with --analyze", v => illegal_words_path = v },
                 { "l|log", "Display logging", v => log = v != null },
                 { "v|verbose", "Verbose logging", v => verbose = v != null },
                 { "h|help", "Show this help message and exit", v => show_help = v != null }
@@ -138,7 +137,7 @@ namespace Vernacular.Tool
             StringAnalyzer analyzer = null;
 
             if (analyze) {
-                analyzer = new StringAnalyzer (illegal_words_path);
+                analyzer = new StringAnalyzer (analyer_config_path);
             }
 
             foreach (var input_path in input_paths) {
