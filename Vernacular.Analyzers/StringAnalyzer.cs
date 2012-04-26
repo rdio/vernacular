@@ -26,6 +26,8 @@
 
 using System;
 using System.IO;
+using System.Xml;
+using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
@@ -36,18 +38,11 @@ namespace Vernacular.Analyzers
     public class StringAnalyzer
     {
         private List<LocalizedString> localized_strings = new List<LocalizedString> ();
-        private List<string> illegal_words = new List<string> ();
+        private AnalyzerConfiguration configuration;
 
-        public StringAnalyzer (string illegalWordsPath = null)
+        public StringAnalyzer (string configurationPath = null)
         {
-            if (illegalWordsPath != null) {
-                using (var reader = new StreamReader (illegalWordsPath)) {
-                    string line;
-                    while ((line = reader.ReadLine ()) != null) {
-                        illegal_words.Add (line.Trim ().ToLower ());
-                    }
-                }
-            }
+            configuration = new AnalyzerConfiguration (configurationPath);
         }
 
         public void Add (LocalizedString localizedString)
@@ -82,6 +77,8 @@ namespace Vernacular.Analyzers
                 warnings.Add ("Empty or whitespace");
             } else if (Check (CheckIllegalWords, localizedString)) {
                 warnings.Add ("Possibly illegal words");
+            } else if (Check (CheckTags, localizedString)) {
+                warnings.Add ("Possibly invalid tags");
             }
 
             if (warnings.Count == 0) {
@@ -126,7 +123,7 @@ namespace Vernacular.Analyzers
                 return false;
             }
 
-            return Regex.IsMatch (value, @"\{\d+");
+            return Regex.IsMatch (value, @"\{\d+", RegexOptions.Multiline);
         }
 
         private bool CheckEmpty (string value)
@@ -136,14 +133,39 @@ namespace Vernacular.Analyzers
 
         private bool CheckIllegalWords (string value)
         {
-            if (String.IsNullOrEmpty (value)) {
+            if (String.IsNullOrWhiteSpace (value)) {
                 return false;
             }
 
             value = value.ToLower ();
 
-            foreach (var word in illegal_words) {
-                if (value.Contains (word)) {
+            foreach (var word in configuration.IllegalWords) {
+                if (value.Contains (word.Key)) {
+                    if (word.Value != null) {
+                        foreach (var except in word.Value) {
+                            if (value == except) {
+                                return false;
+                            }
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool CheckTags (string value)
+        {
+            if (String.IsNullOrWhiteSpace (value) ||
+                configuration.SupportedTags == null || configuration.SupportedTags.Count == 0) {
+                return false;
+            }
+
+            foreach (Match match in new Regex (@"\[(\w+)\]", RegexOptions.Multiline).Matches (value)) {
+                if (match != null && match.Groups.Count > 1 &&
+                    !configuration.SupportedTags.Contains (match.Groups [1].Value)) {
                     return true;
                 }
             }
