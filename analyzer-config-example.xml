@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vernacular-analyzer>
+  <illegal-words>
+    <word value="rdio">
+      <except-in value="Copyright © 2012 Rdio, Inc."/>
+    </word>
+  </illegal-words>
+  <supported-tags>
+    <tag value="product_name"/>
+    <tag value="website_url"/>
+  </supported-tags>
+</vernacular-analyzer>
