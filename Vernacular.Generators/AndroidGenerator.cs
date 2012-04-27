@@ -29,6 +29,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Text;
 
+using Vernacular.Tool;
 using Vernacular.Parsers;
 
 namespace Vernacular.Generators
@@ -76,7 +77,7 @@ namespace Vernacular.Generators
 
             using (var xml = new XmlTextWriter (localizedPath, Encoding.UTF8)) {
                 WriteDocument (xml, parent => {
-                    foreach (var @string in parser.Parse ()) {
+                    foreach (LocalizedString @string in parser.Parse ()) {
                         foreach (var localized_string in Strings) {
                             if (localized_string.UntranslatedSingularValue == @string.UntranslatedSingularValue) {
                                 WriteString (parent, @string.Name, @localized_string.TranslatedValues[0]);

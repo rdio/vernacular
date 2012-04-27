@@ -38,7 +38,14 @@ namespace Vernacular.Parsers
 
         public abstract IEnumerable<string> SupportedFileExtensions { get; }
         public abstract void Add (string path);
-        public abstract IEnumerable<LocalizedString> Parse ();
+        public abstract IEnumerable<ILocalizationUnit> Parse ();
+
+        public LocalizationMetadata LocalizationMetadata { get; private set; }
+
+        public Parser ()
+        {
+            LocalizationMetadata = new LocalizationMetadata ();
+        }
 
         protected void Log (object message = null)
         {

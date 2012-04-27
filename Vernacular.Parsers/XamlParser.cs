@@ -47,11 +47,11 @@ namespace Vernacular.Parsers
             xaml_paths.Add (path);
         }
 
-        public override IEnumerable<LocalizedString> Parse ()
+        public override IEnumerable<ILocalizationUnit> Parse ()
         {
             return from xaml_path in xaml_paths
-                   from localized_string in Parse (xaml_path)
-                   select localized_string;
+                   from localization_unit in Parse (xaml_path)
+                   select localization_unit;
         }
 
         private IEnumerable<LocalizedString> Parse (string xamlPath)

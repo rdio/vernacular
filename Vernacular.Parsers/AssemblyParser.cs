@@ -72,12 +72,12 @@ namespace Vernacular.Parsers
             LocateLocalizationMethods (module);
         }
 
-        public override IEnumerable<LocalizedString> Parse ()
+        public override IEnumerable<ILocalizationUnit> Parse ()
         {
             return
                 from module in modules
-                from localized_string in Parse (module)
-                select localized_string;
+                from localization_unit in Parse (module)
+                select localization_unit;
         }
 
         private IEnumerable<LocalizedString> Parse (ModuleDefinition module)

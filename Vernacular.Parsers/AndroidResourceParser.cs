@@ -76,7 +76,7 @@ namespace Vernacular.Parsers
                 @"[ ]+", " ", RegexOptions.Multiline).Trim ();
         }
 
-        public override IEnumerable<LocalizedString> Parse ()
+        public override IEnumerable<ILocalizationUnit> Parse ()
         {
             return from xml_path in xml_paths
                    from resource in XDocument.Load (xml_path, LoadOptions.SetLineInfo).Elements ("resources")
