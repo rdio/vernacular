@@ -88,6 +88,7 @@
     <Compile Include="Vernacular\LanguageGender.cs" />
     <Compile Include="Vernacular.Tool\LocalizationMetadata.cs" />
     <Compile Include="Vernacular.Tool\ILocalizationUnit.cs" />
+    <Compile Include="Vernacular.Tool\ConsoleCrayon.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
