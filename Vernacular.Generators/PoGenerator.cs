@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 using System.Collections.Generic;
 
 using Vernacular.Tool;
@@ -71,8 +72,60 @@ namespace Vernacular.Generators
             }
         }
 
+        private void GenerateMetadata ()
+        {
+            if (LocalizationMetadata == null) {
+                Add (new LocalizationMetadata ());
+            }
+
+            if (!LocalizationMetadata.ContainsKey ("Project-Id-Version")) {
+                LocalizationMetadata.Add ("Project-Id-Version", "PACKAGE VERSION");
+            }
+
+            if (!LocalizationMetadata.ContainsKey ("PO-Revision-Date")) {
+                LocalizationMetadata.Add ("PO-Revision-Date", DateTime.Now.ToString (@"yyyy\-MM\-dd HH\:mmzz",
+                    System.Globalization.CultureInfo.InvariantCulture));
+            }
+
+            if (!LocalizationMetadata.ContainsKey ("Last-Translator")) {
+                LocalizationMetadata.Add ("Last-Translator", String.Empty);
+            }
+
+            if (!LocalizationMetadata.ContainsKey ("Language-Team")) {
+                LocalizationMetadata.Add ("Language-Team", String.Empty);
+            }
+
+            if (!LocalizationMetadata.ContainsKey ("MIME-Version")) {
+                LocalizationMetadata.Add ("MIME-Version", "1.0");
+            }
+
+            if (!LocalizationMetadata.ContainsKey ("Content-Type")) {
+                LocalizationMetadata.Add ("Content-Type", "text/plain; charset=UTF-8");
+            }
+
+            if (!LocalizationMetadata.ContainsKey ("Content-Transfer-Encoding")) {
+                LocalizationMetadata.Add ("Content-Transfer-Encoding", "8bit");
+            }
+
+            if (!LocalizationMetadata.ContainsKey ("Plural-Forms")) {
+                LocalizationMetadata.Add ("Plural-Forms", "nplurals=2; plural=(n != 1);");
+            }
+
+            LocalizationMetadata.Add ("X-Generator", "Vernacular");
+        }
+
         protected override void Generate ()
         {
+            GenerateMetadata ();
+
+            WriteString ("msgid", String.Empty);
+            var builder = new StringBuilder ();
+            foreach (string header in LocalizationMetadata) {
+                builder.AppendFormat ("{0}: {1}\n", header, LocalizationMetadata [header]);
+            }
+            WriteString ("msgstr", builder.ToString ());
+            Writer.WriteLine ();
+
             foreach (var localized_string in Strings) {
                 WriteComment (' ', localized_string.TranslatorComments);
                 WriteComment ('.', localized_string.DeveloperComments);
