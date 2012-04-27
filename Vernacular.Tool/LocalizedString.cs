@@ -43,6 +43,11 @@ namespace Vernacular.Tool
         public string TranslatorComments { get; set; }
         public LanguageGender Gender { get; set; }
 
+        private List<string> warnings = new List<string> ();
+        public List<string> Warnings {
+            get { return warnings; }
+        }
+
         public void AddReference (string path, int line)
         {
             if (path != null) {
