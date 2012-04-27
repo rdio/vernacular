@@ -50,6 +50,8 @@ namespace Vernacular.Parsers
 
         private List<string> po_paths = new List<string> ();
 
+        private LocalizationMetadata header;
+
         public override IEnumerable<string> SupportedFileExtensions {
             get {
                 yield return ".po";
@@ -93,7 +95,64 @@ namespace Vernacular.Parsers
             }
         }
 
-        private LocalizedString ParsePoUnit (PoUnit unit)
+        private ILocalizationUnit ParsePoUnit (PoUnit unit)
+        {
+            if (header == null) {
+                header = ParsePoHeaderUnit (unit);
+                if (header != null) {
+                    return header;
+                }
+            }
+
+            return ParsePoMessageUnit (unit);
+        }
+
+        private LocalizationMetadata ParsePoHeaderUnit (PoUnit unit)
+        {
+            var keys = new [] {
+                "project-id-version:",
+                "language:",
+                "content-type:"
+            };
+
+            if (unit == null || unit.Messages == null || unit.Messages.Count != 2 ||
+                unit.Messages[0].Identifier != "msgid" ||
+                !String.IsNullOrEmpty (unit.Messages[0].Value) ||
+                unit.Messages[1].Identifier != "msgstr") {
+                return null;
+            }
+
+            var header_lower = unit.Messages[1].Value.ToLower ();
+
+            foreach (var key in keys) {
+                if (!header_lower.Contains (key)) {
+                    return null;
+                }
+            }
+
+            LocalizationMetadata metadata = null;
+
+            foreach (var line in unit.Messages[1].Value.Split ('\n')) {
+                if (String.IsNullOrWhiteSpace (line)) {
+                    continue;
+                }
+
+                var pairs = line.Split (new [] { ':' }, 2);
+                if (pairs == null || pairs.Length != 2) {
+                    return null;
+                }
+
+                if (metadata == null) {
+                    metadata = new LocalizationMetadata ();
+                }
+
+                metadata.Add (pairs[0].Trim (), pairs[1].Trim ());
+            }
+
+            return metadata;
+        }
+
+        private LocalizedString ParsePoMessageUnit (PoUnit unit)
         {
             var developer_comments_builder = new StringBuilder ();
             var translator_comments_builder = new StringBuilder ();
@@ -180,8 +239,10 @@ namespace Vernacular.Parsers
             return localized_string;
         }
 
-        public override IEnumerable<LocalizedString> Parse ()
+        public override IEnumerable<ILocalizationUnit> Parse ()
         {
+            header = null;
+
             foreach (var unit in ParseAllTokenStreams ()) {
                 yield return ParsePoUnit (unit);
             }
