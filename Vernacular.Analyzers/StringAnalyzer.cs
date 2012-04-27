@@ -87,6 +87,8 @@ namespace Vernacular.Analyzers
                 return false;
             }
 
+            ConsoleCrayon.ForegroundColor = ConsoleColor.DarkRed;
+
             if (localizedString.HasReferences) {
                 foreach (var reference in localizedString.References) {
                     Console.WriteLine ("Warning: @{0}", reference);
@@ -95,9 +97,13 @@ namespace Vernacular.Analyzers
                 Console.WriteLine ("Warning: @<unknown source location>");
             }
 
+            ConsoleCrayon.ForegroundColor = ConsoleColor.DarkYellow;
+
             foreach (var warning in warnings) {
                 Console.WriteLine ("  {0}", warning);
             }
+
+            ConsoleCrayon.Reset ();
 
             if (localizedString.DeveloperComments != null) {
                 Console.WriteLine ("  Developer Comments  = {0}", localizedString.DeveloperComments);
