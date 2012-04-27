@@ -235,6 +235,20 @@ namespace Vernacular
 
         #region Utilities
 
+        public static Action<Exception, string> ErrorHandler;
+
+        public static string Format (string format, params object [] args)
+        {
+            try {
+                return String.Format (format, args);
+            } catch (FormatException e) {
+                if (ErrorHandler != null) {
+                    ErrorHandler (e, "Vernacular.Catalog.Format: invalid format string");
+                }
+                return format;
+            }
+        }
+
         public static string GetResourceId (string message, LanguageGender gender, int pluralOrder)
         {
             var builder = new StringBuilder ("Vernacular_P");
