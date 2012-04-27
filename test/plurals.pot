@@ -1,0 +1,14 @@
+msgid "goat"
+msgid_plural "goats"
+msgstr[0] "goat"
+msgstr[1] "goats"
+
+msgid "cat"
+msgid_plural "cats"
+msgstr[0] "cat"
+msgstr[1] "cats"
+
+msgid "untranslated dog"
+msgid_plural "untranslated dogs"
+msgstr[0] "untranslated dog"
+msgstr[1] "untranslated dogs"

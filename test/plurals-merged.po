@@ -1,0 +1,20 @@
+msgid "goat"
+msgid_plural "goats"
+msgstr[0] "0-order goats"
+msgstr[1] "1-order goats"
+msgstr[2] "2-order goats"
+msgstr[3] "3-order goats"
+msgstr[4] "4-order goats"
+msgstr[5] "5-order goats"
+
+msgid "cat"
+msgid_plural "cats"
+msgstr[0] "0-order cats"
+msgstr[1] "1-order cats"
+
+msgid "untranslated dog"
+msgid_plural "untranslated dogs"
+msgstr[0] "untranslated dog"
+msgstr[1] "untranslated dogs"
+
+
