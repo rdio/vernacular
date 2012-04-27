@@ -86,6 +86,8 @@
     <Compile Include="Vernacular\FieldReflectionResourceCatalog.cs" />
     <Compile Include="Vernacular\GoogleTranslateCatalog.cs" />
     <Compile Include="Vernacular\LanguageGender.cs" />
+    <Compile Include="Vernacular.Tool\LocalizationMetadata.cs" />
+    <Compile Include="Vernacular.Tool\ILocalizationUnit.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace Vernacular.Tool
 {
-    public struct LocalizedString
+    public class LocalizedString : ILocalizationUnit
     {
         public string Name { get; set; }
         public string UntranslatedSingularValue { get; set; }
