@@ -1,4 +1,5 @@
 *.suo
-.user*
+*.pidb
+*.user*
 bin/
 obj/
