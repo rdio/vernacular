@@ -79,11 +79,11 @@ namespace Vernacular.Parsers
             }
         }
 
-        public override IEnumerable<LocalizedString> Parse ()
+        public override IEnumerable<ILocalizationUnit> Parse ()
         {
             return from parser in parsers
-                   from localized_string in parser.Parse ()
-                   select localized_string;
+                   from localization_unit in parser.Parse ()
+                   select localization_unit;
         }
     }
 }
