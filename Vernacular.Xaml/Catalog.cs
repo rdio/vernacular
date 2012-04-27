@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-﻿#if !VERNACULAR_TOOL
+#if !VERNACULAR_TOOL
 
 using System;
 using System.Globalization;
@@ -213,6 +213,11 @@ namespace Vernacular.Xaml
                 case StringModifier.Uppercase: return value.ToUpper ();
                 default: return value;
             }
+        }
+
+        public static string Format (string format, params object [] args)
+        {
+            return Vernacular.Catalog.Format (format, args);
         }
 
         public static string GetString (string message,
