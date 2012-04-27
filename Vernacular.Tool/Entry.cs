@@ -49,6 +49,7 @@ namespace Vernacular.Tool
             string android_input_strings_xml = null;
             string android_output_strings_xml = null;
             string analyer_config_path = null;
+            LocalizationMetadata metadata = null;
             bool analyze = false;
             bool log = false;
             bool verbose = false;
@@ -73,6 +74,16 @@ namespace Vernacular.Tool
                 { "android-output-strings-xml=", "Output file of localized Android Strings.xml " +
                     "for preserving hand-maintained string resources", v => android_output_strings_xml = v },
                 { "l|log", "Display logging", v => log = v != null },
+                { "m|meta=", "Add localization metadata (key=value)", v => {
+                    var parts = v.Split (new [] { '=' }, 2);
+                    if (parts != null && parts.Length == 2) {
+                        if (metadata == null) {
+                            metadata = new LocalizationMetadata ();
+                        }
+
+                        metadata.Add (parts[0].Trim (), parts[1].Trim ());
+                    }
+                } },
                 { "v|verbose", "Verbose logging", v => verbose = v != null },
                 { "h|help", "Show this help message and exit", v => show_help = v != null }
             };
@@ -162,9 +173,14 @@ namespace Vernacular.Tool
                 }
             }
 
-            foreach (var localized_string in parser.Parse ()) {
-                generator.Add (localized_string);
+            if (metadata != null) {
+                generator.Add (metadata);
+            }
 
+            foreach (var localization_unit in parser.Parse ()) {
+                generator.Add (localization_unit);
+
+                var localized_string = localization_unit as LocalizedString;
                 if (analyzer != null) {
                     analyzer.Add (localized_string);
                 }
