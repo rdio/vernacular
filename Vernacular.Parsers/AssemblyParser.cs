@@ -226,10 +226,31 @@ namespace Vernacular.Parsers
                 }
             }
 
+            // Detect if the GetString call is nested (an argument to) in a
+            // String.Format call, which is a warning (Catalog.Format should be
+            // used since it will never throw an exception).
+            var call_instruction = invocation.AllInstructions [invocation.AllInstructions.Count - 1];
+            var is_string_format = false;
+
+            if (call_instruction.Next != null &&
+                call_instruction.Next.Next != null &&
+                call_instruction.Next.OpCode == OpCodes.Ldarg_0 &&
+                call_instruction.Next.Next.OpCode == OpCodes.Call) {
+                var string_format_call = call_instruction.Next.Next.Operand as MethodReference;
+                if (string_format_call != null &&
+                    string_format_call.DeclaringType.FullName == "System.String" &&
+                    string_format_call.Name == "Format") {
+                    is_string_format = true;
+                }
+            }
+
             Log (true, "  |".PadRight (70, '-'));
 
             foreach (var @string in GenerateLocalizedStrings (invocation.SequencePoint, strings)) {
                 Log ("  | {0}", @string);
+                if (is_string_format) {
+                    @string.Warnings.Add ("String.Format is unsafe - use Catalog.Format instead");
+                }
                 yield return @string;
             }
 
