@@ -81,6 +81,8 @@ namespace Vernacular.Analyzers
                 warnings.Add ("Possibly invalid tags");
             }
 
+            warnings.AddRange (localizedString.Warnings);
+
             if (warnings.Count == 0) {
                 return false;
             }
