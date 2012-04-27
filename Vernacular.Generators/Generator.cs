@@ -60,6 +60,8 @@ namespace Vernacular.Generators
             get { return from @string in strings select @string; }
         }
 
+        public LocalizationMetadata LocalizationMetadata { get; private set; }
+
         private List<string> generated_resource_string_ids = new List<string> ();
 
         protected TextWriter Writer { get; private set; }
@@ -99,13 +101,25 @@ namespace Vernacular.Generators
             }
         }
 
-        public void Add (LocalizedString localizedString, bool stripMetadata = false)
+        public void Add (ILocalizationUnit localizationUnit, bool stripMetadata = false)
         {
-            if (!Merge (localizedString, stripMetadata: stripMetadata)) {
-                if (stripMetadata) {
-                    localizedString.StripMetadata ();
+            var localized_string = localizationUnit as LocalizedString;
+            var localization_metadata =  localizationUnit as LocalizationMetadata;
+
+            if (localization_metadata != null) {
+                if (LocalizationMetadata == null) {
+                    LocalizationMetadata = new LocalizationMetadata ();
                 }
-                strings.Add (localizedString);
+                LocalizationMetadata.Add (localization_metadata);
+            } else if (localized_string != null) {
+                if (!Merge (localized_string, stripMetadata: stripMetadata)) {
+                    if (stripMetadata) {
+                        localized_string.StripMetadata ();
+                    }
+                    strings.Add (localized_string);
+                }
+            } else {
+                throw new ArgumentException ("Unsupported ILocalizationUnit");
             }
         }
 
@@ -173,12 +187,22 @@ namespace Vernacular.Generators
 
         public void Reduce (Parser masterSet, Parser subSet)
         {
-            foreach (var localized_string in subSet.Parse ()) {
-                Add (localized_string, stripMetadata: true);
+            foreach (var localization_unit in subSet.Parse ()) {
+                var localized_string = localization_unit as LocalizedString;
+                if (localized_string != null) {
+                    Add (localized_string, stripMetadata: true);
+                }
             }
 
-            foreach (var localized_string in masterSet.Parse ()) {
-                Merge (localized_string, stripMetadata: true);
+            foreach (var localization_unit in masterSet.Parse ()) {
+                var localized_string = localization_unit as LocalizedString;
+                var localization_metadata = localization_unit as LocalizationMetadata;
+
+                if (localized_string != null) {
+                    Merge (localized_string, stripMetadata: true);
+                } else if (localization_metadata != null) {
+                    Add (localization_metadata);
+                }
             }
         }
     }
