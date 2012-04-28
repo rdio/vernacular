@@ -34,6 +34,8 @@ namespace Vernacular.Generators
 {
     public sealed class PoGenerator : Generator
     {
+        public bool PotMode { get; set; }
+
         private static string Escape (string value)
         {
             return String.IsNullOrWhiteSpace (value) ? value : value.Escape ();
@@ -154,10 +156,10 @@ namespace Vernacular.Generators
                 }
 
                 if (translated.Length == 1) {
-                    WriteString ("msgstr", translated [0]);
+                    WriteString ("msgstr", PotMode ? String.Empty : translated [0]);
                 } else {
                     for (int i = 0; i < translated.Length; i++) {
-                        WriteString (String.Format ("msgstr[{0}]", i), translated [i]);
+                        WriteString (String.Format ("msgstr[{0}]", i), PotMode ? String.Empty : translated [i]);
                     }
                 }
 

@@ -50,6 +50,7 @@ namespace Vernacular.Tool
             string android_output_strings_xml = null;
             string analyer_config_path = null;
             LocalizationMetadata metadata = null;
+            bool generate_pot = false;
             bool analyze = false;
             bool log = false;
             bool verbose = false;
@@ -73,6 +74,7 @@ namespace Vernacular.Tool
                     "for preserving hand-maintained string resources", v => android_input_strings_xml = v },
                 { "android-output-strings-xml=", "Output file of localized Android Strings.xml " +
                     "for preserving hand-maintained string resources", v => android_output_strings_xml = v },
+                { "pot", v => generate_pot = v != null },
                 { "l|log", "Display logging", v => log = v != null },
                 { "m|meta=", "Add localization metadata (key=value)", v => {
                     var parts = v.Split (new [] { '=' }, 2);
@@ -110,6 +112,10 @@ namespace Vernacular.Tool
                 generator = Generator.GetGeneratorForName (generator_name.ToLower ());
                 if (generator == null) {
                     throw new OptionException ("invalid generator", "generator");
+                }
+
+                if (generator is PoGenerator && generate_pot) {
+                    ((PoGenerator)generator).PotMode = true;
                 }
 
                 if (reduce_master_path != null && reduce_retain_path == null) {
