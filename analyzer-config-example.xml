@@ -9,4 +9,8 @@
     <tag value="product_name"/>
     <tag value="website_url"/>
   </supported-tags>
+  <spellcheck hunspell-affix="hunspell/en_US.aff"
+              hunspell-dictionary="hunspell/en_US.dic">
+    <dictionary-path value="custom-words-file"/>
+  </spellcheck>
 </vernacular-analyzer>

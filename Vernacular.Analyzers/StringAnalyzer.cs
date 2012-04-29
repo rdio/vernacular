@@ -38,11 +38,31 @@ namespace Vernacular.Analyzers
     public class StringAnalyzer
     {
         private List<LocalizedString> localized_strings = new List<LocalizedString> ();
+        private Hunspell hunspell;
         private AnalyzerConfiguration configuration;
+
 
         public StringAnalyzer (string configurationPath = null)
         {
             configuration = new AnalyzerConfiguration (configurationPath);
+
+            if (File.Exists (configuration.HunspellAffixPath) && File.Exists (configuration.HunspellDictionaryPath)) {
+                hunspell = new Hunspell (configuration.HunspellAffixPath, configuration.HunspellDictionaryPath);
+
+                if (configuration.SpellcheckDictionaries != null) {
+                    foreach (var path in configuration.SpellcheckDictionaries) {
+                        using (var reader = new StreamReader (path)) {
+                            string word;
+                            while ((word = reader.ReadLine ()) != null) {
+                                word = word.Trim ().ToLower ();
+                                if (!String.IsNullOrWhiteSpace (word)) {
+                                    hunspell.AddWordToDictionary (word);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public void Add (LocalizedString localizedString)
@@ -73,12 +93,22 @@ namespace Vernacular.Analyzers
             if (Check (CheckFormatArguments, localizedString) &&
                 String.IsNullOrWhiteSpace (localizedString.DeveloperComments)) {
                 warnings.Add ("String.Format without developer comment");
-            } else if (Check (CheckEmpty, localizedString)) {
+            }
+
+            if (Check (CheckEmpty, localizedString)) {
                 warnings.Add ("Empty or whitespace");
-            } else if (Check (CheckIllegalWords, localizedString)) {
+            }
+
+            if (Check (CheckIllegalWords, localizedString)) {
                 warnings.Add ("Possibly illegal words");
-            } else if (Check (CheckTags, localizedString)) {
+            }
+
+            if (Check (CheckTags, localizedString)) {
                 warnings.Add ("Possibly invalid tags");
+            }
+
+            if (Check (CheckSpelling, localizedString)) {
+                warnings.Add ("Possibly mispelled words");
             }
 
             warnings.AddRange (localizedString.Warnings);
@@ -174,6 +204,29 @@ namespace Vernacular.Analyzers
             foreach (Match match in new Regex (@"\[(\w+)\]", RegexOptions.Multiline).Matches (value)) {
                 if (match != null && match.Groups.Count > 1 &&
                     !configuration.SupportedTags.Contains (match.Groups [1].Value)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool CheckSpelling (string value)
+        {
+            if (String.IsNullOrWhiteSpace (value)) {
+                return false;
+            }
+
+            value = Regex.Replace (value, @"[^A-Za-z\_\']+", " ");
+            foreach (var word in Regex.Split (value, @"\s+")) {
+                var sanitized_word = word;
+                if (sanitized_word.EndsWith ("'s") || sanitized_word.EndsWith ("s'")) {
+                    sanitized_word = sanitized_word.Substring (0, sanitized_word.Length - 2);
+                }
+
+                if (!sanitized_word.StartsWith ("'") &&
+                    !configuration.SupportedTags.Contains (sanitized_word) &&
+                    !hunspell.SpellCheckWord (sanitized_word)) {
                     return true;
                 }
             }

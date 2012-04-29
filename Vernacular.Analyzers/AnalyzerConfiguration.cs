@@ -35,6 +35,7 @@ namespace Vernacular.Analyzers
     {
         private Dictionary<string, List<string>> illegal_words = new Dictionary<string, List<string>> ();
         private List<string> supported_tags = new List<string> ();
+        private List<string> spellcheck_dictionaries = new List<string> ();
 
         public Dictionary<string, List<string>> IllegalWords {
             get { return illegal_words; }
@@ -42,6 +43,13 @@ namespace Vernacular.Analyzers
 
         public List<string> SupportedTags {
             get { return supported_tags; }
+        }
+
+        public string HunspellDictionaryPath { get; set; }
+        public string HunspellAffixPath { get; set; }
+
+        public List<string> SpellcheckDictionaries {
+            get { return spellcheck_dictionaries; }
         }
 
         private string configuration_path;
@@ -71,6 +79,36 @@ namespace Vernacular.Analyzers
 
             foreach (var element in root.Elements ()) {
                 switch (element.Name.ToString ()) {
+                    case "spellcheck":
+                        var hunspell_affix = element.Attribute ("hunspell-affix");
+                        var hunspell_dictionary = element.Attribute ("hunspell-dictionary");
+
+                        if (hunspell_affix == null || hunspell_dictionary == null) {
+                            ConfigError (element, "spellcheck element must have hunspell-affix and hunspell-dictionary attributes");
+                            return;
+                        }
+
+                        HunspellAffixPath = hunspell_affix.Value;
+                        HunspellDictionaryPath = hunspell_dictionary.Value;
+
+                        foreach (var spellcheck_element in element.Elements ()) {
+                            if (spellcheck_element.Name != "dictionary-path") {
+                                ConfigError (spellcheck_element, "invalid spellcheck element: {0}", spellcheck_element.Name);
+                                return;
+                            }
+
+                            var path = spellcheck_element.Attribute ("value");
+                            if (path == null) {
+                                ConfigError (spellcheck_element, "dictionary-path element without value");
+                                return;
+                            } else if (spellcheck_dictionaries.Contains (path.Value)) {
+                                ConfigError (spellcheck_element, "dictionary-path already specified");
+                                return;
+                            }
+
+                            spellcheck_dictionaries.Add (path.Value);
+                        }
+                        break;
                     case "supported-tags":
                         foreach (var supported_tags_element in element.Elements ()) {
                             if (supported_tags_element.Name != "tag") {

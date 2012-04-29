@@ -89,6 +89,7 @@
     <Compile Include="Vernacular.Tool\LocalizationMetadata.cs" />
     <Compile Include="Vernacular.Tool\ILocalizationUnit.cs" />
     <Compile Include="Vernacular.Tool\ConsoleCrayon.cs" />
+    <Compile Include="Vernacular.Analyzers\Hunspell.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
