@@ -213,7 +213,7 @@ namespace Vernacular.Analyzers
 
         private bool CheckSpelling (string value)
         {
-            if (String.IsNullOrWhiteSpace (value)) {
+            if (hunspell == null || String.IsNullOrWhiteSpace (value)) {
                 return false;
             }
 
