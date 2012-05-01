@@ -41,15 +41,17 @@ namespace Vernacular.Analyzers
         private Hunspell hunspell;
         private AnalyzerConfiguration configuration;
 
-
         public StringAnalyzer (string configurationPath = null)
         {
             configuration = new AnalyzerConfiguration (configurationPath);
 
             if (File.Exists (configuration.HunspellAffixPath) && File.Exists (configuration.HunspellDictionaryPath)) {
-                hunspell = new Hunspell (configuration.HunspellAffixPath, configuration.HunspellDictionaryPath);
+                try {
+                    hunspell = new Hunspell (configuration.HunspellAffixPath, configuration.HunspellDictionaryPath);
+                } catch (DllNotFoundException) {
+                }
 
-                if (configuration.SpellcheckDictionaries != null) {
+                if (hunspell != null && configuration.SpellcheckDictionaries != null) {
                     foreach (var path in configuration.SpellcheckDictionaries) {
                         using (var reader = new StreamReader (path)) {
                             string word;
