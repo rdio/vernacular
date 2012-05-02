@@ -63,9 +63,11 @@ namespace Vernacular.Generators
             new XDocument (resources).WriteTo (xml);
         }
 
-        private void WriteString (XElement parent, string name, string value)
+        private void WriteString (XElement parent, string name, string value, bool formatted = false)
         {
-            var string_element = XElement.Parse ("<string formatted=\"false\">" + value.Replace ("'", "\\'") + "</string>");
+            var string_element = XElement.Parse (String.Format ("<string{0}>{1}</string>",
+                formatted ? String.Empty : " formatted=\"false\"",
+                value.Replace ("'", "\\'")));
             string_element.SetAttributeValue ("name", name);
             parent.Add (string_element);
         }
@@ -86,7 +88,7 @@ namespace Vernacular.Generators
                                     ? localized_string.UntranslatedSingularValue
                                     : localized_string.TranslatedValues [0];
 
-                                WriteString (parent, @string.Name, translated);
+                                WriteString (parent, @string.Name, translated, formatted: true);
 
                                 found_localization = true;
                                 break;
@@ -94,7 +96,7 @@ namespace Vernacular.Generators
                         }
 
                         if (!found_localization) {
-                            WriteString (parent, @string.Name, @string.UntranslatedSingularValue);
+                            WriteString (parent, @string.Name, @string.UntranslatedSingularValue, formatted: true);
                         }
                     }
                 });
