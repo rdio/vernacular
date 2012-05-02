@@ -71,8 +71,7 @@ namespace Vernacular.Parsers
                 .Replace ("\r", " ")
                 .Replace ("\t", " ")
                 .Replace ("\\'", "'")
-                .Replace ("\\\"", "\"")
-                .Escape (decode: true),
+                .Replace ("\\\"", "\""),
                 @"[ ]+", " ", RegexOptions.Multiline).Trim ();
         }
 
