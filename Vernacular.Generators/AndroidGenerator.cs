@@ -78,13 +78,23 @@ namespace Vernacular.Generators
             using (var xml = new XmlTextWriter (localizedPath, Encoding.UTF8)) {
                 WriteDocument (xml, parent => {
                     foreach (LocalizedString @string in parser.Parse ()) {
+                        var found_localization = false;
+
                         foreach (var localized_string in Strings) {
                             if (localized_string.UntranslatedSingularValue == @string.UntranslatedSingularValue) {
                                 var translated = String.IsNullOrWhiteSpace (@localized_string.TranslatedValues [0])
                                     ? localized_string.UntranslatedSingularValue
                                     : localized_string.TranslatedValues [0];
+
                                 WriteString (parent, @string.Name, translated);
+
+                                found_localization = true;
+                                break;
                             }
+                        }
+
+                        if (!found_localization) {
+                            WriteString (parent, @string.Name, @string.UntranslatedSingularValue);
                         }
                     }
                 });
