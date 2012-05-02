@@ -45,6 +45,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <DefineConstants>LINQ;VERNACULAR_TOOL</DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil.Mdb">
