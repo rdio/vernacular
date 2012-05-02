@@ -65,7 +65,7 @@ namespace Vernacular.Generators
 
         private void WriteString (XElement parent, string name, string value)
         {
-            var string_element = XElement.Parse ("<string>" + value.Replace ("'", "\\'") + "</string>");
+            var string_element = XElement.Parse ("<string formatted=\"false\">" + value.Replace ("'", "\\'") + "</string>");
             string_element.SetAttributeValue ("name", name);
             parent.Add (string_element);
         }
