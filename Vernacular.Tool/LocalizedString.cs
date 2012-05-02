@@ -153,6 +153,22 @@ namespace Vernacular.Tool
             return merged;
         }
 
+        public bool HasValidTranslations {
+            get {
+                if (TranslatedValues == null || TranslatedValues.Length == 0) {
+                    return false;
+                }
+
+                foreach (var translated_value in TranslatedValues) {
+                    if (!String.IsNullOrWhiteSpace (translated_value)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
         private static string Escape (string str)
         {
             return str.Replace ("\"", "\\\"").Replace ("\\", "\\\\");

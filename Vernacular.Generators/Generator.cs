@@ -148,8 +148,11 @@ namespace Vernacular.Generators
 
         protected IEnumerable<ResourceString> GetResourceStrings (LocalizedString localizedString)
         {
-            var translated = localizedString.TranslatedValues;
-            if (translated == null) {
+            string [] translated;
+
+            if (localizedString.HasValidTranslations) {
+                translated = localizedString.TranslatedValues;
+            } else {
                 translated = new [] {
                     localizedString.UntranslatedSingularValue,
                     localizedString.UntranslatedPluralValue
@@ -164,6 +167,10 @@ namespace Vernacular.Generators
                 var untranslated = i == 0
                     ? localizedString.UntranslatedSingularValue
                     : localizedString.UntranslatedPluralValue;
+
+                if (i == 0 && String.IsNullOrWhiteSpace (untranslated)) {
+                    continue;
+                }
 
                 yield return new ResourceString {
                     Id = Catalog.GetResourceId (untranslated, localizedString.Gender, i),

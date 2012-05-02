@@ -80,7 +80,10 @@ namespace Vernacular.Generators
                     foreach (LocalizedString @string in parser.Parse ()) {
                         foreach (var localized_string in Strings) {
                             if (localized_string.UntranslatedSingularValue == @string.UntranslatedSingularValue) {
-                                WriteString (parent, @string.Name, @localized_string.TranslatedValues[0]);
+                                var translated = String.IsNullOrWhiteSpace (@localized_string.TranslatedValues [0])
+                                    ? localized_string.UntranslatedSingularValue
+                                    : localized_string.TranslatedValues [0];
+                                WriteString (parent, @string.Name, translated);
                             }
                         }
                     }
