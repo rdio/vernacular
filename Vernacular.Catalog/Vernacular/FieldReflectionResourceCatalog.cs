@@ -77,7 +77,7 @@ namespace Vernacular
             var cached_string = new CachedString {
                 Message = message,
                 Gender = gender,
-                PluralOrder = GetPluralOrder (CurrentIsoLanguageCode, pluralCount)
+                PluralOrder = PluralRules.GetOrder (CurrentIsoLanguageCode, pluralCount)
             };
 
             if (string_cache.TryGetValue (cached_string, out resource)) {

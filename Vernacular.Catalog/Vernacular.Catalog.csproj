@@ -46,6 +46,8 @@
     <Compile Include="Vernacular\GoogleTranslateCatalog.cs" />
     <Compile Include="Vernacular\LanguageGender.cs" />
     <Compile Include="Vernacular.Xaml\Catalog.cs" />
+    <Compile Include="Vernacular\PluralRules.cs" />
+    <Compile Include="Vernacular\ResourceCatalog.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
