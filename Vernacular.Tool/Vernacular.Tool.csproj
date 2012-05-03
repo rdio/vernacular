@@ -76,17 +76,12 @@
     <Compile Include="Vernacular.Tool\Entry.cs" />
     <Compile Include="Vernacular.Tool\LocalizedString.cs" />
     <Compile Include="Vernacular.Tool\StringExtensions.cs" />
-    <Compile Include="Vernacular\AndroidCatalog.cs" />
     <Compile Include="Vernacular.Generators\Generator.cs" />
     <Compile Include="Vernacular.Generators\IosGenerator.cs" />
     <Compile Include="Vernacular.Parsers\Parser.cs" />
     <Compile Include="Vernacular.Analyzers\StringAnalyzer.cs" />
     <Compile Include="Vernacular.Generators\ResxGenerator.cs" />
     <Compile Include="Vernacular.Parsers\XamlParser.cs" />
-    <Compile Include="Vernacular\Catalog.cs" />
-    <Compile Include="Vernacular\FieldReflectionResourceCatalog.cs" />
-    <Compile Include="Vernacular\GoogleTranslateCatalog.cs" />
-    <Compile Include="Vernacular\LanguageGender.cs" />
     <Compile Include="Vernacular.Tool\LocalizationMetadata.cs" />
     <Compile Include="Vernacular.Tool\ILocalizationUnit.cs" />
     <Compile Include="Vernacular.Tool\ConsoleCrayon.cs" />
@@ -114,6 +109,11 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Vernacular.Catalog\Vernacular.Catalog.csproj">
+      <Project>{BEC7B55D-F922-446D-9BBF-12DB249C4CA4}</Project>
+      <Name>Vernacular.Catalog</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
