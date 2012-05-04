@@ -197,7 +197,8 @@ namespace Vernacular
             }
         }
 
-        public static string GetResourceId (string message, LanguageGender gender, int pluralOrder)
+        public static string GetResourceId (ResourceIdType resourceIdType,
+            string message, LanguageGender gender, int pluralOrder)
         {
             var builder = new StringBuilder ("Vernacular_P");
 
@@ -208,12 +209,21 @@ namespace Vernacular
                 builder.Append (gender == LanguageGender.Masculine ? "M_" : "F_");
             }
 
-            foreach (var c in message) {
-                if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_') {
-                    builder.Append (c);
-                } else if (c != ' ') {
-                    builder.Append ((int)c);
-                }
+            switch (resourceIdType) {
+                case ResourceIdType.ComprehensibleIdentifier:
+                    foreach (var c in message) {
+                        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_') {
+                            builder.Append (c);
+                        } else if (c != ' ') {
+                            builder.Append ((int)c);
+                        }
+                    }
+                    break;
+                case ResourceIdType.Base64:
+                    builder.Append (Convert.ToBase64String (Encoding.UTF8.GetBytes (message)));
+                    break;
+                default:
+                    throw new Exception ("Unknown ResourceIdType");
             }
 
             return builder.ToString ();

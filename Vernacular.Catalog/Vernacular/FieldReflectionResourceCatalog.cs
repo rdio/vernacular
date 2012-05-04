@@ -84,7 +84,8 @@ namespace Vernacular
                 return true;
             }
 
-            var id = GetResourceId (message, gender, cached_string.PluralOrder);
+            var id = GetResourceId (ResourceIdType.ComprehensibleIdentifier,
+                message, gender, cached_string.PluralOrder);
             var field = reflection_type.GetField (id);
 
             if (field == null) {

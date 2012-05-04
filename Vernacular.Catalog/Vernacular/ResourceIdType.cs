@@ -1,5 +1,5 @@
-//
-// ResxGenerator.cs
+﻿//
+// ResourceIdType.cs
 //
 // Author:
 //   Aaron Bockover <abock@rd.io>
@@ -25,29 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using System.Text;
-using System.Resources;
 
-namespace Vernacular.Generators
+namespace Vernacular
 {
-    public sealed class ResxGenerator : Generator
+    public enum ResourceIdType
     {
-        protected override ResourceIdType ResourceIdType {
-            get { return ResourceIdType.Base64; }
-        }
-
-        protected override void Generate ()
-        {
-            using (var resx = new ResXResourceWriter (Writer)) {
-                foreach (var localized_string in Strings) {
-                    foreach (var resource_string in GetResourceStrings (localized_string)) {
-                        if (!HasResourceStringBeenGenerated (resource_string)) {
-                            MarkResourceStringAsGenerated (resource_string);
-                            resx.AddResource (new ResXDataNode (resource_string.Id, resource_string.Translated));
-                        }
-                    }
-                }
-            }
-        }
+        ComprehensibleIdentifier,
+        Base64
     }
 }

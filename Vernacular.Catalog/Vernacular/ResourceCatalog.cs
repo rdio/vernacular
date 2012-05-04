@@ -31,6 +31,12 @@ namespace Vernacular
     public class ResourceCatalog : Catalog
     {
         public Func<string, string> GetResourceById { get; set; }
+        public ResourceIdType ResourceIdType { get; set; }
+
+        public ResourceCatalog ()
+        {
+            ResourceIdType = ResourceIdType.ComprehensibleIdentifier;
+        }
 
         protected virtual string GetResource (string message,
             LanguageGender gender = LanguageGender.Neutral, int pluralCount = 1)
@@ -40,7 +46,7 @@ namespace Vernacular
             }
 
             var plural_order = PluralRules.GetOrder (CurrentIsoLanguageCode, pluralCount);
-            var resource_id = GetResourceId (message, gender, plural_order);
+            var resource_id = GetResourceId (ResourceIdType, message, gender, plural_order);
 
             if (resource_id == null) {
                 return null;

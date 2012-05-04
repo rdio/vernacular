@@ -70,6 +70,10 @@ namespace Vernacular.Generators
             get { return Encoding.UTF8; }
         }
 
+        protected virtual ResourceIdType ResourceIdType {
+            get { return ResourceIdType.ComprehensibleIdentifier; }
+        }
+
         protected sealed class GeneratorWriter : StreamWriter
         {
             private Encoding encoding;
@@ -173,7 +177,7 @@ namespace Vernacular.Generators
                 }
 
                 yield return new ResourceString {
-                    Id = Catalog.GetResourceId (untranslated, localizedString.Gender, i),
+                    Id = Catalog.GetResourceId (ResourceIdType, untranslated, localizedString.Gender, i),
                     Untranslated = untranslated,
                     Translated = translated [i]
                 };
