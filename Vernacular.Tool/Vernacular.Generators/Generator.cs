@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
@@ -151,8 +152,7 @@ namespace Vernacular.Generators
                 get {
                     // We want to chop off the Vernacular_P0_M_ style
                     // prefixes to keep plurals grouped together.
-                    var index = Id.LastIndexOf ('_');
-                    return index >= 0 ? Id.Substring (index) : Id;
+                    return Regex.Replace (Id, @"^Vernacular_P\d+(_[FM]{1})?_", "");
                 }
             }
         }
