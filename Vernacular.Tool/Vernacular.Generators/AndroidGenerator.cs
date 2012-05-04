@@ -40,13 +40,8 @@ namespace Vernacular.Generators
         {
             using (var writer = new XmlTextWriter (Writer)) {
                 WriteDocument (writer, parent => {
-                    foreach (var localized_string in Strings) {
-                        foreach (var resource_string in GetResourceStrings (localized_string)) {
-                            if (!HasResourceStringBeenGenerated (resource_string)) {
-                                WriteString (parent, resource_string.Id, resource_string.Translated);
-                                MarkResourceStringAsGenerated (resource_string);
-                            }
-                        }
+                    foreach (var resource_string in GetAllResourceStrings ()) {
+                        WriteString (parent, resource_string.Id, resource_string.Translated);
                     }
                 });
             }

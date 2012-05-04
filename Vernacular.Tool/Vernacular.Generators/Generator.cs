@@ -62,8 +62,6 @@ namespace Vernacular.Generators
 
         public LocalizationMetadata LocalizationMetadata { get; private set; }
 
-        private List<string> generated_resource_string_ids = new List<string> ();
-
         protected TextWriter Writer { get; private set; }
 
         protected virtual Encoding Encoding {
@@ -148,6 +146,31 @@ namespace Vernacular.Generators
             public string Id { get; set; }
             public string Untranslated { get; set; }
             public string Translated { get; set; }
+
+            public string SortKey {
+                get {
+                    // We want to chop off the Vernacular_P0_M_ style
+                    // prefixes to keep plurals grouped together.
+                    var index = Id.LastIndexOf ('_');
+                    return index >= 0 ? Id.Substring (index) : Id;
+                }
+            }
+        }
+
+        protected IEnumerable<ResourceString> GetAllResourceStrings ()
+        {
+            var resource_strings = new Dictionary<string, ResourceString> ();
+
+            foreach (var resource_string in from localized_string in Strings
+                                            from resource_string in GetResourceStrings (localized_string)
+                                            where !resource_strings.ContainsKey (resource_string.Id)
+                                            select resource_string) {
+                resource_strings.Add (resource_string.Id, resource_string);
+            }
+
+            return from resource_string in resource_strings
+                   orderby resource_string.Value.SortKey
+                   select resource_string.Value;
         }
 
         protected IEnumerable<ResourceString> GetResourceStrings (LocalizedString localizedString)
@@ -182,16 +205,6 @@ namespace Vernacular.Generators
                     Translated = translated [i]
                 };
             }
-        }
-
-        protected void MarkResourceStringAsGenerated (ResourceString resourceString)
-        {
-            generated_resource_string_ids.Add (resourceString.Id);
-        }
-
-        protected bool HasResourceStringBeenGenerated (ResourceString resourceString)
-        {
-            return generated_resource_string_ids.Contains (resourceString.Id);
         }
 
         protected abstract void Generate ();

@@ -41,15 +41,10 @@ namespace Vernacular.Generators
 
         protected override void Generate ()
         {
-            foreach (var localized_string in Strings) {
-                foreach (var resource_string in GetResourceStrings (localized_string)) {
-                    if (!HasResourceStringBeenGenerated (resource_string)) {
-                        MarkResourceStringAsGenerated (resource_string);
-                        Writer.WriteLine ("/* Untranslated: {0} */", resource_string.Untranslated);
-                        Writer.WriteLine ("\"{0}\" = \"{1}\";", resource_string.Id, Escape (resource_string.Translated));
-                        Writer.WriteLine ();
-                    }
-                }
+            foreach (var resource_string in GetAllResourceStrings ()) {
+                Writer.WriteLine ("/* Untranslated: {0} */", resource_string.Untranslated);
+                Writer.WriteLine ("\"{0}\" = \"{1}\";", resource_string.Id, Escape (resource_string.Translated));
+                Writer.WriteLine ();
             }
         }
     }
