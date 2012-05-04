@@ -211,19 +211,20 @@ namespace Vernacular
 
             switch (resourceIdType) {
                 case ResourceIdType.ComprehensibleIdentifier:
-                    foreach (var c in message) {
-                        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_') {
-                            builder.Append (c);
-                        } else if (c != ' ') {
-                            builder.Append ((int)c);
-                        }
-                    }
                     break;
                 case ResourceIdType.Base64:
-                    builder.Append (Convert.ToBase64String (Encoding.UTF8.GetBytes (message)));
+                    message = Convert.ToBase64String (Encoding.UTF8.GetBytes (message));
                     break;
                 default:
                     throw new Exception ("Unknown ResourceIdType");
+            }
+
+            foreach (var c in message) {
+                if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_') {
+                    builder.Append (c);
+                } else if (c != ' ') {
+                    builder.Append ((int)c);
+                }
             }
 
             return builder.ToString ();
