@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 
@@ -35,6 +36,7 @@ namespace Vernacular.Generators
     public sealed class PoGenerator : Generator
     {
         public bool PotMode { get; set; }
+        public bool ExcludeHeaderMetadata { get; set; }
 
         private static string Escape (string value)
         {
@@ -118,17 +120,24 @@ namespace Vernacular.Generators
 
         protected override void Generate ()
         {
-            GenerateMetadata ();
+            if (!ExcludeHeaderMetadata) {
+                GenerateMetadata ();
 
-            WriteString ("msgid", String.Empty);
-            var builder = new StringBuilder ();
-            foreach (string header in LocalizationMetadata) {
-                builder.AppendFormat ("{0}: {1}\n", header, LocalizationMetadata [header]);
+                WriteString ("msgid", String.Empty);
+                var builder = new StringBuilder ();
+                foreach (string header in LocalizationMetadata) {
+                    builder.AppendFormat ("{0}: {1}\n", header, LocalizationMetadata [header]);
+                }
+                WriteString ("msgstr", builder.ToString ());
+                Writer.WriteLine ();
             }
-            WriteString ("msgstr", builder.ToString ());
-            Writer.WriteLine ();
 
-            foreach (var localized_string in Strings) {
+            var sorted_strings = from localized_string in Strings
+                                 orderby localized_string.UntranslatedSingularValue
+                                 orderby localized_string.UntranslatedPluralValue
+                                 select localized_string;
+
+            foreach (var localized_string in sorted_strings) {
                 WriteComment (' ', localized_string.TranslatorComments);
                 WriteComment ('.', localized_string.DeveloperComments);
                 if (localized_string.References != null) {
