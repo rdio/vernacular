@@ -159,6 +159,7 @@ namespace Vernacular.Parsers
             var references_builder = new StringBuilder ();
             var flags_builder = new StringBuilder ();
             var translated_values = new List<string> ();
+            var vernacular_metadata = new Dictionary<string, string> ();
             string untranslated_singular_value = null;
             string untranslated_plural_value = null;
 
@@ -184,8 +185,18 @@ namespace Vernacular.Parsers
             foreach (var comment in unit.Comments) {
                 switch (comment.Type) {
                     case PoLexer.CommentType.Extracted:
-                        developer_comments_builder.Append (comment.Value.Trim ());
-                        developer_comments_builder.Append ('\n');
+                        var value = comment.Value.Trim ();
+                        if (value.StartsWith ("Vernacular-Metadata-")) {
+                            try {
+                                var parts = value.Substring (20).Split (new [] { ':' }, 2);
+                                vernacular_metadata.Add (parts [0].Trim ().ToLower (), parts [1].Trim ());
+                            } catch {
+                                Log ("Invalid Vernacular-Metadata comment");
+                            }
+                        } else {
+                            developer_comments_builder.Append (value);
+                            developer_comments_builder.Append ('\n');
+                        }
                         break;
                     case PoLexer.CommentType.Translator:
                         translator_comments_builder.Append (comment.Value.Trim ());
@@ -225,6 +236,17 @@ namespace Vernacular.Parsers
                 foreach (var flag in flags.Split (',')) {
                     if (flag.EndsWith ("-format")) {
                         localized_string.StringFormatHint = flag;
+                    }
+                }
+            }
+
+            foreach (var metadata in vernacular_metadata) {
+                if (metadata.Key == "gender") {
+                    LanguageGender gender;
+                    if (Enum.TryParse (metadata.Value, true, out gender)) {
+                        localized_string.Gender = gender;
+                    } else {
+                        Log ("Invalid Vernacular-Metadata-Gender value: {0}", metadata.Value);
                     }
                 }
             }

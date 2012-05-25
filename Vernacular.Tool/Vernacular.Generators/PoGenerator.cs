@@ -140,6 +140,11 @@ namespace Vernacular.Generators
             foreach (var localized_string in sorted_strings) {
                 WriteComment (' ', localized_string.TranslatorComments);
                 WriteComment ('.', localized_string.DeveloperComments);
+
+				if (localized_string.Gender != LanguageGender.Neutral) {
+					WriteComment('.', String.Format ("Vernacular-Metadata-Gender: {0}", localized_string.Gender));
+				}
+
                 if (localized_string.References != null) {
                     foreach (var reference in localized_string.References) {
                         WriteComment (':', reference);
