@@ -74,7 +74,8 @@ namespace Vernacular
         public override string CoreGetGenderString (LanguageGender gender, string masculineMessage, string feminineMessage)
         {
             int resource_id;
-            if (GetResource (out resource_id, masculineMessage, gender: gender)) {
+            var message = gender == LanguageGender.Feminine ? feminineMessage : masculineMessage;
+            if (GetResource (out resource_id, message, gender: gender)) {
                 return GetString (resource_id);
             }
 
@@ -87,7 +88,8 @@ namespace Vernacular
             int n)
         {
             int resource_id;
-            if (GetResource (out resource_id, singularMasculineMessage, gender: gender, pluralCount: n)) {
+            var message = gender == LanguageGender.Feminine ? singularFeminineMessage : singularMasculineMessage;
+            if (GetResource (out resource_id, message, gender: gender, pluralCount: n)) {
                 return GetString (resource_id);
             }
 
