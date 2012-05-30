@@ -89,6 +89,9 @@ namespace Vernacular
             var field = reflection_type.GetField (id);
 
             if (field == null) {
+                if (gender != LanguageGender.Neutral) {
+                    return GetResource (out resource, message, LanguageGender.Neutral, pluralCount);
+                }
                 return false;
             }
 
