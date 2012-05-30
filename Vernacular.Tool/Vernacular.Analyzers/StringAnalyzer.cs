@@ -109,8 +109,10 @@ namespace Vernacular.Analyzers
                 warnings.Add ("Possibly invalid tags");
             }
 
-            if (Check (CheckSpelling, localizedString)) {
-                warnings.Add ("Possibly mispelled words");
+            string misspelledWord;
+            if (CheckSpelling (localizedString.UntranslatedSingularValue, out misspelledWord) ||
+                CheckSpelling (localizedString.UntranslatedPluralValue, out misspelledWord)) {
+                warnings.Add ("Possibly misspelled word: " + misspelledWord);
             }
 
             warnings.AddRange (localizedString.Warnings);
@@ -203,23 +205,27 @@ namespace Vernacular.Analyzers
                 return false;
             }
 
-            foreach (Match match in new Regex (@"\[(\w+)\]", RegexOptions.Multiline).Matches (value)) {
-                if (match != null && match.Groups.Count > 1 &&
-                    !configuration.SupportedTags.Contains (match.Groups [1].Value)) {
-                    return true;
+            foreach (var tag_regex in new [] { @"\%\((\w+)\)", @"\[(\w+)\]" }) {
+                foreach (Match match in new Regex (tag_regex, RegexOptions.Multiline).Matches (value)) {
+                    if (match != null && match.Groups.Count > 1 &&
+                        !configuration.SupportedTags.Contains (match.Groups [1].Value)) {
+                        return true;
+                    }
                 }
             }
 
             return false;
         }
 
-        private bool CheckSpelling (string value)
+        private bool CheckSpelling (string value, out string misspelledWord)
         {
+            misspelledWord = null;
+
             if (hunspell == null || String.IsNullOrWhiteSpace (value)) {
                 return false;
             }
 
-            value = Regex.Replace (value, @"[^A-Za-z\_\']+", " ");
+            value = Regex.Replace (StringExtensions.Escape (value, decode: true), @"[^A-Za-z\_\']+", " ");
             foreach (var word in Regex.Split (value, @"\s+")) {
                 var sanitized_word = word;
                 if (sanitized_word.EndsWith ("'s") || sanitized_word.EndsWith ("s'")) {
@@ -229,6 +235,7 @@ namespace Vernacular.Analyzers
                 if (!sanitized_word.StartsWith ("'") &&
                     !configuration.SupportedTags.Contains (sanitized_word) &&
                     !hunspell.SpellCheckWord (sanitized_word)) {
+                    misspelledWord = sanitized_word;
                     return true;
                 }
             }
