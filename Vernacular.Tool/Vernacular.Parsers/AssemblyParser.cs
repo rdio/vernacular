@@ -246,7 +246,8 @@ namespace Vernacular.Parsers
 
             Log (true, "  |".PadRight (70, '-'));
 
-            foreach (var @string in GenerateLocalizedStrings (invocation.SequencePoint, strings)) {
+            foreach (var @string in GenerateLocalizedStrings (invocation.SequencePoint, strings,
+                invocation.Method.Name.Contains("Gender"))) {
                 Log ("  | {0}", @string);
                 if (is_string_format) {
                     @string.Warnings.Add ("String.Format is unsafe - use Catalog.Format instead");
@@ -258,7 +259,7 @@ namespace Vernacular.Parsers
         }
 
         private IEnumerable<LocalizedString> GenerateLocalizedStrings (SequencePoint sequencePoint,
-            Stack<KeyValuePair<string, string>> parameters)
+            Stack<KeyValuePair<string, string>> parameters, bool gendered)
         {
             var neutral = CreateLocalizedString (LanguageGender.Neutral, sequencePoint);
             var masculine = CreateLocalizedString (LanguageGender.Masculine, sequencePoint);
@@ -274,10 +275,20 @@ namespace Vernacular.Parsers
                         break;
                     case "message":
                     case "singularMessage":
-                        neutral.UntranslatedSingularValue = param.Value;
+                        if (gendered) {
+                            masculine.UntranslatedSingularValue = param.Value;
+                            feminine.UntranslatedSingularValue = param.Value;
+                        } else {
+                            neutral.UntranslatedSingularValue = param.Value;
+                        }
                         break;
                     case "pluralMessage":
-                        neutral.UntranslatedPluralValue = param.Value;
+                        if (gendered) {
+                            masculine.UntranslatedPluralValue = param.Value;
+                            feminine.UntranslatedPluralValue = param.Value;
+                        } else {
+                            neutral.UntranslatedPluralValue = param.Value;
+                        }
                         break;
                     case "masculineMessage":
                     case "singularMasculineMessage":
