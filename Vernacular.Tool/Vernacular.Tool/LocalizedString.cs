@@ -86,7 +86,8 @@ namespace Vernacular.Tool
         public bool UntranslatedEquals (LocalizedString other)
         {
             return UntranslatedSingularValue == other.UntranslatedSingularValue &&
-                UntranslatedPluralValue == other.UntranslatedPluralValue;
+                UntranslatedPluralValue == other.UntranslatedPluralValue &&
+                Gender == other.Gender;
         }
 
         private static string Join (string a, string b)
@@ -109,13 +110,7 @@ namespace Vernacular.Tool
         {
             if (!a.UntranslatedEquals (b)) {
                 throw new Exception ("Cannot merge two strings with different untranslated values");
-            }/*
-                FIXME: don't enforce gender merging because gender isn't properly handled
-                anywhere else. Need to figure out how to generate PO strings that differentiate
-                gender... until then, don't enforce this.
-                else if (a.Gender != b.Gender) {
-                throw new Exception ("Cannot merge two strings with different genders");
-            }*/
+            }
 
             var merged = new LocalizedString {
                 UntranslatedSingularValue = a.UntranslatedSingularValue,
