@@ -61,11 +61,11 @@ namespace Vernacular.Parsers
 
             public sealed class String : Token { }
             public sealed class Identifier : Token { }
-            public sealed class EndOfUnit : Token { }
 
             public sealed class Comment : Token
             {
                 public CommentType Type { get; set; }
+                public char TypeChar { get; set; }
 
                 public override string ToString ()
                 {
@@ -148,34 +148,21 @@ namespace Vernacular.Parsers
 
         public IEnumerable<Token> Lex ()
         {
-            Token last = null;
-
             while (!Reader.EndOfStream) {
                 EatWhitespace ();
                 var c = Peek ();
                 if (c == '#') {
-                    if (last is Token.String) {
-                        yield return Annotate (Line, Column, last = new Token.EndOfUnit ());
-                    }
-                    yield return Annotate (Line, Column, last = LexComment ());
+                    yield return Annotate (Line, Column, LexComment ());
                 } else if (c == '"') {
-                    yield return Annotate (Line, Column, last = LexMessage ());
+                    yield return Annotate (Line, Column, LexMessage ());
                 } else if (IsIdentifier (c)) {
-                    var line = Line;
-                    var column = Column;
-                    var identifier = Annotate (line, column, LexIdentifier ());
-                    if (identifier.Value == "msgid" && last is Token.String) {
-                        yield return Annotate (line, column, new Token.EndOfUnit ());
-                    }
-                    yield return last = identifier;
+                    yield return Annotate (Line, Column, LexIdentifier ());
                 } else if (c == Char.MaxValue) {
                     break;
                 } else {
                     throw new SyntaxException (this, "Expected whitespace, comment, identifier, or string");
                 }
             }
-
-            yield return Annotate (Line, Column, new Token.EndOfUnit ());
         }
 
         private Token.Comment LexComment ()
@@ -195,6 +182,8 @@ namespace Vernacular.Parsers
                 case '~': comment.Type = CommentType.ObsoleteMessage; break;
                 default: comment.Type = CommentType.Translator; break;
             }
+
+            comment.TypeChar = c;
 
             // Eat the one of four comment type characters from above
             if (comment.Type != CommentType.Translator) {
