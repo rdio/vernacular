@@ -1,5 +1,5 @@
 //
-// PoParser.cs
+// Parser.cs
 //
 // Author:
 //   Aaron Bockover <abock@rd.io>
@@ -32,9 +32,9 @@ using System.Collections.Generic;
 
 using Vernacular.Tool;
 
-namespace Vernacular.Parsers
+namespace Vernacular.PO
 {
-    public sealed class PoParser : Parser
+    public sealed class Parser : Vernacular.Parsers.Parser
     {
         private class PoMessage
         {
@@ -49,7 +49,7 @@ namespace Vernacular.Parsers
 
         private class PoUnit
         {
-            public List<PoLexer.Token.Comment> Comments = new List<PoLexer.Token.Comment> ();
+            public List<Token.Comment> Comments = new List<Token.Comment> ();
             public List<PoMessage> Messages = new List<PoMessage> ();
 
             public override string ToString ()
@@ -91,23 +91,23 @@ namespace Vernacular.Parsers
             po_paths.Add (path);
         }
 
-        private bool IsStartOfUnitToken (PoLexer.Token token)
+        private bool IsStartOfUnitToken (Token token)
         {
-            return token is PoLexer.Token.Comment ||
-                (token is PoLexer.Token.Identifier &&
+            return token is Token.Comment ||
+                (token is Token.Identifier &&
                     (token.Value == "msgctxt" || token.Value == "msgid"));
         }
 
-        private bool IsMsgstrToken (PoLexer.Token token)
+        private bool IsMsgstrToken (Token token)
         {
-            return token is PoLexer.Token.Identifier && token.Value.StartsWith ("msgstr");
+            return token is Token.Identifier && token.Value.StartsWith ("msgstr");
         }
 
         private IEnumerable<PoUnit> ParseAllTokenStreams ()
         {
             foreach (var path in po_paths) {
                 var unit = new PoUnit ();
-                PoLexer.Token last_msgstr_token = null;
+                Token last_msgstr_token = null;
                 PoMessage message = null;
 
                 using (var reader = new StreamReader (path)) {
@@ -125,12 +125,12 @@ namespace Vernacular.Parsers
                             unit = new PoUnit ();
                         }
 
-                        if (token is PoLexer.Token.Comment) {
+                        if (token is Token.Comment) {
                             unit.Comments.Add ((PoLexer.Token.Comment)token);
-                        } else if (token is PoLexer.Token.Identifier) {
+                        } else if (token is Token.Identifier) {
                             message = new PoMessage { Identifier = (string)token };
                             unit.Messages.Add (message);
-                        } else if (token is PoLexer.Token.String) {
+                        } else if (token is Token.String) {
                             message.Value += (string)token;
                         }
                     }

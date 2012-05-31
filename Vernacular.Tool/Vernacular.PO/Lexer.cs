@@ -1,5 +1,5 @@
 //
-// PoLexer.cs
+// Lexer.cs
 //
 // Author:
 //   Aaron Bockover <abock@rd.io>
@@ -29,51 +29,10 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-namespace Vernacular.Parsers
+namespace Vernacular.PO
 {
-    public sealed class PoLexer
+    public sealed class Lexer
     {
-        public enum CommentType
-        {
-            Translator,
-            Extracted,
-            Reference,
-            Flag,
-            PreviousContext,
-            ObsoleteMessage
-        }
-
-        public abstract class Token
-        {
-            public int Line { get; set; }
-            public int Column { get; set; }
-            public string Value { get; set; }
-
-            public static explicit operator string (Token token)
-            {
-                return token.Value;
-            }
-
-            public override string ToString ()
-            {
-                return string.Format ("[{0},{1}] {2} = \"{3}\"", Line, Column, GetType ().Name, Value);
-            }
-
-            public sealed class String : Token { }
-            public sealed class Identifier : Token { }
-
-            public sealed class Comment : Token
-            {
-                public CommentType Type { get; set; }
-                public char TypeChar { get; set; }
-
-                public override string ToString ()
-                {
-                    return string.Format ("{0} ({1})", base.ToString (), Type);
-                }
-            }
-        }
-
         private class SyntaxException :Exception
         {
             public SyntaxException (PoLexer lexer, string message)
