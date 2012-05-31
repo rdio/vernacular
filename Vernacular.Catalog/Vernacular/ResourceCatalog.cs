@@ -38,7 +38,7 @@ namespace Vernacular
             ResourceIdType = ResourceIdType.ComprehensibleIdentifier;
         }
 
-        protected virtual string GetResource (string message,
+        protected virtual string GetResource (string context, string message,
             LanguageGender gender = LanguageGender.Neutral, int pluralCount = 1)
         {
             if (GetResourceById == null) {
@@ -46,7 +46,7 @@ namespace Vernacular
             }
 
             var plural_order = PluralRules.GetOrder (CurrentIsoLanguageCode, pluralCount);
-            var resource_id = GetResourceId (ResourceIdType, message, gender, plural_order);
+            var resource_id = GetResourceId (ResourceIdType, context, message, gender, plural_order);
 
             if (resource_id == null) {
                 return null;
@@ -57,19 +57,20 @@ namespace Vernacular
 
         public override string CoreGetString (string message)
         {
-            return CoreFilter (GetResource (message) ?? DefaultImplementation.CoreGetString (message));
+            return CoreFilter (GetResource (null, message) ?? DefaultImplementation.CoreGetString (message));
         }
 
         public override string CoreGetPluralString (string singularMessage, string pluralMessage, int n)
         {
-            return CoreFilter (GetResource (singularMessage, pluralCount: n)
+            return CoreFilter (GetResource (null, singularMessage, pluralCount: n)
                 ?? DefaultImplementation.CoreGetPluralString (singularMessage, pluralMessage, n));
         }
 
         public override string CoreGetGenderString (LanguageGender gender,
             string masculineMessage, string feminineMessage)
         {
-            return CoreFilter (GetResource (masculineMessage, gender: gender)
+            var message = gender == LanguageGender.Feminine ? feminineMessage : masculineMessage;
+            return CoreFilter (GetResource (null, message, gender: gender)
                 ?? DefaultImplementation.CoreGetGenderString (gender, masculineMessage, feminineMessage));
         }
 
@@ -78,7 +79,8 @@ namespace Vernacular
             string singularFeminineMessage, string pluralFeminineMessage,
             int n)
         {
-            return CoreFilter (GetResource (singularMasculineMessage, gender: gender, pluralCount: n)
+            var message = gender == LanguageGender.Feminine ? singularFeminineMessage : singularMasculineMessage;
+            return CoreFilter (GetResource (null, message, gender: gender, pluralCount: n)
                 ?? DefaultImplementation.CoreGetPluralGenderString (gender,
                     singularMasculineMessage, pluralMasculineMessage,
                     singularFeminineMessage, pluralFeminineMessage,

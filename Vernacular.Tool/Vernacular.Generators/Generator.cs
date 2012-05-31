@@ -200,7 +200,9 @@ namespace Vernacular.Generators
                 }
 
                 yield return new ResourceString {
-                    Id = Catalog.GetResourceId (ResourceIdType, untranslated, localizedString.Gender, i),
+                    Id = Catalog.GetResourceId (ResourceIdType,
+                        localizedString.Context, untranslated,
+                        localizedString.Gender, i),
                     Untranslated = untranslated,
                     Translated = translated [i]
                 };

@@ -71,7 +71,7 @@ namespace Vernacular
             reflection_type = reflectionType;
         }
 
-        protected bool GetResource (out T resource, string message,
+        protected bool GetResource (out T resource, string context, string message,
             LanguageGender gender = LanguageGender.Neutral, int pluralCount = 1)
         {
             var cached_string = new CachedString {
@@ -85,12 +85,12 @@ namespace Vernacular
             }
 
             var id = GetResourceId (ResourceIdType.ComprehensibleIdentifier,
-                message, gender, cached_string.PluralOrder);
+                context, message, gender, cached_string.PluralOrder);
             var field = reflection_type.GetField (id);
 
             if (field == null) {
                 if (gender != LanguageGender.Neutral) {
-                    return GetResource (out resource, message, LanguageGender.Neutral, pluralCount);
+                    return GetResource (out resource, context, message, LanguageGender.Neutral, pluralCount);
                 }
                 return false;
             }

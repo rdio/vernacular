@@ -198,9 +198,13 @@ namespace Vernacular
         }
 
         public static string GetResourceId (ResourceIdType resourceIdType,
-            string message, LanguageGender gender, int pluralOrder)
+            string context, string message, LanguageGender gender, int pluralOrder)
         {
             var builder = new StringBuilder ("Vernacular_P");
+
+            if (!String.IsNullOrEmpty (context)) {
+                message = context + "__" + message;
+            }
 
             builder.Append (pluralOrder);
             builder.Append ('_');
