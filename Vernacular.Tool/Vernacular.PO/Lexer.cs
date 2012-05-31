@@ -35,7 +35,7 @@ namespace Vernacular.PO
     {
         private class SyntaxException :Exception
         {
-            public SyntaxException (PoLexer lexer, string message)
+            public SyntaxException (Lexer lexer, string message)
                 : base (String.Format ("Syntax error: \"{0}\": {1}:{2},{3} ('{4}')",
                     message, lexer.Path, lexer.Line, lexer.Column, lexer.Peek ()))
             {
@@ -49,7 +49,7 @@ namespace Vernacular.PO
 
         private StringBuilder builder = new StringBuilder ();
 
-        public PoLexer ()
+        public Lexer ()
         {
             Line = 1;
             Column = 1;

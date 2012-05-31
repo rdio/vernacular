@@ -1,5 +1,5 @@
 // 
-// Token.cs
+// Unit.cs
 //  
 // Author:
 //   Aaron Bockover <abock@rd.io>
@@ -25,42 +25,42 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
+using System.Collections.Generic;
 
 namespace Vernacular.PO
 {
-    public abstract class Token : IDocumentPart
+    public sealed class Unit
     {
-        public int Line { get; set; }
-        public int Column { get; set; }
-        public string Value { get; set; }
+        private List<Token.Comment> comments = new List<Token.Comment> ();
+        private List<Message> messages = new List<Message> ();
 
-        internal Token ()
-        {
+        public IList<Token.Comment> Comments {
+            get { return comments; }
         }
 
-        public static explicit operator string (Token token)
+        public IList<Message> Messages {
+            get { return messages; }
+        }
+
+        internal Unit ()
         {
-            return token.Value;
         }
 
         public override string ToString ()
         {
-            return string.Format ("[{0},{1}] {2} = \"{3}\"", Line, Column,
-                GetType ().Name, Value.Replace("\"", "\\\""));
-        }
+            var builder = new StringBuilder ();
 
-        public sealed class String : Token { }
-        public sealed class Identifier : Token { }
-
-        public sealed class Comment : Token
-        {
-            public CommentType Type { get; set; }
-            public char TypeChar { get; set; }
-
-            public override string ToString ()
-            {
-                return string.Format ("{0} [{1} ({2})]", base.ToString (), Type, TypeChar);
+            foreach (var comment in Comments) {
+                builder.AppendFormat ("#{0} {1}\n", comment.TypeChar, comment.Value);
             }
+
+            foreach (var message in Messages) {
+                builder.Append (message);
+                builder.Append ("\n");
+            }
+
+            return builder.ToString ();
         }
     }
 }

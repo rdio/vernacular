@@ -1,5 +1,5 @@
 // 
-// Token.cs
+// IDocumentPart.cs
 //  
 // Author:
 //   Aaron Bockover <abock@rd.io>
@@ -28,39 +28,9 @@ using System;
 
 namespace Vernacular.PO
 {
-    public abstract class Token : IDocumentPart
+    public interface IDocumentPart
     {
-        public int Line { get; set; }
-        public int Column { get; set; }
-        public string Value { get; set; }
-
-        internal Token ()
-        {
-        }
-
-        public static explicit operator string (Token token)
-        {
-            return token.Value;
-        }
-
-        public override string ToString ()
-        {
-            return string.Format ("[{0},{1}] {2} = \"{3}\"", Line, Column,
-                GetType ().Name, Value.Replace("\"", "\\\""));
-        }
-
-        public sealed class String : Token { }
-        public sealed class Identifier : Token { }
-
-        public sealed class Comment : Token
-        {
-            public CommentType Type { get; set; }
-            public char TypeChar { get; set; }
-
-            public override string ToString ()
-            {
-                return string.Format ("{0} [{1} ({2})]", base.ToString (), Type, TypeChar);
-            }
-        }
+        int Line { get; }
+        int Column { get; }
     }
 }
