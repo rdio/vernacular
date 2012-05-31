@@ -33,6 +33,7 @@ namespace Vernacular.Tool
     public class LocalizedString : ILocalizationUnit
     {
         public string Name { get; set; }
+        public string Context { get; set; }
         public string UntranslatedSingularValue { get; set; }
         public string UntranslatedPluralValue { get; set; }
         public string [] TranslatedValues { get; set; }
@@ -85,7 +86,9 @@ namespace Vernacular.Tool
 
         public bool UntranslatedEquals (LocalizedString other)
         {
-            return UntranslatedSingularValue == other.UntranslatedSingularValue &&
+            return
+                Context == other.Context &&
+                UntranslatedSingularValue == other.UntranslatedSingularValue &&
                 UntranslatedPluralValue == other.UntranslatedPluralValue &&
                 Gender == other.Gender;
         }
@@ -113,6 +116,7 @@ namespace Vernacular.Tool
             }
 
             var merged = new LocalizedString {
+                Context = a.Context,
                 UntranslatedSingularValue = a.UntranslatedSingularValue,
                 UntranslatedPluralValue = a.UntranslatedPluralValue,
                 Gender = a.Gender,
