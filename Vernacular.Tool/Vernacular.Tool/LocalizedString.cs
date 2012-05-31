@@ -105,7 +105,14 @@ namespace Vernacular.Tool
             } else if (a_null && !b_null) {
                 return b;
             } else {
-                return String.Join ("; ", a, b);
+                a = a.Trim ();
+                b = b.Trim ();
+
+                if (String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase)) {
+                    return a;
+                } else {
+                    return String.Join ("; ", a, b);
+                }
             }
         }
 
