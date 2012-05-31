@@ -40,15 +40,42 @@ namespace Vernacular.Parsers
         {
             public string Identifier;
             public string Value;
+
+            public override string ToString ()
+            {
+                return String.Format("{0} = \"{1}\"", Identifier, Value);
+            }
         }
 
         private class PoUnit
         {
             public List<PoLexer.Token.Comment> Comments = new List<PoLexer.Token.Comment> ();
             public List<PoMessage> Messages = new List<PoMessage> ();
+
+            public override string ToString ()
+            {
+                var builder = new StringBuilder ();
+
+                foreach (var comment in Comments) {
+                    builder.AppendFormat ("#{0} {1}\n", comment.TypeChar, comment.Value);
+                }
+
+                foreach (var message in Messages) {
+                    builder.AppendFormat ("{0} \"{1}\"\n", message.Identifier, message.Value.Replace ("\"", "\\\""));
+                }
+
+                return builder.ToString ();
+            }
         }
 
         private List<string> po_paths = new List<string> ();
+
+        public static readonly Dictionary<string, LanguageGender> GenderContexts = new Dictionary<string, LanguageGender> {
+            { "masculine form", LanguageGender.Masculine },
+            { "feminine form", LanguageGender.Feminine },
+            { "gender-masculine", LanguageGender.Masculine },
+            { "gender-feminine", LanguageGender.Feminine }
+        };
 
         private LocalizationMetadata header;
 
@@ -64,10 +91,23 @@ namespace Vernacular.Parsers
             po_paths.Add (path);
         }
 
+        private bool IsStartOfUnitToken (PoLexer.Token token)
+        {
+            return token is PoLexer.Token.Comment ||
+                (token is PoLexer.Token.Identifier &&
+                    (token.Value == "msgctxt" || token.Value == "msgid"));
+        }
+
+        private bool IsMsgstrToken (PoLexer.Token token)
+        {
+            return token is PoLexer.Token.Identifier && token.Value.StartsWith ("msgstr");
+        }
+
         private IEnumerable<PoUnit> ParseAllTokenStreams ()
         {
             foreach (var path in po_paths) {
                 var unit = new PoUnit ();
+                PoLexer.Token last_msgstr_token = null;
                 PoMessage message = null;
 
                 using (var reader = new StreamReader (path)) {
@@ -77,6 +117,14 @@ namespace Vernacular.Parsers
                     };
 
                     foreach (var token in lexer.Lex ()) {
+                        if (IsMsgstrToken (token)) {
+                            last_msgstr_token = token;
+                        } else if (IsStartOfUnitToken (token) && last_msgstr_token != null) {
+                            last_msgstr_token = null;
+                            yield return unit;
+                            unit = new PoUnit ();
+                        }
+
                         if (token is PoLexer.Token.Comment) {
                             unit.Comments.Add ((PoLexer.Token.Comment)token);
                         } else if (token is PoLexer.Token.Identifier) {
@@ -84,9 +132,6 @@ namespace Vernacular.Parsers
                             unit.Messages.Add (message);
                         } else if (token is PoLexer.Token.String) {
                             message.Value += (string)token;
-                        } else if (token is PoLexer.Token.EndOfUnit) {
-                            yield return unit;
-                            unit = new PoUnit ();
                         }
                     }
                 }
@@ -159,24 +204,32 @@ namespace Vernacular.Parsers
             var references_builder = new StringBuilder ();
             var flags_builder = new StringBuilder ();
             var translated_values = new List<string> ();
-            var vernacular_metadata = new Dictionary<string, string> ();
             string untranslated_singular_value = null;
             string untranslated_plural_value = null;
+            string context = null;
 
             foreach (var message in unit.Messages) {
-                var match = Regex.Match (message.Identifier, @"^msg(id|id_plural|str|str\[(\d+)\]|ctx)$");
+                var match = Regex.Match (message.Identifier, @"^msg(id|id_plural|str|str\[(\d+)\]|ctxt)$");
                 if (!match.Success) {
                     continue;
                 }
 
-                switch (match.Groups[1].Value) {
-                    case "id": untranslated_singular_value = message.Value; break;
-                    case "id_plural": untranslated_plural_value = message.Value; break;
-                    case "str": translated_values.Insert (0, message.Value); break;
-                    case "ctx": break;
+                switch (match.Groups [1].Value) {
+                    case "id":
+                        untranslated_singular_value = message.Value;
+                        break;
+                    case "id_plural":
+                        untranslated_plural_value = message.Value;
+                        break;
+                    case "str":
+                        translated_values.Insert (0, message.Value);
+                        break;
+                    case "ctxt":
+                        context = message.Value.Trim ();
+                        break;
                     default:
                         if (match.Groups.Count == 3) {
-                            translated_values.Insert (Int32.Parse (match.Groups[2].Value), message.Value);
+                            translated_values.Insert (Int32.Parse (match.Groups [2].Value), message.Value);
                         }
                         break;
                 }
@@ -185,18 +238,8 @@ namespace Vernacular.Parsers
             foreach (var comment in unit.Comments) {
                 switch (comment.Type) {
                     case PoLexer.CommentType.Extracted:
-                        var value = comment.Value.Trim ();
-                        if (value.StartsWith ("Vernacular-Metadata-")) {
-                            try {
-                                var parts = value.Substring (20).Split (new [] { ':' }, 2);
-                                vernacular_metadata.Add (parts [0].Trim ().ToLower (), parts [1].Trim ());
-                            } catch {
-                                Log ("Invalid Vernacular-Metadata comment");
-                            }
-                        } else {
-                            developer_comments_builder.Append (value);
-                            developer_comments_builder.Append ('\n');
-                        }
+                        developer_comments_builder.Append (comment.Value.Trim ());
+                        developer_comments_builder.Append ('\n');
                         break;
                     case PoLexer.CommentType.Translator:
                         translator_comments_builder.Append (comment.Value.Trim ());
@@ -240,17 +283,21 @@ namespace Vernacular.Parsers
                 }
             }
 
-            foreach (var metadata in vernacular_metadata) {
-                if (metadata.Key == "gender") {
-                    LanguageGender gender;
-                    if (Enum.TryParse (metadata.Value, true, out gender)) {
-                        localized_string.Gender = gender;
-                    } else {
-                        Log ("Invalid Vernacular-Metadata-Gender value: {0}", metadata.Value);
+            if (context != null) {
+                var context_lower = context.ToLower ();
+                foreach (var gender_context in GenderContexts) {
+                    if (context_lower == gender_context.Key) {
+                        localized_string.Gender = gender_context.Value;
+                        context = null;
+                        break;
+                    } else if (context.Contains (gender_context.Key)) {
+                        localized_string.Gender = gender_context.Value;
+                        break;
                     }
                 }
             }
 
+            localized_string.Context = context;
             localized_string.UntranslatedSingularValue = untranslated_singular_value;
             localized_string.UntranslatedPluralValue = untranslated_plural_value;
 
