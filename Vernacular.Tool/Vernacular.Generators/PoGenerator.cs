@@ -30,6 +30,7 @@ using System.Text;
 using System.Collections.Generic;
 
 using Vernacular.Tool;
+using Vernacular.Parsers;
 
 namespace Vernacular.Generators
 {
@@ -141,19 +142,43 @@ namespace Vernacular.Generators
                 WriteComment (' ', localized_string.TranslatorComments);
                 WriteComment ('.', localized_string.DeveloperComments);
 
-				if (localized_string.Gender != LanguageGender.Neutral) {
-					WriteComment('.', String.Format ("Vernacular-Metadata-Gender: {0}", localized_string.Gender));
-				}
-
                 if (localized_string.References != null) {
                     foreach (var reference in localized_string.References) {
                         WriteComment (':', reference);
                     }
                 }
+
                 WriteComment (',', localized_string.StringFormatHint);
 
+                var context = localized_string.Context;
                 var singular = localized_string.UntranslatedSingularValue;
                 var plural = localized_string.UntranslatedPluralValue;
+
+                if (localized_string.Gender != LanguageGender.Neutral) {
+                    var add_gender_context = true;
+                    if (context != null) {
+                        var context_lower = context.ToLower ();
+                        foreach (var gender_context in PoParser.GenderContexts) {
+                            if (context_lower.Contains (gender_context.Key)) {
+                                add_gender_context = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (add_gender_context) {
+                        var gender_context = localized_string.Gender.ToString () + " form";
+                        if (String.IsNullOrEmpty (context)) {
+                            context = gender_context;
+                        } else {
+                            context += ", " + gender_context;
+                        }
+                    }
+                }
+
+                if (!String.IsNullOrEmpty (context)) {
+                    WriteString ("msgctxt", context);
+                }
 
                 WriteString ("msgid", singular);
                 if (plural != null) {
