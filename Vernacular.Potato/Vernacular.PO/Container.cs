@@ -30,7 +30,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace Vernacular.PO
+namespace Vernacular.Potato
 {
     public abstract class Container : IDocumentPart, IEnumerable<IDocumentPart>, INotifyCollectionChanged
     {

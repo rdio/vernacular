@@ -29,7 +29,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-namespace Vernacular.PO.Internal
+namespace Vernacular.Potato.Internal
 {
     public sealed class Lexer
     {

@@ -32,9 +32,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-using Vernacular.PO.Internal;
+using Vernacular.Potato.Internal;
 
-namespace Vernacular.PO
+namespace Vernacular.Potato
 {
     public sealed class Document : Container
     {

@@ -26,7 +26,7 @@
 
 using System;
 
-namespace Vernacular
+namespace Vernacular.Potato
 {
     public enum MessageType
     {

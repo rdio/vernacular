@@ -28,9 +28,9 @@ using System;
 using System.Text;
 using System.ComponentModel;
 
-using Vernacular.PO.Internal;
+using Vernacular.Potato.Internal;
 
-namespace Vernacular.PO
+namespace Vernacular.Potato
 {
     public sealed class Comment : UnitChild
     {

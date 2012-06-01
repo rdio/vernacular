@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-namespace Vernacular.PO
+namespace Vernacular.Potato
 {
     public sealed class Unit : Container
     {

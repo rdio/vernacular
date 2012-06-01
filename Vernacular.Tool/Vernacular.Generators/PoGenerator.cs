@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 using Vernacular.Tool;
 using Vernacular.Parsers;
-using Vernacular.PO;
+using Vernacular.Potato;
 
 namespace Vernacular.Generators
 {

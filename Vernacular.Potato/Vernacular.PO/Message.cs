@@ -28,9 +28,9 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 
-using Vernacular.PO.Internal;
+using Vernacular.Potato.Internal;
 
-namespace Vernacular.PO
+namespace Vernacular.Potato
 {
     public sealed class Message : UnitChild
     {

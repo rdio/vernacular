@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 using Vernacular.Tool;
 
-using Vernacular.PO;
+using Vernacular.Potato;
 
 namespace Vernacular.Parsers
 {
@@ -230,7 +230,7 @@ namespace Vernacular.Parsers
             header = null;
 
             foreach (var path in po_paths) {
-                var parser = new Vernacular.PO.Internal.Parser ();
+                var parser = new Vernacular.Potato.Internal.Parser ();
                 foreach (var unit in parser.Parse (path)) {
                     yield return ParsePoUnit (unit);
                 }

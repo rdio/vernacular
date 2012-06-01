@@ -26,7 +26,7 @@
 
 using System;
 
-namespace Vernacular.PO.Internal
+namespace Vernacular.Potato.Internal
 {
     public abstract class Token
     {

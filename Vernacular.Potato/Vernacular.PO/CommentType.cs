@@ -26,7 +26,7 @@
 
 using System;
 
-namespace Vernacular.PO
+namespace Vernacular.Potato
 {
     public enum CommentType
     {

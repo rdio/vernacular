@@ -27,7 +27,7 @@
 using System;
 using System.ComponentModel;
 
-namespace Vernacular.PO
+namespace Vernacular.Potato
 {
     public interface IDocumentPart : INotifyPropertyChanged
     {
