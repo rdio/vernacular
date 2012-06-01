@@ -32,7 +32,6 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 using Vernacular.Tool;
-using Vernacular.PO;
 
 namespace Vernacular.Analyzers
 {

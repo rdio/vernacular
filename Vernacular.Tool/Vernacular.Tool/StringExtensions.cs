@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Vernacular.PO
+namespace Vernacular.Tool
 {
     public static class StringExtensions
     {
