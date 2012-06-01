@@ -25,10 +25,11 @@
 // THE SOFTWARE.
 
 using System;
+using System.ComponentModel;
 
 namespace Vernacular.PO
 {
-    public interface IDocumentPart
+    public interface IDocumentPart : INotifyPropertyChanged
     {
         int Line { get; }
         int Column { get; }

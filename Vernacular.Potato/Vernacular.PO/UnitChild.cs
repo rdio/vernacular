@@ -1,5 +1,5 @@
 // 
-// Container.cs
+// UnitChild.cs
 //  
 // Author:
 //   Aaron Bockover <abock@rd.io>
@@ -26,55 +26,60 @@
 
 using System;
 using System.ComponentModel;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 
 namespace Vernacular.PO
 {
-    public abstract class Container : IDocumentPart, IEnumerable<IDocumentPart>, INotifyCollectionChanged
+    public abstract class UnitChild : IDocumentPart, INotifyPropertyChanged
     {
-        internal Container ()
+        internal UnitChild ()
         {
         }
 
-        public abstract event NotifyCollectionChangedEventHandler CollectionChanged;
+        public abstract bool HasValue { get; }
+
+        private int line;
+        public int Line {
+            get { return line; }
+            set {
+                if (line != value) {
+                    line = value;
+                    NotifyPropertyChanged ("Line");
+                }
+            }
+        }
+
+        private int column;
+        public int Column {
+            get { return column; }
+            set {
+                if (column != value) {
+                    column = value;
+                    NotifyPropertyChanged ("Column");
+                }
+            }
+        }
+
+        private string value;
+        public string Value {
+            get { return value; }
+            set {
+                if (this.value != value) {
+                    this.value = value;
+                    NotifyPropertyChanged ("Value");
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public bool HasValue {
-            get { return FirstChildDocumentPart != null; }
-        }
-
-        protected IDocumentPart FirstChildDocumentPart {
-            get {
-                foreach (IDocumentPart part in this) {
-                    return part;
-                }
-
-                return null;
-            }
-        }
-
-        public int Line {
-            get {
-                var part = FirstChildDocumentPart;
-                return part == null ? 0 : part.Line;
-            }
-        }
-
-        public int Column {
-            get {
-                var part = FirstChildDocumentPart;
-                return part == null ? 0 : part.Column;
+        protected void NotifyPropertyChanged (string property)
+        {
+            var handler = PropertyChanged;
+            if (handler != null) {
+                handler (this, new PropertyChangedEventArgs (property));
             }
         }
 
         public abstract string Generate ();
-        public abstract IEnumerator<IDocumentPart> GetEnumerator ();
-
-        IEnumerator IEnumerable.GetEnumerator ()
-        {
-            return GetEnumerator ();
-        }
     }
 }

@@ -26,15 +26,45 @@
 
 using System;
 using System.Text;
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace Vernacular.PO
 {
     public sealed class Unit : Container
     {
-        private List<Comment> comments = new List<Comment> ();
-        private List<Message> messages = new List<Message> ();
+        private ObservableCollection<Comment> comments = new ObservableCollection<Comment> ();
+        private ObservableCollection<Message> messages = new ObservableCollection<Message> ();
+
+        private NotifyCollectionChangedEventHandler collection_changed;
+
+        public override event NotifyCollectionChangedEventHandler CollectionChanged {
+            add {
+                var listen = collection_changed == null;
+                collection_changed += value;
+                if (collection_changed != null && listen) {
+                    comments.CollectionChanged += OnCollectionChanged;
+                    messages.CollectionChanged += OnCollectionChanged;
+                }
+            }
+
+            remove {
+                collection_changed -= value;
+                if (collection_changed == null) {
+                    comments.CollectionChanged -= OnCollectionChanged;
+                    messages.CollectionChanged -= OnCollectionChanged;
+                }
+            }
+        }
+
+        private void OnCollectionChanged (object sender, NotifyCollectionChangedEventArgs args)
+        {
+            var handler = collection_changed;
+            if (handler != null) {
+                handler (this, args);
+            }
+        }
 
         public IEnumerable<Comment> Comments {
             get { return comments; }
@@ -51,7 +81,14 @@ namespace Vernacular.PO
 
         public void Add (params Comment [] comments)
         {
-            this.comments.AddRange (comments);
+            Add ((IEnumerable<Comment>)comments);
+        }
+
+        public void Add (IEnumerable<Comment> comments)
+        {
+            foreach (var comment in comments) {
+                Add (comment);
+            }
         }
 
         public void Add (Message message)
@@ -61,7 +98,14 @@ namespace Vernacular.PO
 
         public void Add (params Message [] messages)
         {
-            this.messages.AddRange (messages);
+            Add ((IEnumerable<Message>)messages);
+        }
+
+        public void Add (IEnumerable<Message> messages)
+        {
+            foreach (var message in messages) {
+                Add (message);
+            }
         }
 
         public override string Generate ()

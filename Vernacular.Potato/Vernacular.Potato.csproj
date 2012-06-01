@@ -44,5 +44,6 @@
     <Compile Include="Vernacular.PO.Internal\Lexer.cs" />
     <Compile Include="Vernacular.PO.Internal\Parser.cs" />
     <Compile Include="Vernacular.PO.Internal\Token.cs" />
+    <Compile Include="Vernacular.PO\UnitChild.cs" />
   </ItemGroup>
 </Project>

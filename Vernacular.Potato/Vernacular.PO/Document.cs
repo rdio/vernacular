@@ -27,7 +27,10 @@
 using System;
 using System.IO;
 using System.Text;
+using System.ComponentModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 using Vernacular.PO.Internal;
 
@@ -35,7 +38,12 @@ namespace Vernacular.PO
 {
     public sealed class Document : Container
     {
-        private List<Unit> units = new List<Unit> ();
+        private ObservableCollection<Unit> units = new ObservableCollection<Unit> ();
+
+        public override event NotifyCollectionChangedEventHandler CollectionChanged {
+            add { units.CollectionChanged += value; }
+            remove { units.CollectionChanged -= value; }
+        }
 
         public void Add (Unit unit)
         {
@@ -44,17 +52,24 @@ namespace Vernacular.PO
 
         public void Add (params Unit [] units)
         {
-            this.units.AddRange (units);
+            Add ((IEnumerable<Unit>)units);
+        }
+
+        public void Add (IEnumerable<Unit> units)
+        {
+            foreach (var unit in units) {
+                Add (unit);
+            }
         }
 
         public void Load (string path)
         {
-            units.AddRange (new Parser ().Parse (path));
+            Add (new Parser ().Parse (path));
         }
 
         public void Load (StreamReader reader, string documentName = null)
         {
-            units.AddRange (new Parser ().Parse (reader, documentName));
+            Add (new Parser ().Parse (reader, documentName));
         }
 
         public override string Generate ()

@@ -32,15 +32,31 @@ using Vernacular.PO.Internal;
 
 namespace Vernacular.PO
 {
-    public sealed class Message : IDocumentPart
+    public sealed class Message : UnitChild
     {
-        public int Line { get; set; }
-        public int Column { get; set; }
-        public string Value { get; set; }
-        public MessageType Type { get; set; }
-        public int PluralOrder { get; set; }
+        private MessageType type;
+        public MessageType Type {
+            get { return type; }
+            set {
+                if (type != value) {
+                    type = value;
+                    NotifyPropertyChanged ("Type");
+                }
+            }
+        }
 
-        public bool HasValue {
+        private int plural_order;
+        public int PluralOrder {
+            get { return plural_order; }
+            set {
+                if (plural_order != value) {
+                    plural_order = value;
+                    NotifyPropertyChanged ("PluralOrder");
+                }
+            }
+        }
+
+        public override bool HasValue {
             get { return Value != null; }
         }
 
@@ -82,7 +98,7 @@ namespace Vernacular.PO
             return value;
         }
 
-        public string Generate ()
+        public override string Generate ()
         {
             if (!HasValue) {
                 return null;

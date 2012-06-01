@@ -26,19 +26,26 @@
 
 using System;
 using System.Text;
+using System.ComponentModel;
 
 using Vernacular.PO.Internal;
 
 namespace Vernacular.PO
 {
-    public class Comment : IDocumentPart
+    public sealed class Comment : UnitChild
     {
-        public int Line { get; set; }
-        public int Column { get; set; }
-        public CommentType Type { get; set; }
-        public string Value { get; set; }
+        private CommentType type;
+        public CommentType Type {
+            get { return type; }
+            set {
+                if (type != value) {
+                    type = value;
+                    NotifyPropertyChanged ("Type");
+                }
+            }
+        }
 
-        public bool HasValue {
+        public override bool HasValue {
             get { return !String.IsNullOrWhiteSpace (Value); }
         }
 
@@ -54,7 +61,7 @@ namespace Vernacular.PO
             Value = comment.Value;
         }
 
-        public string Generate ()
+        public override string Generate ()
         {
             if (!HasValue) {
                 return null;
