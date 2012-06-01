@@ -33,17 +33,17 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="Vernacular.PO\Comment.cs" />
-    <Compile Include="Vernacular.PO\CommentType.cs" />
-    <Compile Include="Vernacular.PO\Container.cs" />
-    <Compile Include="Vernacular.PO\Document.cs" />
-    <Compile Include="Vernacular.PO\IDocumentPart.cs" />
-    <Compile Include="Vernacular.PO\Message.cs" />
-    <Compile Include="Vernacular.PO\MessageType.cs" />
-    <Compile Include="Vernacular.PO\Unit.cs" />
-    <Compile Include="Vernacular.PO.Internal\Lexer.cs" />
-    <Compile Include="Vernacular.PO.Internal\Parser.cs" />
-    <Compile Include="Vernacular.PO.Internal\Token.cs" />
-    <Compile Include="Vernacular.PO\UnitChild.cs" />
+    <Compile Include="Vernacular.Potato\Comment.cs" />
+    <Compile Include="Vernacular.Potato\CommentType.cs" />
+    <Compile Include="Vernacular.Potato\Container.cs" />
+    <Compile Include="Vernacular.Potato\Document.cs" />
+    <Compile Include="Vernacular.Potato\IDocumentPart.cs" />
+    <Compile Include="Vernacular.Potato\Message.cs" />
+    <Compile Include="Vernacular.Potato\MessageType.cs" />
+    <Compile Include="Vernacular.Potato\Unit.cs" />
+    <Compile Include="Vernacular.Potato.Internal\Lexer.cs" />
+    <Compile Include="Vernacular.Potato.Internal\Parser.cs" />
+    <Compile Include="Vernacular.Potato.Internal\Token.cs" />
+    <Compile Include="Vernacular.Potato\UnitChild.cs" />
   </ItemGroup>
 </Project>
