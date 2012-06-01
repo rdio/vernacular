@@ -132,20 +132,11 @@ namespace Vernacular.PO
             Read ();
 
             // Determine the comment type
-            var c = Peek ();
-            switch (c) {
-                case '.': comment.Type = CommentType.Extracted; break;
-                case ':': comment.Type = CommentType.Reference; break;
-                case ',': comment.Type = CommentType.Flag; break;
-                case '|': comment.Type = CommentType.PreviousContext; break;
-                case '~': comment.Type = CommentType.ObsoleteMessage; break;
-                default: comment.Type = CommentType.Translator; break;
-            }
-
-            comment.TypeChar = c;
+            var c = comment.TypeChar = Peek ();
+            var type = Comment.GetCommentType (comment.TypeChar);
 
             // Eat the one of four comment type characters from above
-            if (comment.Type != CommentType.Translator) {
+            if (type != CommentType.Translator) {
                 Read ();
             }
 

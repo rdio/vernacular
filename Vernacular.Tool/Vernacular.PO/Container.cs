@@ -1,5 +1,5 @@
 // 
-// IDocumentPart.cs
+// Container.cs
 //  
 // Author:
 //   Aaron Bockover <abock@rd.io>
@@ -25,16 +25,51 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Vernacular.PO
 {
-    public interface IDocumentPart
+    public abstract class Container : IDocumentPart, IEnumerable<IDocumentPart>
     {
-        int Line { get; }
-        int Column { get; }
+        internal Container ()
+        {
+        }
 
-        bool HasValue { get; }
+        public bool HasValue {
+            get { return FirstChildDocumentPart != null; }
+        }
 
-        string Generate ();
+        protected IDocumentPart FirstChildDocumentPart {
+            get {
+                foreach (IDocumentPart part in this) {
+                    return part;
+                }
+
+                return null;
+            }
+        }
+
+        public int Line {
+            get {
+                var part = FirstChildDocumentPart;
+                return part == null ? 0 : part.Line;
+            }
+        }
+
+        public int Column {
+            get {
+                var part = FirstChildDocumentPart;
+                return part == null ? 0 : part.Column;
+            }
+        }
+
+        public abstract string Generate ();
+        public abstract IEnumerator<IDocumentPart> GetEnumerator ();
+
+        IEnumerator IEnumerable.GetEnumerator ()
+        {
+            return GetEnumerator ();
+        }
     }
 }

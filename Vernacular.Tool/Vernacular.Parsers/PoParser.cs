@@ -81,14 +81,19 @@ namespace Vernacular.Parsers
                 "content-type:"
             };
 
-            if (unit == null || unit.Messages == null || unit.Messages.Count != 2 ||
-                unit.Messages[0].Type != MessageType.SingularIdentifier ||
-                !String.IsNullOrEmpty (unit.Messages[0].Value) ||
-                unit.Messages[1].Type != MessageType.SingularString) {
+            if (unit == null) {
                 return null;
             }
 
-            var header_lower = unit.Messages[1].Value.ToLower ();
+            var messages = new List<Message> (unit.Messages);
+            if (messages == null || messages.Count != 2 ||
+                messages[0].Type != MessageType.SingularIdentifier ||
+                !String.IsNullOrEmpty (messages[0].Value) ||
+                messages[1].Type != MessageType.SingularString) {
+                return null;
+            }
+
+            var header_lower = messages [1].Value.ToLower ();
 
             foreach (var key in keys) {
                 if (!header_lower.Contains (key)) {
@@ -98,7 +103,7 @@ namespace Vernacular.Parsers
 
             LocalizationMetadata metadata = null;
 
-            foreach (var line in unit.Messages[1].Value.Split ('\n')) {
+            foreach (var line in messages [1].Value.Split ('\n')) {
                 if (String.IsNullOrWhiteSpace (line)) {
                     continue;
                 }

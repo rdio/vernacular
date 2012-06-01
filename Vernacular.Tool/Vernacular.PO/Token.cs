@@ -28,7 +28,7 @@ using System;
 
 namespace Vernacular.PO
 {
-    public abstract class Token : IDocumentPart
+    public abstract class Token
     {
         public int Line { get; set; }
         public int Column { get; set; }
@@ -54,12 +54,11 @@ namespace Vernacular.PO
 
         public sealed class Comment : Token
         {
-            public CommentType Type { get; set; }
             public char TypeChar { get; set; }
 
             public override string ToString ()
             {
-                return string.Format ("{0} [{1} ({2})]", base.ToString (), Type, TypeChar);
+                return string.Format ("{0} [TypeChar='{1}']", base.ToString (), TypeChar);
             }
         }
     }

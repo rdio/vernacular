@@ -26,41 +26,73 @@
 
 using System;
 using System.Text;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Vernacular.PO
 {
-    public sealed class Unit
+    public sealed class Unit : Container
     {
-        private List<Token.Comment> comments = new List<Token.Comment> ();
+        private List<Comment> comments = new List<Comment> ();
         private List<Message> messages = new List<Message> ();
 
-        public IList<Token.Comment> Comments {
+        public IEnumerable<Comment> Comments {
             get { return comments; }
         }
 
-        public IList<Message> Messages {
+        public IEnumerable<Message> Messages {
             get { return messages; }
         }
 
-        internal Unit ()
+        public void Add (Comment comment)
         {
+            comments.Add (comment);
         }
 
-        public override string ToString ()
+        public void Add (params Comment [] comments)
+        {
+            this.comments.AddRange (comments);
+        }
+
+        public void Add (Message message)
+        {
+            messages.Add (message);
+        }
+
+        public void Add (params Message [] messages)
+        {
+            this.messages.AddRange (messages);
+        }
+
+        public override string Generate ()
         {
             var builder = new StringBuilder ();
 
-            foreach (var comment in Comments) {
-                builder.AppendFormat ("#{0} {1}\n", comment.TypeChar, comment.Value);
-            }
-
-            foreach (var message in Messages) {
-                builder.Append (message);
+            foreach (var part in this) {
+                builder.Append (part.Generate ());
                 builder.Append ("\n");
             }
 
+            if (builder.Length > 0) {
+                builder.Length--;
+            }
+
             return builder.ToString ();
+        }
+
+        public override IEnumerator<IDocumentPart> GetEnumerator ()
+        {
+            foreach (var comment in comments) {
+                if (comment.HasValue) {
+                    yield return comment;
+                }
+            }
+
+            foreach (var message in messages) {
+                if (message.HasValue) {
+                    yield return message;
+                }
+            }
         }
     }
 }

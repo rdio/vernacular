@@ -1,5 +1,5 @@
 // 
-// IDocumentPart.cs
+// Document.cs
 //  
 // Author:
 //   Aaron Bockover <abock@rd.io>
@@ -25,16 +25,41 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
+using System.Collections.Generic;
 
 namespace Vernacular.PO
 {
-    public interface IDocumentPart
+    public sealed class Document : Container
     {
-        int Line { get; }
-        int Column { get; }
+        private List<Unit> units = new List<Unit> ();
 
-        bool HasValue { get; }
+        public void Add (Unit unit)
+        {
+            units.Add (unit);
+        }
 
-        string Generate ();
+        public override string Generate ()
+        {
+            var builder = new StringBuilder ();
+
+            foreach (var part in this) {
+                builder.Append (part.Generate ());
+                builder.Append ("\n\n");
+            }
+
+            builder.Length--;
+
+            return builder.ToString ();
+        }
+
+        public override IEnumerator<IDocumentPart> GetEnumerator ()
+        {
+            foreach (var unit in units) {
+                if (unit.HasValue) {
+                    yield return unit;
+                }
+            }
+        }
     }
 }

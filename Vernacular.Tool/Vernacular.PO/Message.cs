@@ -25,17 +25,25 @@
 // THE SOFTWARE.
 
 using System;
-using System.Text.RegularExpressions;
+using System.Text;
 
 namespace Vernacular.PO
 {
     public sealed class Message : IDocumentPart
     {
-        public int Line { get; private set; }
-        public int Column { get; private set; }
-        public string Value { get; private set; }
-        public MessageType Type { get; private set; }
-        public int PluralOrder { get; private set; }
+        public int Line { get; set; }
+        public int Column { get; set; }
+        public string Value { get; set; }
+        public MessageType Type { get; set; }
+        public int PluralOrder { get; set; }
+
+        public bool HasValue {
+            get { return Value != null; }
+        }
+
+        public Message ()
+        {
+        }
 
         internal Message (Token token, MessageType type, int pluralOrder)
         {
@@ -45,34 +53,62 @@ namespace Vernacular.PO
             PluralOrder = pluralOrder;
         }
 
-        public void AppendValue (Token token)
+        private static string Escape (string value)
         {
-            Value += (string)token;
+            return String.IsNullOrWhiteSpace (value) ? value : value.Escape ();
         }
 
-        public override string ToString ()
+        public string Generate ()
         {
-            string id = null;
+            if (!HasValue) {
+                return null;
+            }
+
+            var builder = new StringBuilder ();
 
             switch (Type) {
                 case MessageType.Context:
-                    id = "msgctxt";
+                    builder.Append ("msgctxt");
                     break;
                 case MessageType.SingularIdentifier:
-                    id = "msgid";
+                    builder.Append ("msgid");
                     break;
                 case MessageType.PluralIdentifier:
-                    id = "msgid_plural";
+                    builder.Append ("msgid_plural");
                     break;
                 case MessageType.SingularString:
-                    id = "msgstr";
+                    builder.Append ("msgstr");
                     break;
                 case MessageType.PluralString:
-                    id = "msgstr[" + PluralOrder.ToString () + "]";
+                    builder.Append ("msgstr[");
+                    builder.Append (PluralOrder);
+                    builder.Append (']');
                     break;
+                default:
+                    throw new Exception ("Invalid MessageType");
             }
 
-            return String.Format ("{0} \"{1}\"", id, Value.Replace ("\"", "\\\""));
+            builder.Append (' ');
+
+            var lines = Value.Split ('\n');
+            if (lines.Length > 1) {
+                builder.Append ("\"\"\n");
+                foreach (var line in lines) {
+                    if (!String.IsNullOrEmpty (line)) {
+                        builder.Append ('"');
+                        builder.Append (Escape (line));
+                        builder.Append ("\\n\"");
+                        builder.Append ('\n');
+                    }
+                }
+                builder.Length--;
+            } else {
+                builder.Append ('"');
+                builder.Append (Escape (lines [0]));
+                builder.Append ('"');
+            }
+
+            return builder.ToString ();
         }
     }
 }

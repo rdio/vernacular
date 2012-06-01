@@ -31,6 +31,7 @@ using System.Collections.Generic;
 
 using Vernacular.Tool;
 using Vernacular.Parsers;
+using Vernacular.PO;
 
 namespace Vernacular.Generators
 {
@@ -38,44 +39,6 @@ namespace Vernacular.Generators
     {
         public bool PotMode { get; set; }
         public bool ExcludeHeaderMetadata { get; set; }
-
-        private static string Escape (string value)
-        {
-            return String.IsNullOrWhiteSpace (value) ? value : value.Escape ();
-        }
-
-        private void WriteComment (char prefix, string value)
-        {
-            if (String.IsNullOrWhiteSpace (value)) {
-                return;
-            }
-
-            foreach (var line in value.Split ('\n')) {
-                Writer.WriteLine ("#{0} {1}", prefix, line);
-            }
-        }
-
-        private void WriteString (string id, string value)
-        {
-            if (id == null || value == null) {
-                return;
-            }
-
-            Writer.Write (id);
-            Writer.Write (' ');
-
-            var lines = value.Split ('\n');
-            if (lines.Length > 1) {
-                Writer.WriteLine ("\"\"");
-                foreach (var line in lines) {
-                    if (!String.IsNullOrEmpty (line)) {
-                        Writer.WriteLine ("\"{0}\\n\"", Escape (line));
-                    }
-                }
-            } else {
-                Writer.WriteLine ("\"{0}\"", Escape (lines [0]));
-            }
-        }
 
         private void GenerateMetadata ()
         {
@@ -121,16 +84,27 @@ namespace Vernacular.Generators
 
         protected override void Generate ()
         {
+            var document = new Document ();
+
             if (!ExcludeHeaderMetadata) {
                 GenerateMetadata ();
 
-                WriteString ("msgid", String.Empty);
                 var builder = new StringBuilder ();
                 foreach (string header in LocalizationMetadata) {
                     builder.AppendFormat ("{0}: {1}\n", header, LocalizationMetadata [header]);
                 }
-                WriteString ("msgstr", builder.ToString ());
-                Writer.WriteLine ();
+
+                document.Add (new Unit {
+                    new Message {
+                        Type = MessageType.SingularIdentifier,
+                        Value = String.Empty
+                    },
+
+                    new Message {
+                        Type = MessageType.SingularString,
+                        Value = builder.ToString ()
+                    }
+                });
             }
 
             var sorted_strings = from localized_string in Strings
@@ -139,16 +113,31 @@ namespace Vernacular.Generators
                                  select localized_string;
 
             foreach (var localized_string in sorted_strings) {
-                WriteComment (' ', localized_string.TranslatorComments);
-                WriteComment ('.', localized_string.DeveloperComments);
+                var unit = new Unit {
+                    new Comment {
+                        Type = CommentType.Translator,
+                        Value = localized_string.TranslatorComments
+                    },
+
+                    new Comment {
+                        Type = CommentType.Extracted,
+                        Value = localized_string.DeveloperComments
+                    }
+                };
 
                 if (localized_string.References != null) {
                     foreach (var reference in localized_string.References) {
-                        WriteComment (':', reference);
+                        unit.Add (new Comment {
+                            Type = CommentType.Reference,
+                            Value = reference
+                        });
                     }
                 }
 
-                WriteComment (',', localized_string.StringFormatHint);
+                unit.Add (new Comment {
+                    Type = CommentType.Flag,
+                    Value = localized_string.StringFormatHint
+                });
 
                 var context = localized_string.Context;
                 var singular = localized_string.UntranslatedSingularValue;
@@ -176,14 +165,22 @@ namespace Vernacular.Generators
                     }
                 }
 
-                if (!String.IsNullOrEmpty (context)) {
-                    WriteString ("msgctxt", context);
-                }
+                unit.Add (
+                    new Message {
+                        Type = MessageType.Context,
+                        Value = context
+                    },
 
-                WriteString ("msgid", singular);
-                if (plural != null) {
-                    WriteString ("msgid_plural", plural);
-                }
+                    new Message {
+                        Type = MessageType.SingularIdentifier,
+                        Value = singular
+                    },
+
+                    new Message {
+                        Type = MessageType.PluralIdentifier,
+                        Value = plural
+                    }
+                );
 
                 var translated = localized_string.TranslatedValues;
                 if (translated == null) {
@@ -194,16 +191,18 @@ namespace Vernacular.Generators
                     }
                 }
 
-                if (translated.Length == 1) {
-                    WriteString ("msgstr", PotMode ? String.Empty : translated [0]);
-                } else {
-                    for (int i = 0; i < translated.Length; i++) {
-                        WriteString (String.Format ("msgstr[{0}]", i), PotMode ? String.Empty : translated [i]);
-                    }
+                for (int i = 0; i < translated.Length; i++) {
+                    unit.Add (new Message {
+                        Type = translated.Length == 1 ? MessageType.SingularString : MessageType.PluralString,
+                        PluralOrder = i,
+                        Value = PotMode ? String.Empty : translated [i]
+                    });
                 }
 
-                Writer.WriteLine ();
+                document.Add (unit);
             }
+
+            Writer.Write (document.Generate ());
         }
     }
 }

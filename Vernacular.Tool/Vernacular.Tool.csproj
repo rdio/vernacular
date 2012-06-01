@@ -94,6 +94,9 @@
     <Compile Include="Vernacular.PO\Unit.cs" />
     <Compile Include="Vernacular.PO\IDocumentPart.cs" />
     <Compile Include="Vernacular.PO\MessageType.cs" />
+    <Compile Include="Vernacular.PO\Comment.cs" />
+    <Compile Include="Vernacular.PO\Document.cs" />
+    <Compile Include="Vernacular.PO\Container.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

@@ -30,8 +30,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
-using Vernacular.Tool;
-
 namespace Vernacular.PO
 {
     public sealed class Parser
@@ -87,12 +85,12 @@ namespace Vernacular.PO
                 }
 
                 if (token is Token.Comment) {
-                    unit.Comments.Add ((Token.Comment)token);
+                    unit.Add (new Comment ((Token.Comment)token));
                 } else if (token is Token.Identifier) {
                     message = ParseIdentifier (lexer, (Token.Identifier)token);
-                    unit.Messages.Add (message);
+                    unit.Add (message);
                 } else if (token is Token.String) {
-                    message.AppendValue (token);
+                    message.Value += (string)token;
                 }
             }
 
