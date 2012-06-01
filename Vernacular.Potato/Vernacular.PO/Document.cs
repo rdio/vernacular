@@ -25,8 +25,11 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Text;
 using System.Collections.Generic;
+
+using Vernacular.PO.Internal;
 
 namespace Vernacular.PO
 {
@@ -37,6 +40,21 @@ namespace Vernacular.PO
         public void Add (Unit unit)
         {
             units.Add (unit);
+        }
+
+        public void Add (params Unit [] units)
+        {
+            this.units.AddRange (units);
+        }
+
+        public void Load (string path)
+        {
+            units.AddRange (new Parser ().Parse (path));
+        }
+
+        public void Load (StreamReader reader, string documentName = null)
+        {
+            units.AddRange (new Parser ().Parse (reader, documentName));
         }
 
         public override string Generate ()
