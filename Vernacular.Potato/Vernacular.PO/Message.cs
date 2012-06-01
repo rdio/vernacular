@@ -26,6 +26,9 @@
 
 using System;
 using System.Text;
+using System.Collections.Generic;
+
+using Vernacular.PO.Internal;
 
 namespace Vernacular.PO
 {
@@ -53,9 +56,30 @@ namespace Vernacular.PO
             PluralOrder = pluralOrder;
         }
 
+        private static Dictionary<string, string> escapes = new Dictionary<string, string> {
+            {"\\", @"\\"},
+            {"\"", @"\"""},
+            {"\a", @"\a"},
+            {"\b", @"\b"},
+            {"\f", @"\f"},
+            {"\n", @"\n"},
+            {"\r", @"\r"},
+            {"\t", @"\t"},
+            {"\v", @"\v"},
+            {"\0", @"\0"}
+        };
+
         private static string Escape (string value)
         {
-            return String.IsNullOrWhiteSpace (value) ? value : value.Escape ();
+            if (String.IsNullOrWhiteSpace (value)) {
+                return value;
+            }
+
+            foreach (var escape in escapes) {
+                value = value.Replace (escape.Value, escape.Key);
+            }
+
+            return value;
         }
 
         public string Generate ()

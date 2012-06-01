@@ -5,12 +5,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vernacular.Tool", "Vernacul
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vernacular.Catalog", "Vernacular.Catalog\Vernacular.Catalog.csproj", "{BEC7B55D-F922-446D-9BBF-12DB249C4CA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vernacular.Potato", "Vernacular.Potato\Vernacular.Potato.csproj", "{8326683D-C60D-42AD-A295-00321AE332A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8326683D-C60D-42AD-A295-00321AE332A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8326683D-C60D-42AD-A295-00321AE332A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8326683D-C60D-42AD-A295-00321AE332A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8326683D-C60D-42AD-A295-00321AE332A6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BEC7B55D-F922-446D-9BBF-12DB249C4CA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BEC7B55D-F922-446D-9BBF-12DB249C4CA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BEC7B55D-F922-446D-9BBF-12DB249C4CA4}.Release|Any CPU.ActiveCfg = Release|Any CPU

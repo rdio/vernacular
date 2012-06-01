@@ -30,7 +30,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
-namespace Vernacular.PO
+namespace Vernacular.PO.Internal
 {
     public sealed class Parser
     {

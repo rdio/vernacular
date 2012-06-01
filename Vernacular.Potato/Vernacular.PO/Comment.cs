@@ -27,6 +27,8 @@
 using System;
 using System.Text;
 
+using Vernacular.PO.Internal;
+
 namespace Vernacular.PO
 {
     public class Comment : IDocumentPart

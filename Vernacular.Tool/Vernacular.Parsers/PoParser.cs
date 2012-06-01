@@ -230,7 +230,7 @@ namespace Vernacular.Parsers
             header = null;
 
             foreach (var path in po_paths) {
-                var parser = new Vernacular.PO.Parser ();
+                var parser = new Vernacular.PO.Internal.Parser ();
                 foreach (var unit in parser.Parse (path)) {
                     yield return ParsePoUnit (unit);
                 }

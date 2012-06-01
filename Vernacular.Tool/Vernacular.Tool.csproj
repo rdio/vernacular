@@ -85,18 +85,7 @@
     <Compile Include="Vernacular.Tool\ILocalizationUnit.cs" />
     <Compile Include="Vernacular.Tool\ConsoleCrayon.cs" />
     <Compile Include="Vernacular.Analyzers\Hunspell.cs" />
-    <Compile Include="Vernacular.PO\CommentType.cs" />
-    <Compile Include="Vernacular.PO\Token.cs" />
-    <Compile Include="Vernacular.PO\Lexer.cs" />
-    <Compile Include="Vernacular.PO\Parser.cs" />
     <Compile Include="Vernacular.Parsers\PoParser.cs" />
-    <Compile Include="Vernacular.PO\Message.cs" />
-    <Compile Include="Vernacular.PO\Unit.cs" />
-    <Compile Include="Vernacular.PO\IDocumentPart.cs" />
-    <Compile Include="Vernacular.PO\MessageType.cs" />
-    <Compile Include="Vernacular.PO\Comment.cs" />
-    <Compile Include="Vernacular.PO\Document.cs" />
-    <Compile Include="Vernacular.PO\Container.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
@@ -125,9 +114,10 @@
       <Project>{BEC7B55D-F922-446D-9BBF-12DB249C4CA4}</Project>
       <Name>Vernacular.Catalog</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Vernacular.Potato\Vernacular.Potato.csproj">
+      <Project>{8326683D-C60D-42AD-A295-00321AE332A6}</Project>
+      <Name>Vernacular.Potato</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Vernacular.PO\" />
-  </ItemGroup>
 </Project>
