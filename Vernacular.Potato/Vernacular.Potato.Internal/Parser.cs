@@ -87,10 +87,18 @@ namespace Vernacular.Potato.Internal
                         is_header_message = true;
                     } else if (message.Type == MessageType.SingularString && is_header_message) {
                         var headers = new HeaderCollection ();
+
                         foreach (var header in ParseHeaders (message)) {
                             have_parsed_headers = true;
                             headers.Add (header);
                         }
+
+                        if (have_parsed_headers) {
+                            yield return headers;
+                        } else {
+                            yield return unit;
+                        }
+
                         break;
                     }
                 }
@@ -99,20 +107,6 @@ namespace Vernacular.Potato.Internal
 
         private IEnumerable<Header> ParseHeaders (Message message)
         {
-            var signature_keys = new [] {
-                "project-id-version:",
-                "language:",
-                "content-type:"
-            };
-
-            var header_lower = message.Value;
-
-            foreach (var key in signature_keys) {
-                if (!header_lower.Contains (key)) {
-                    yield break;
-                }
-            }
-
             var line_number = message.Line;
             foreach (var line in message.Value.Split ('\n')) {
                 line_number++;
