@@ -47,8 +47,6 @@ namespace Vernacular.Parsers
 
         private List<string> po_paths = new List<string> ();
 
-        private LocalizationMetadata header;
-
         public override IEnumerable<string> SupportedFileExtensions {
             get {
                 yield return ".po";
@@ -61,66 +59,22 @@ namespace Vernacular.Parsers
             po_paths.Add (path);
         }
 
-        private ILocalizationUnit ParsePoUnit (Unit unit)
+        private ILocalizationUnit Parse (IDocumentPart part)
         {
-            if (header == null) {
-                header = ParsePoHeaderUnit (unit);
-                if (header != null) {
-                    return header;
+            var headers = part as HeaderCollection;
+            var unit = part as Unit;
+
+            if (headers != null) {
+                var metadata = new LocalizationMetadata ();
+                foreach (var header in headers) {
+                    metadata.Add (header.Name, header.Value);
                 }
-            }
-
-            return ParsePoMessageUnit (unit);
-        }
-
-        private LocalizationMetadata ParsePoHeaderUnit (Unit unit)
-        {
-            var keys = new [] {
-                "project-id-version:",
-                "language:",
-                "content-type:"
-            };
-
-            if (unit == null) {
+                return metadata;
+            } else if (unit != null) {
+                return ParsePoMessageUnit (unit);
+            } else {
                 return null;
             }
-
-            var messages = new List<Message> (unit.Messages);
-            if (messages == null || messages.Count != 2 ||
-                messages[0].Type != MessageType.SingularIdentifier ||
-                !String.IsNullOrEmpty (messages[0].Value) ||
-                messages[1].Type != MessageType.SingularString) {
-                return null;
-            }
-
-            var header_lower = messages [1].Value.ToLower ();
-
-            foreach (var key in keys) {
-                if (!header_lower.Contains (key)) {
-                    return null;
-                }
-            }
-
-            LocalizationMetadata metadata = null;
-
-            foreach (var line in messages [1].Value.Split ('\n')) {
-                if (String.IsNullOrWhiteSpace (line)) {
-                    continue;
-                }
-
-                var pairs = line.Split (new [] { ':' }, 2);
-                if (pairs == null || pairs.Length != 2) {
-                    return null;
-                }
-
-                if (metadata == null) {
-                    metadata = new LocalizationMetadata ();
-                }
-
-                metadata.Add (pairs[0].Trim (), pairs[1].Trim ());
-            }
-
-            return metadata;
         }
 
         private LocalizedString ParsePoMessageUnit (Unit unit)
@@ -227,12 +181,13 @@ namespace Vernacular.Parsers
 
         public override IEnumerable<ILocalizationUnit> Parse ()
         {
-            header = null;
-
             foreach (var path in po_paths) {
                 var parser = new Vernacular.Potato.Internal.Parser ();
-                foreach (var unit in parser.Parse (path)) {
-                    yield return ParsePoUnit (unit);
+                foreach (var part in parser.Parse (path)) {
+                    var unit = Parse (part);
+                    if (unit != null) {
+                        yield return unit;
+                    }
                 }
             }
         }
