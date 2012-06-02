@@ -36,7 +36,7 @@ using Vernacular.Potato.Internal;
 
 namespace Vernacular.Potato
 {
-    public sealed class Document : Container
+    public sealed class Document : Container<Unit>
     {
         private ObservableCollection<Unit> units = new ObservableCollection<Unit> ();
 
@@ -86,7 +86,7 @@ namespace Vernacular.Potato
             return builder.ToString ();
         }
 
-        public override IEnumerator<IDocumentPart> GetEnumerator ()
+        public override IEnumerator<Unit> GetEnumerator ()
         {
             foreach (var unit in units) {
                 if (unit.HasValue) {

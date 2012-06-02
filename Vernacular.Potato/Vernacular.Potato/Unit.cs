@@ -32,7 +32,7 @@ using System.Collections.Specialized;
 
 namespace Vernacular.Potato
 {
-    public sealed class Unit : Container
+    public sealed class Unit : Container<IDocumentPart>
     {
         private ObservableCollection<Comment> comments = new ObservableCollection<Comment> ();
         private ObservableCollection<Message> messages = new ObservableCollection<Message> ();

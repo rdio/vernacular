@@ -32,7 +32,8 @@ using System.Collections.Specialized;
 
 namespace Vernacular.Potato
 {
-    public abstract class Container : IDocumentPart, IEnumerable<IDocumentPart>, INotifyCollectionChanged
+    public abstract class Container<TDocumentPart> : IDocumentPart, IEnumerable<TDocumentPart>,
+        INotifyCollectionChanged where TDocumentPart : IDocumentPart
     {
         internal Container ()
         {
@@ -45,13 +46,13 @@ namespace Vernacular.Potato
             get { return FirstChildDocumentPart != null; }
         }
 
-        protected IDocumentPart FirstChildDocumentPart {
+        protected TDocumentPart FirstChildDocumentPart {
             get {
-                foreach (IDocumentPart part in this) {
+                foreach (TDocumentPart part in this) {
                     return part;
                 }
 
-                return null;
+                return default (TDocumentPart);
             }
         }
 
@@ -70,7 +71,7 @@ namespace Vernacular.Potato
         }
 
         public abstract string Generate ();
-        public abstract IEnumerator<IDocumentPart> GetEnumerator ();
+        public abstract IEnumerator<TDocumentPart> GetEnumerator ();
 
         IEnumerator IEnumerable.GetEnumerator ()
         {
