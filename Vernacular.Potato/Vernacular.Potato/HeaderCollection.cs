@@ -214,5 +214,42 @@ namespace Vernacular.Potato
         {
             return GetEnumerator ();
         }
+
+        public void PopulateWithRequiredHeaders ()
+        {
+            if (!Contains ("Project-Id-Version")) {
+                Add ("Project-Id-Version", "PACKAGE VERSION");
+            }
+
+            if (!Contains ("PO-Revision-Date")) {
+                Add ("PO-Revision-Date", DateTime.Now.ToString (@"yyyy\-MM\-dd HH\:mmzz",
+                    System.Globalization.CultureInfo.InvariantCulture)
+                );
+            }
+
+            if (!Contains ("Last-Translator")) {
+                Add ("Last-Translator", String.Empty);
+            }
+
+            if (!Contains ("Language-Team")) {
+                Add ("Language-Team", String.Empty);
+            }
+
+            if (!Contains ("MIME-Version")) {
+                Add ("MIME-Version", "1.0");
+            }
+
+            if (!Contains ("Content-Type")) {
+                Add ("Content-Type", "text/plain; charset=UTF-8");
+            }
+
+            if (!Contains ("Content-Transfer-Encoding")) {
+                Add ("Content-Transfer-Encoding", "8bit");
+            }
+
+            if (!Contains ("Plural-Forms")) {
+                Add ("Plural-Forms", "nplurals=2; plural=(n != 1);");
+            }
+        }
     }
 }
