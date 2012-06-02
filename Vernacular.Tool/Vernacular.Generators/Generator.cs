@@ -63,6 +63,8 @@ namespace Vernacular.Generators
 
         public LocalizationMetadata LocalizationMetadata { get; private set; }
 
+        public bool RetainStringOrder { get; set; }
+
         protected TextWriter Writer { get; private set; }
 
         protected virtual Encoding Encoding {
@@ -168,9 +170,13 @@ namespace Vernacular.Generators
                 resource_strings.Add (resource_string.Id, resource_string);
             }
 
-            return from resource_string in resource_strings
-                   orderby resource_string.Value.SortKey
-                   select resource_string.Value;
+            if (RetainStringOrder) {
+                return from resource_string in resource_strings select resource_string.Value;
+            } else {
+                return from resource_string in resource_strings
+                       orderby resource_string.Value.SortKey
+                       select resource_string.Value;
+            }
         }
 
         protected IEnumerable<ResourceString> GetResourceStrings (LocalizedString localizedString)

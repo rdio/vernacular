@@ -38,7 +38,7 @@ namespace Vernacular.Tool
 {
     public static class Entry
     {
-        public static void Main (string [] args)
+        public static void Main (string[] args)
         {
             var input_paths = new List<string> ();
             string output_path = "-";
@@ -55,6 +55,7 @@ namespace Vernacular.Tool
             bool analyze = false;
             bool log = false;
             bool verbose = false;
+            bool retain_order = false;
             bool show_help = false;
 
             Generator generator = null;
@@ -65,6 +66,8 @@ namespace Vernacular.Tool
                 { "r|source-root=", "Root directory of source code", v => source_root_path = v },
                 { "g|generator=", String.Format ("Generator to use ({0})",
                     String.Join ("|", Generator.GeneratorNames)), v => generator_name = v },
+                { "retain-order", "Retain the original input string order when generating. " +
+                    "Default behavior is to sort strings for better diff support.", v => retain_order = v != null },
                 { "a|analyze", "Run the string analyzer after generation", v => analyze = v != null },
                 { "analyzer-config=", "Path to a configuration file for the analyzer; use with --analyze", v => analyer_config_path = v },
                 { "reduce-master=", "Reduce a master localized PO file, " +
@@ -115,6 +118,8 @@ namespace Vernacular.Tool
                 if (generator == null) {
                     throw new OptionException ("invalid generator", "generator");
                 }
+
+                generator.RetainStringOrder = retain_order;
 
                 if (generator is PoGenerator) {
                     ((PoGenerator)generator).PotMode = generate_pot;

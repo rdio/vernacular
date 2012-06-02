@@ -60,7 +60,7 @@ namespace Vernacular.Generators
                                  orderby localized_string.UntranslatedPluralValue
                                  select localized_string;
 
-            foreach (var localized_string in sorted_strings) {
+            foreach (var localized_string in RetainStringOrder ? Strings : sorted_strings) {
                 var unit = new Unit {
                     new Comment {
                         Type = CommentType.Translator,
