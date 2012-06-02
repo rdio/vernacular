@@ -55,7 +55,7 @@ namespace Vernacular.Potato.Internal
             return token is Token.Identifier && token.Value.StartsWith ("msgstr");
         }
 
-        public IEnumerable<Unit> Parse (string path)
+        public IEnumerable<IDocumentPart> Parse (string path)
         {
             using (var reader = new StreamReader(path)) {
                 foreach (var unit in Parse (reader, path)) {
@@ -64,12 +64,77 @@ namespace Vernacular.Potato.Internal
             }
         }
 
-        public IEnumerable<Unit> Parse (StreamReader reader, string pathHint = null)
+        public IEnumerable<IDocumentPart> Parse (StreamReader reader, string pathHint = null)
         {
             return Parse (new Lexer { Path = pathHint, Reader = reader });
         }
 
-        public IEnumerable<Unit> Parse (Lexer lexer)
+        public IEnumerable<IDocumentPart> Parse (Lexer lexer)
+        {
+            bool have_parsed_headers = false;
+
+            foreach (var unit in ParseUnits (lexer)) {
+                if (have_parsed_headers) {
+                    yield return unit;
+                    continue;
+                }
+
+                var is_header_message = false;
+                foreach (var message in unit.Messages) {
+                    if (!message.HasValue) {
+                        break;
+                    } else if (message.Type == MessageType.SingularIdentifier && message.Value == String.Empty) {
+                        is_header_message = true;
+                    } else if (message.Type == MessageType.SingularString && is_header_message) {
+                        var headers = new HeaderCollection ();
+                        foreach (var header in ParseHeaders (message)) {
+                            have_parsed_headers = true;
+                            headers.Add (header);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<Header> ParseHeaders (Message message)
+        {
+            var signature_keys = new [] {
+                "project-id-version:",
+                "language:",
+                "content-type:"
+            };
+
+            var header_lower = message.Value;
+
+            foreach (var key in signature_keys) {
+                if (!header_lower.Contains (key)) {
+                    yield break;
+                }
+            }
+
+            var line_number = message.Line;
+            foreach (var line in message.Value.Split ('\n')) {
+                line_number++;
+
+                if (String.IsNullOrWhiteSpace (line)) {
+                    continue;
+                }
+
+                var key_value = line.Split (new [] { ':' }, 2);
+                if (key_value == null || key_value.Length != 2) {
+                    yield break;
+                }
+
+                yield return new Header {
+                    Line = line_number,
+                    Name = key_value [0].Trim (),
+                    Value = key_value [1].Trim ()
+                };
+            }
+        }
+
+        private IEnumerable<Unit> ParseUnits (Lexer lexer)
         {
             var unit = new Unit ();
             Token last_msgstr_token = null;
