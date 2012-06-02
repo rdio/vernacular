@@ -92,7 +92,7 @@ namespace Vernacular.Potato
             }
 
             foreach (var escape in escapes) {
-                value = value.Replace (escape.Value, escape.Key);
+                value = value.Replace (escape.Key, escape.Value);
             }
 
             return value;
