@@ -38,11 +38,16 @@ namespace Vernacular.Potato
 {
     public sealed class Document : Container<Unit>
     {
+        private HeaderCollection headers = new HeaderCollection ();
         private ObservableCollection<Unit> units = new ObservableCollection<Unit> ();
 
         public override event NotifyCollectionChangedEventHandler CollectionChanged {
             add { units.CollectionChanged += value; }
             remove { units.CollectionChanged -= value; }
+        }
+
+        public HeaderCollection Headers {
+            get { return headers; }
         }
 
         public void Add (Unit unit)
@@ -62,6 +67,21 @@ namespace Vernacular.Potato
             }
         }
 
+        private void Add (IEnumerable<IDocumentPart> parts)
+        {
+            foreach (var part in parts) {
+                var headers = part as HeaderCollection;
+                if (headers != null) {
+                    this.headers = headers;
+                }
+
+                var unit = part as Unit;
+                if (unit != null) {
+                    Add (unit);
+                }
+            }
+        }
+
         public void Load (string path)
         {
             Add (new Parser ().Parse (path));
@@ -72,11 +92,25 @@ namespace Vernacular.Potato
             Add (new Parser ().Parse (reader, documentName));
         }
 
+        private IEnumerable<Unit> GetAllUnits ()
+        {
+            if (headers.HasValue) {
+                yield return new Unit {
+                    new Message { Type = MessageType.SingularIdentifier, Value = String.Empty },
+                    new Message { Type = MessageType.SingularString, Value = headers.Generate () }
+                };
+            }
+
+            foreach (var unit in this) {
+                yield return unit;
+            }
+        }
+
         public override string Generate ()
         {
             var builder = new StringBuilder ();
 
-            foreach (var part in this) {
+            foreach (var part in GetAllUnits ()) {
                 builder.Append (part.Generate ());
                 builder.Append ("\n\n");
             }
