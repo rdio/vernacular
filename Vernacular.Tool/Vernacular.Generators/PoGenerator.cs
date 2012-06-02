@@ -40,71 +40,19 @@ namespace Vernacular.Generators
         public bool PotMode { get; set; }
         public bool ExcludeHeaderMetadata { get; set; }
 
-        private void GenerateMetadata ()
-        {
-            if (LocalizationMetadata == null) {
-                Add (new LocalizationMetadata ());
-            }
-
-            if (!LocalizationMetadata.ContainsKey ("Project-Id-Version")) {
-                LocalizationMetadata.Add ("Project-Id-Version", "PACKAGE VERSION");
-            }
-
-            if (!LocalizationMetadata.ContainsKey ("PO-Revision-Date")) {
-                LocalizationMetadata.Add ("PO-Revision-Date", DateTime.Now.ToString (@"yyyy\-MM\-dd HH\:mmzz",
-                    System.Globalization.CultureInfo.InvariantCulture));
-            }
-
-            if (!LocalizationMetadata.ContainsKey ("Last-Translator")) {
-                LocalizationMetadata.Add ("Last-Translator", String.Empty);
-            }
-
-            if (!LocalizationMetadata.ContainsKey ("Language-Team")) {
-                LocalizationMetadata.Add ("Language-Team", String.Empty);
-            }
-
-            if (!LocalizationMetadata.ContainsKey ("MIME-Version")) {
-                LocalizationMetadata.Add ("MIME-Version", "1.0");
-            }
-
-            if (!LocalizationMetadata.ContainsKey ("Content-Type")) {
-                LocalizationMetadata.Add ("Content-Type", "text/plain; charset=UTF-8");
-            }
-
-            if (!LocalizationMetadata.ContainsKey ("Content-Transfer-Encoding")) {
-                LocalizationMetadata.Add ("Content-Transfer-Encoding", "8bit");
-            }
-
-            if (!LocalizationMetadata.ContainsKey ("Plural-Forms")) {
-                LocalizationMetadata.Add ("Plural-Forms", "nplurals=2; plural=(n != 1);");
-            }
-
-            LocalizationMetadata.Add ("X-Generator", "Vernacular");
-        }
-
         protected override void Generate ()
         {
             var document = new Document ();
 
             if (!ExcludeHeaderMetadata) {
-                GenerateMetadata ();
-
-                var builder = new StringBuilder ();
-                foreach (string header in LocalizationMetadata) {
-                    builder.AppendFormat ("{0}: {1}\n", header, LocalizationMetadata [header]);
+                if (LocalizationMetadata != null) {
+                    foreach (string header in LocalizationMetadata) {
+                        document.Headers [header] = LocalizationMetadata [header];
+                    }
                 }
 
-                document.Add (new Unit {
-                    new Message {
-                        Type = MessageType.SingularIdentifier,
-                        Value = String.Empty
-                    },
-
-                    new Message {
-                        Type = MessageType.SingularString,
-                        Value = builder.ToString ()
-                    }
-                });
+                document.Headers.PopulateWithRequiredHeaders ();
+                document.Headers ["X-Generator"] = "Vernacular";
             }
 
             var sorted_strings = from localized_string in Strings
