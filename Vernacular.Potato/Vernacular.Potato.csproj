@@ -45,5 +45,7 @@
     <Compile Include="Vernacular.Potato.Internal\Parser.cs" />
     <Compile Include="Vernacular.Potato.Internal\Token.cs" />
     <Compile Include="Vernacular.Potato\UnitChild.cs" />
+    <Compile Include="Vernacular.Potato\Header.cs" />
+    <Compile Include="Vernacular.Potato\HeaderCollection.cs" />
   </ItemGroup>
 </Project>
