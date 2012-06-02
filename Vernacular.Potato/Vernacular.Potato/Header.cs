@@ -34,7 +34,7 @@ namespace Vernacular.Potato
         public event PropertyChangedEventHandler PropertyChanged;
 
         public bool HasValue {
-            get { return !String.IsNullOrWhiteSpace (Name) && !String.IsNullOrWhiteSpace (Value); }
+            get { return !String.IsNullOrWhiteSpace (Name); }
         }
 
         private int line;
