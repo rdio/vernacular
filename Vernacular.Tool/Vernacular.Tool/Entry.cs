@@ -38,7 +38,7 @@ namespace Vernacular.Tool
 {
     public static class Entry
     {
-        public static void Main (string[] args)
+        public static int Main (string[] args)
         {
             var input_paths = new List<string> ();
             string output_path = "-";
@@ -53,6 +53,7 @@ namespace Vernacular.Tool
             bool generate_pot = false;
             bool exclude_po_header = false;
             bool analyze = false;
+            bool analyzer_warn_as_error = false;
             bool log = false;
             bool verbose = false;
             bool retain_order = false;
@@ -70,6 +71,7 @@ namespace Vernacular.Tool
                     "Default behavior is to sort strings for better diff support.", v => retain_order = v != null },
                 { "a|analyze", "Run the string analyzer after generation", v => analyze = v != null },
                 { "analyzer-config=", "Path to a configuration file for the analyzer; use with --analyze", v => analyer_config_path = v },
+                { "analyzer-warnaserror", "Treat analyzer warnings as errors", v => analyzer_warn_as_error = v != null },
                 { "reduce-master=", "Reduce a master localized PO file, " +
                     "keeping only strings defined by another unlocalized PO[T] file", v => reduce_master_path = v },
                 { "reduce-retain=", "An unlocalized PO[T] file used to " +
@@ -103,7 +105,7 @@ namespace Vernacular.Tool
                     Console.WriteLine ();
                     Console.WriteLine ("Options:");
                     options.WriteOptionDescriptions (Console.Out);
-                    return;
+                    return 1;
                 }
 
                 if (source_root_path != null) {
@@ -141,12 +143,12 @@ namespace Vernacular.Tool
 
                     generator.Generate (output_path);
 
-                    return;
+                    return 0;
                 }
             } catch (OptionException e) {
                 Console.WriteLine ("vernacular: {0}", e.Message);
                 Console.WriteLine ("Try `vernacular --help` for more information.");
-                return;
+                return 1;
             }
 
             var parser = new AggregateParser {
@@ -162,7 +164,7 @@ namespace Vernacular.Tool
             StringAnalyzer analyzer = null;
 
             if (analyze) {
-                analyzer = new StringAnalyzer (analyer_config_path);
+                analyzer = new StringAnalyzer (analyer_config_path, analyzer_warn_as_error);
             }
 
             foreach (var input_path in input_paths) {
@@ -201,7 +203,11 @@ namespace Vernacular.Tool
             }
 
             if (analyzer != null) {
-                analyzer.Analyze ();
+                var error_count = analyzer.Analyze ();
+                if (error_count > 0) {
+                    Console.WriteLine ("The analyzer reported {0} errors. Generation skipped.", error_count);
+                    return 1;
+                }
             }
 
             generator.Generate (output_path);
@@ -209,6 +215,8 @@ namespace Vernacular.Tool
             if (generator is AndroidGenerator && android_input_strings_xml != null && android_output_strings_xml != null) {
                 ((AndroidGenerator)generator).LocalizeManualStringsXml (android_input_strings_xml, android_output_strings_xml);
             }
+
+            return 0;
         }
     }
 }

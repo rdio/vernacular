@@ -41,9 +41,9 @@ namespace Vernacular.Analyzers
         private Hunspell hunspell;
         private AnalyzerConfiguration configuration;
 
-        public StringAnalyzer (string configurationPath = null)
+        public StringAnalyzer (string configurationPath = null, bool warningsAsErrors = false)
         {
-            configuration = new AnalyzerConfiguration (configurationPath);
+            configuration = new AnalyzerConfiguration (configurationPath, warningsAsErrors);
 
             if (File.Exists (configuration.HunspellAffixPath) && File.Exists (configuration.HunspellDictionaryPath)) {
                 try {
@@ -72,7 +72,7 @@ namespace Vernacular.Analyzers
             localized_strings.Add (localizedString);
         }
 
-        public void Analyze ()
+        public int Analyze ()
         {
             var count = 0;
             foreach (var localized_string in localized_strings) {
@@ -86,6 +86,8 @@ namespace Vernacular.Analyzers
                 Console.WriteLine ();
                 Console.WriteLine ("{0} possibly problematic strings.", count);
             }
+
+            return configuration.WarningsAsErrors ? count : 0;
         }
 
         private bool Analyze (LocalizedString localizedString)
@@ -122,13 +124,14 @@ namespace Vernacular.Analyzers
             }
 
             ConsoleCrayon.ForegroundColor = ConsoleColor.DarkRed;
+            var label = configuration.WarningsAsErrors ? "Error" : "Warning";
 
             if (localizedString.HasReferences) {
                 foreach (var reference in localizedString.References) {
-                    Console.WriteLine ("Warning: @{0}", reference);
+                    Console.WriteLine ("{0}: @{1}", label, reference);
                 }
             } else {
-                Console.WriteLine ("Warning: @<unknown source location>");
+                Console.WriteLine ("{0}: @<unknown source location>", label);
             }
 
             ConsoleCrayon.ForegroundColor = ConsoleColor.DarkYellow;

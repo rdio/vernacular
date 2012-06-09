@@ -48,14 +48,18 @@ namespace Vernacular.Analyzers
         public string HunspellDictionaryPath { get; set; }
         public string HunspellAffixPath { get; set; }
 
+        public bool WarningsAsErrors { get; set; }
+
         public List<string> SpellcheckDictionaries {
             get { return spellcheck_dictionaries; }
         }
 
         private string configuration_path;
 
-        public AnalyzerConfiguration (string configurationPath)
+        public AnalyzerConfiguration (string configurationPath, bool warningsAsErrors = false)
         {
+            WarningsAsErrors = warningsAsErrors;
+
             if (configurationPath != null) {
                 configuration_path = configurationPath;
                 ParseConfiguration (XDocument.Load (configurationPath, LoadOptions.SetLineInfo));
@@ -79,6 +83,15 @@ namespace Vernacular.Analyzers
 
             foreach (var element in root.Elements ()) {
                 switch (element.Name.ToString ()) {
+                    case "warnings-as-errors":
+                        bool warnings_as_errors;
+                        if (!Boolean.TryParse (element.Value, out warnings_as_errors)) {
+                            ConfigError (element, "invalid boolean value for warnings-as-errors");
+                            return;
+                        }
+
+                        WarningsAsErrors = warnings_as_errors;
+                        break;
                     case "spellcheck":
                         var hunspell_affix = element.Attribute ("hunspell-affix");
                         var hunspell_dictionary = element.Attribute ("hunspell-dictionary");
