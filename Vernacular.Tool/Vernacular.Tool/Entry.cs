@@ -164,7 +164,11 @@ namespace Vernacular.Tool
             StringAnalyzer analyzer = null;
 
             if (analyze) {
-                analyzer = new StringAnalyzer (analyer_config_path, analyzer_warn_as_error);
+                try {
+                    analyzer = new StringAnalyzer (analyer_config_path, analyzer_warn_as_error);
+                } catch {
+                    return 1;
+                }
             }
 
             foreach (var input_path in input_paths) {

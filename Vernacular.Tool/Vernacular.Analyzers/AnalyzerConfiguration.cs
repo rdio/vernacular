@@ -71,6 +71,7 @@ namespace Vernacular.Analyzers
             Console.Error.WriteLine ("Analyzer Configuration Error: {0} ({1}:{2},{3})",
                 String.Format (message, args), configuration_path,
                 lineInfo.LineNumber, lineInfo.LinePosition);
+            throw new Exception ();
         }
 
         private void ParseConfiguration (XDocument doc)
