@@ -59,6 +59,11 @@ namespace Vernacular.Parsers
             po_paths.Add (path);
         }
 
+        public override void Add(Stream stream)
+        {
+            throw new NotSupportedException();
+        }
+
         private ILocalizationUnit Parse (IDocumentPart part)
         {
             var headers = part as HeaderCollection;
