@@ -37,6 +37,7 @@ namespace Vernacular.Parsers
     public sealed class XamlParser : Parser
     {
         private List<string> xaml_paths = new List<string> ();
+        List<Stream> xaml_streams = new List<Stream>(); 
 
         public override IEnumerable<string> SupportedFileExtensions {
             get { yield return ".xaml"; }
@@ -47,63 +48,101 @@ namespace Vernacular.Parsers
             xaml_paths.Add (path);
         }
 
-        public override IEnumerable<ILocalizationUnit> Parse ()
+        public override void Add(Stream stream)
         {
-            return from xaml_path in xaml_paths
-                   from localization_unit in Parse (xaml_path)
-                   select localization_unit;
+            var newStream = new MemoryStream();
+            var size = 0;
+            var buffer = new byte[2048];
+            do
+            {
+                size = stream.Read(buffer, 0, buffer.Length);
+                newStream.Write(buffer,0,size);
+            } while (size > 0);
+            xaml_streams.Add(newStream);
         }
 
-        private IEnumerable<LocalizedString> Parse (string xamlPath)
+        public override IEnumerable<ILocalizationUnit> Parse ()
         {
-            using (var reader = new XmlTextReader (xamlPath)) {
-                while (reader.Read ()) {
-                    if (reader.NodeType != XmlNodeType.Element || !reader.HasAttributes) {
+            return (from xaml_path in xaml_paths
+                   from localization_unit in Parse (xaml_path)
+                   select localization_unit).Concat(
+                       from xamlStream in xaml_streams 
+                       from localization_unit in Parse(xamlStream)
+                       select localization_unit);
+        }
+
+        IEnumerable<LocalizedString> Parse (Stream stream)
+        {
+            using (var reader = new XmlTextReader(stream))
+            {
+                return Parse(reader);
+            }
+        }
+
+        IEnumerable<LocalizedString> Parse (string xamlPath)
+        {
+            using (var reader = new XmlTextReader(xamlPath))
+            {
+                return Parse(reader, xamlPath);
+            }
+        }
+
+        IEnumerable<LocalizedString> Parse(XmlTextReader reader, string xamlPath=null)
+        {
+            while (reader.Read())
+            {
+                if (reader.NodeType != XmlNodeType.Element || !reader.HasAttributes)
+                {
+                    continue;
+                }
+
+                var in_app_bar = false;
+
+                if (reader.NamespaceURI.Contains("clr-namespace:Microsoft.Phone.Shell"))
+                {
+                    var name = reader.Name.Substring(reader.Prefix.Length + 1);
+                    in_app_bar = name == "ApplicationBarIconButton" || name == "ApplicationBarMenuItem";
+                }
+
+                var localized_string = new LocalizedString();
+
+                while (reader.MoveToNextAttribute())
+                {
+                    if (!in_app_bar && !reader.NamespaceURI.Contains("clr-namespace:Vernacular.Xaml"))
+                    {
                         continue;
                     }
 
-                    var in_app_bar = false;
+                    var name = String.IsNullOrEmpty(reader.Prefix)
+                        ? reader.Name
+                        : reader.Name.Substring(reader.Prefix.Length + 1);
 
-                    if (reader.NamespaceURI.Contains ("clr-namespace:Microsoft.Phone.Shell")) {
-                        var name = reader.Name.Substring (reader.Prefix.Length + 1);
-                        in_app_bar = name == "ApplicationBarIconButton" || name == "ApplicationBarMenuItem";
+                    switch (name)
+                    {
+                        case "Text": // only valid when in_app_bar is true
+                        case "Catalog.Message":
+                            localized_string.UntranslatedSingularValue = reader.Value;
+                            if (reader.HasLineInfo())
+                            {
+                                localized_string.AddReference(RelativeDocumentUrl(xamlPath), reader.LineNumber);
+                            }
+                            break;
+                        case "Catalog.PluralMessage":
+                            localized_string.UntranslatedPluralValue = reader.Value;
+                            break;
+                        case "Catalog.Comment":
+                            localized_string.DeveloperComments = reader.Value;
+                            break;
                     }
-
-                    var localized_string = new LocalizedString ();
-
-                    while (reader.MoveToNextAttribute ()) {
-                        if (!in_app_bar && !reader.NamespaceURI.Contains ("clr-namespace:Vernacular.Xaml")) {
-                            continue;
-                        }
-
-                        var name = String.IsNullOrEmpty (reader.Prefix)
-                            ? reader.Name
-                            : reader.Name.Substring (reader.Prefix.Length + 1);
-
-                        switch (name) {
-                            case "Text": // only valid when in_app_bar is true
-                            case "Catalog.Message":
-                                localized_string.UntranslatedSingularValue = reader.Value;
-                                if (reader.HasLineInfo ()) {
-                                    localized_string.AddReference (RelativeDocumentUrl (xamlPath), reader.LineNumber);
-                                }
-                                break;
-                            case "Catalog.PluralMessage":
-                                localized_string.UntranslatedPluralValue = reader.Value;
-                                break;
-                            case "Catalog.Comment":
-                                localized_string.DeveloperComments = reader.Value;
-                                break;
-                        }
-                    }
-
-                    if (localized_string.IsDefined) {
-                        yield return localized_string;
-                    }
-
-                    reader.MoveToElement ();
                 }
+
+                if (localized_string.IsDefined)
+                {
+                    yield return localized_string;
+                }
+
+                reader.MoveToElement();
             }
-        }
+        }        
     }
 }

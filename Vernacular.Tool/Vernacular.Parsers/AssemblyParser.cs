@@ -64,12 +64,26 @@ namespace Vernacular.Parsers
         public override void Add (string assemblyPath)
         {
             var module = ModuleDefinition.ReadModule (assemblyPath);
-            try {
-                module.ReadSymbols ();
-            } catch (FileNotFoundException) {
-            }
-            modules.Add (module);
-            LocateLocalizationMethods (module);
+            Add(module);
+        }
+
+        public override void Add(Stream stream)
+        {
+            var module = ModuleDefinition.ReadModule(stream);
+            Add(module);
+        }
+
+        void Add(ModuleDefinition module)
+        {
+            //try
+            //{
+            //    module.ReadSymbols();
+            //}
+            //catch (FileNotFoundException)
+            //{
+            //}
+            modules.Add(module);
+            LocateLocalizationMethods(module);
         }
 
         public override IEnumerable<ILocalizationUnit> Parse ()
