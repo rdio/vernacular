@@ -57,6 +57,8 @@ namespace Vernacular.Parsers
                 size = stream.Read (buffer, 0, buffer.Length);
                 memory_stream.Write (buffer,0,size);
             } while (size > 0);
+            memory_stream.Seek (0, SeekOrigin.Begin);
+
             xaml_streams.Add (path, memory_stream);
         }
 
@@ -123,15 +125,16 @@ namespace Vernacular.Parsers
 
         private IEnumerable<LocalizedString> Parse (Stream stream, string xamlPath)
         {
+            Console.WriteLine("parsing stream {0}", xamlPath);
             using (var reader = new XmlTextReader (stream)) {
-                return Parse (reader, xamlPath);
+                return Parse (reader, xamlPath).ToList();
             }
         }
 
         private IEnumerable<LocalizedString> Parse (string xamlPath)
         {
             using (var reader = new XmlTextReader (xamlPath)) {
-                return Parse (reader, xamlPath);
+                return Parse (reader, xamlPath).ToList();
             }
         }
     }
