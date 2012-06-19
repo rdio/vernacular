@@ -35,13 +35,19 @@ namespace Vernacular.Parsers
 {
     public sealed class AggregateParser : Parser
     {
-        private List<Parser> parsers = new List<Parser> {
-            new AssemblyParser (),
-            new XamlParser (),
-            new PoParser (),
-            new AndroidResourceParser ()
-        };
-
+        private readonly List<Parser> parsers;
+        
+        public AggregateParser ()
+        {
+            parsers = new List<Parser> {
+                              new AssemblyParser (),
+                              new XamlParser (),
+                              new PoParser (),
+                              new AndroidResourceParser (),
+                              new XapParser (this),
+                          };
+        }
+        
         public override IEnumerable<string> SupportedFileExtensions {
             get {
                 return from parser in parsers
@@ -75,7 +81,21 @@ namespace Vernacular.Parsers
                 from ext in parser.SupportedFileExtensions
                 where ext == Path.GetExtension (path)
                 select parser) {
-                parser_for_path.Add (path);
+                    parser_for_path.Add (path);
+            }
+        }
+
+        public override void Add (Stream stream, string path) 
+        {
+            if (path == null)
+                throw new NotSupportedException ();
+
+            foreach (var parser_for_extension in
+                from parser in parsers
+                from ext in parser.SupportedFileExtensions
+                where ext == Path.GetExtension (path)
+                select parser) {
+                    parser_for_extension.Add (stream, path);
             }
         }
 

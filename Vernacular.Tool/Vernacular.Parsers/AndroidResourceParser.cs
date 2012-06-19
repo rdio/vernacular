@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Text;
 using System.Linq;
 using System.Xml;
@@ -50,6 +51,11 @@ namespace Vernacular.Parsers
         public override void Add (string path)
         {
             xml_paths.Add (path);
+        }
+
+        public override void Add (Stream stream, string path)
+        {
+            throw new NotSupportedException ();
         }
 
         private static string DecodeElement (XElement element)

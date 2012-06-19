@@ -60,16 +60,33 @@ namespace Vernacular.Parsers
                 yield return ".dll";
             }
         }
-
-        public override void Add (string assemblyPath)
+        
+        private void Add (ModuleDefinition module)
         {
-            var module = ModuleDefinition.ReadModule (assemblyPath);
-            try {
-                module.ReadSymbols ();
-            } catch (FileNotFoundException) {
+            try
+            {
+                module.ReadSymbols();
+            }
+            catch (FileNotFoundException)
+            {
+            }
+            catch (InvalidOperationException)
+            {                
             }
             modules.Add (module);
             LocateLocalizationMethods (module);
+        }
+
+        public override void Add (string path)
+        {
+            var module = ModuleDefinition.ReadModule (path);
+            Add (module);
+        }
+
+        public override void Add (Stream stream, string path)
+        {
+            var module = ModuleDefinition.ReadModule (stream);
+            Add (module);
         }
 
         public override IEnumerable<ILocalizationUnit> Parse ()
