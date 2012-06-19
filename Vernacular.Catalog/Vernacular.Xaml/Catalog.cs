@@ -154,6 +154,7 @@ namespace Vernacular.Xaml
                 : Vernacular.Catalog.GetPluralString (message, plural_message, count);
 
             localized = ModifyString (localized, modifier);
+            localized = Format(localized, count);
             var property = FindMessageProperty (framework_element);
             if (property != null) {
                 framework_element.SetValue (property, localized);
