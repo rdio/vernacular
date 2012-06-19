@@ -40,7 +40,7 @@ namespace Vernacular.Parsers
         public AggregateParser ()
         {
             parsers = new List<Parser> {
-                              new AssemblyParser (),
+                              new AssemblyParser (this),
                               new XamlParser (),
                               new PoParser (),
                               new AndroidResourceParser (),
@@ -94,7 +94,7 @@ namespace Vernacular.Parsers
                 from parser in parsers
                 from ext in parser.SupportedFileExtensions
                 where ext == Path.GetExtension (path)
-                select parser) {
+                select parser) {                
                     parser_for_extension.Add (stream, path);
             }
         }

@@ -3,6 +3,7 @@
 //
 // Author:
 //   Aaron Bockover <abock@rd.io>
+//   Stephane Delcroix <stephane@delcroix.org>
 //
 // Copyright 2012 Rdio, Inc.
 //
@@ -25,9 +26,11 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Resources;
 
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -39,6 +42,8 @@ namespace Vernacular.Parsers
 {
     public sealed class AssemblyParser : Parser
     {
+        private readonly Parser parser_for_resources;
+
         private static readonly List<string> LOCALIZATION_TYPES = new List<string> {
             "Vernacular.Catalog",
             "Vernacular.Xaml.Catalog"
@@ -53,6 +58,11 @@ namespace Vernacular.Parsers
 
         private List<ModuleDefinition> modules = new List<ModuleDefinition> ();
         private List<MethodDefinition> localization_methods = new List<MethodDefinition> ();
+
+        public AssemblyParser (Parser parser)
+        {
+            parser_for_resources = parser;
+        }
 
         public override IEnumerable<string> SupportedFileExtensions {
             get {
@@ -73,8 +83,30 @@ namespace Vernacular.Parsers
             catch (InvalidOperationException)
             {                
             }
+
+            foreach (var resource in from res in module.Resources
+                                         where res.ResourceType == ResourceType.Embedded && Path.GetExtension(res.Name) == ".resources"
+                                         select res as EmbeddedResource) {
+                AddResource (resource);
+            }
+
             modules.Add (module);
             LocateLocalizationMethods (module);
+        }
+
+        private void AddResource (EmbeddedResource resource)
+        {
+            if (parser_for_resources == null)
+                return;
+
+            using (var reader = new ResourceReader (resource.GetResourceStream ())) {
+                foreach (DictionaryEntry re in reader) {
+                    if (!parser_for_resources.SupportedFileExtensions.Contains (Path.GetExtension(re.Key as string))) {
+                        continue;
+                    }
+                    parser_for_resources.Add(re.Value as Stream, re.Key as string);
+                }        
+            }
         }
 
         public override void Add (string path)
@@ -88,7 +120,7 @@ namespace Vernacular.Parsers
             var module = ModuleDefinition.ReadModule (stream);
             Add (module);
         }
-
+        
         public override IEnumerable<ILocalizationUnit> Parse ()
         {
             return

@@ -71,7 +71,7 @@ namespace Vernacular.Parsers
 
                         out_stream.Seek (0, SeekOrigin.Begin);
                         try {
-                            parser_for_parts.Add (out_stream, extension);
+                            parser_for_parts.Add (out_stream, entry.Name);
                         } catch (NotSupportedException) {
                             
                         }
