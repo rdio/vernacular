@@ -27,11 +27,9 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 using Vernacular.Tool;
-
 using Vernacular.Potato;
 
 namespace Vernacular.Parsers
@@ -57,6 +55,11 @@ namespace Vernacular.Parsers
         public override void Add (string path)
         {
             po_paths.Add (path);
+        }
+
+        public override void Add (Stream stream, string path)
+        {
+            throw new NotSupportedException ();
         }
 
         private ILocalizationUnit Parse (IDocumentPart part)

@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.IO;
 using Vernacular.Tool;
 
 namespace Vernacular.Parsers
@@ -38,11 +38,12 @@ namespace Vernacular.Parsers
 
         public abstract IEnumerable<string> SupportedFileExtensions { get; }
         public abstract void Add (string path);
+        public abstract void Add (Stream stream, string path);
         public abstract IEnumerable<ILocalizationUnit> Parse ();
 
         public LocalizationMetadata LocalizationMetadata { get; private set; }
 
-        public Parser ()
+        protected Parser ()
         {
             LocalizationMetadata = new LocalizationMetadata ();
         }
