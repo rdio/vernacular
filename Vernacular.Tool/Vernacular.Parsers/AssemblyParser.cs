@@ -31,6 +31,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Resources;
+using System.Reflection;
 
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -42,8 +43,6 @@ namespace Vernacular.Parsers
 {
     public sealed class AssemblyParser : Parser
     {
-        private readonly Parser parser_for_resources;
-
         private static readonly List<string> LOCALIZATION_TYPES = new List<string> {
             "Vernacular.Catalog",
             "Vernacular.Xaml.Catalog"
@@ -56,12 +55,13 @@ namespace Vernacular.Parsers
             "GetPluralGenderString"
         };
 
-        private List<ModuleDefinition> modules = new List<ModuleDefinition> ();
-        private List<MethodDefinition> localization_methods = new List<MethodDefinition> ();
+        private readonly Parser embedded_resource_parser;
+        private readonly List<ModuleDefinition> modules = new List<ModuleDefinition> ();
+        private readonly List<MethodDefinition> localization_methods = new List<MethodDefinition> ();
 
-        public AssemblyParser (Parser parser)
+        public AssemblyParser (Parser embeddedResourceParser = null)
         {
-            parser_for_resources = parser;
+            embedded_resource_parser = embeddedResourceParser;
         }
 
         public override IEnumerable<string> SupportedFileExtensions {
@@ -73,20 +73,15 @@ namespace Vernacular.Parsers
         
         private void Add (ModuleDefinition module)
         {
-            try
-            {
+            try {
                 module.ReadSymbols();
-            }
-            catch (FileNotFoundException)
-            {
-            }
-            catch (InvalidOperationException)
-            {                
+            } catch (FileNotFoundException) {
+            } catch (InvalidOperationException) {
             }
 
             foreach (var resource in from res in module.Resources
-                                         where res.ResourceType == ResourceType.Embedded && Path.GetExtension(res.Name) == ".resources"
-                                         select res as EmbeddedResource) {
+                where res.ResourceType == ResourceType.Embedded && Path.GetExtension(res.Name) == ".resources"
+                select res as EmbeddedResource) {
                 AddResource (resource);
             }
 
@@ -96,15 +91,15 @@ namespace Vernacular.Parsers
 
         private void AddResource (EmbeddedResource resource)
         {
-            if (parser_for_resources == null)
+            if (embedded_resource_parser == null) {
                 return;
+            }
 
             using (var reader = new ResourceReader (resource.GetResourceStream ())) {
                 foreach (DictionaryEntry re in reader) {
-                    if (!parser_for_resources.SupportedFileExtensions.Contains (Path.GetExtension(re.Key as string))) {
-                        continue;
+                    if (embedded_resource_parser.SupportedFileExtensions.Contains (Path.GetExtension (re.Key as string))) {
+                        embedded_resource_parser.Add (re.Value as Stream, re.Key as string);
                     }
-                    parser_for_resources.Add(re.Value as Stream, re.Key as string);
                 }        
             }
         }
