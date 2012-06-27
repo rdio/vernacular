@@ -101,13 +101,13 @@ namespace Vernacular.Parsers
                     switch (name) {
                         case "Text": // only valid when in_app_bar is true
                         case "Catalog.Message":
-                            localized_string.UntranslatedSingularValue = reader.Value;
+                            localized_string.UntranslatedSingularValue = UnEscape(reader.Value);
                             if (reader.HasLineInfo ()) {
                                 localized_string.AddReference (RelativeDocumentUrl (xamlPath), reader.LineNumber);
                             }
                             break;
                         case "Catalog.PluralMessage":
-                            localized_string.UntranslatedPluralValue = reader.Value;
+                            localized_string.UntranslatedPluralValue = UnEscape(reader.Value);
                             break;
                         case "Catalog.Comment":
                             localized_string.DeveloperComments = reader.Value;
@@ -121,6 +121,14 @@ namespace Vernacular.Parsers
 
                 reader.MoveToElement ();
             }
+        }
+
+        /// <summary>
+        /// Unescape xaml positional parameters (i.e. removes all occurences of "{}")
+        /// </summary>
+        private string UnEscape(string value)
+        {
+            return value.Replace("{}{", "{");
         }
 
         private IEnumerable<LocalizedString> Parse (Stream stream, string xamlPath)
