@@ -197,9 +197,7 @@ namespace Vernacular.Generators
                     continue;
                 }
 
-                var untranslated = i == 0
-                    ? localizedString.UntranslatedSingularValue
-                    : localizedString.UntranslatedPluralValue;
+                var untranslated = localizedString.UntranslatedSingularValue;
 
                 if (i == 0 && String.IsNullOrWhiteSpace (untranslated)) {
                     continue;
