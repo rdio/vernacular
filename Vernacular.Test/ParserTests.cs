@@ -65,7 +65,7 @@ namespace Vernacular.Test
                 units.RemoveAt (0);
             }
 
-            Assert.AreEqual (6, units.Count);
+            Assert.AreEqual (8, units.Count);
 
             int gs_m_count = 0;
             int gs_f_count = 0;

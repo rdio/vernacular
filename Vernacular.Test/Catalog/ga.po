@@ -12,6 +12,11 @@ msgstr ""
 
 #. comment=GenderSingular
 #: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:49
+msgid "GenderSingular"
+msgstr "ga|GenderSingular"
+
+#. comment=GenderSingular
+#: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:49
 msgctxt "Feminine form"
 msgid "GenderSingular"
 msgstr "ga|GenderSingular:F"
@@ -26,6 +31,16 @@ msgstr "ga|GenderSingular:M"
 #: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:37
 msgid "NeutralSingular"
 msgstr "ga|NeutralSingular"
+
+#. comment=GenderPlural
+#: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:56
+msgid "GenderPlural:P0"
+msgid_plural "GenderPlural:P1"
+msgstr[0] "ga,P0|GenderPlural"
+msgstr[1] "ga,P1|GenderPlural"
+msgstr[2] "ga,P2|GenderPlural"
+msgstr[3] "ga,P3|GenderPlural"
+msgstr[4] "ga,P4|GenderPlural"
 
 #. comment=GenderPlural
 #: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:56

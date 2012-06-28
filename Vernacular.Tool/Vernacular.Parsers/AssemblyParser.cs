@@ -322,17 +322,17 @@ namespace Vernacular.Parsers
                         if (gendered) {
                             masculine.UntranslatedSingularValue = param.Value;
                             feminine.UntranslatedSingularValue = param.Value;
-                        } else {
-                            neutral.UntranslatedSingularValue = param.Value;
                         }
+
+                        neutral.UntranslatedSingularValue = param.Value;
                         break;
                     case "pluralMessage":
                         if (gendered) {
                             masculine.UntranslatedPluralValue = param.Value;
                             feminine.UntranslatedPluralValue = param.Value;
-                        } else {
-                            neutral.UntranslatedPluralValue = param.Value;
                         }
+
+                        neutral.UntranslatedPluralValue = param.Value;
                         break;
                     case "masculineMessage":
                     case "singularMasculineMessage":
