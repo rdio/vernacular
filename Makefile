@@ -13,8 +13,18 @@ INSTALL_FILES = \
 	Vernacular.exe \
 	Vernacular.exe.mdb
 
-all:
+NUNIT_CONSOLE = /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0/nunit-console.exe
+
+all: vernacular
+
+vernacular:
 	xbuild Vernacular.sln
+
+clean:
+	find . -type d -name bin -or -name obj -maxdepth 2 -exec echo rm -rf {} \; -exec rm -rf {} \;
+
+test: clean vernacular
+	mono --debug $(NUNIT_CONSOLE) -labels -nologo Vernacular.Test/bin/Debug/Vernacular.Test.dll
 
 install:
 	mkdir -p "$(LIBDIR)/vernacular"
@@ -24,3 +34,5 @@ install:
 	done
 	sed 's|@libdir@|$(LIBDIR)|' < vernacular.in > "$(BINDIR)/vernacular"
 	chmod 0755 "$(BINDIR)/vernacular"
+
+.PHONY: all vernacular test install clean
