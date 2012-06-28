@@ -30,8 +30,8 @@ namespace Vernacular
 {
     public class ResourceCatalog : Catalog
     {
-        public Func<string, string> GetResourceById { get; set; }
-        public ResourceIdType ResourceIdType { get; set; }
+        public virtual Func<string, string> GetResourceById { get; set; }
+        public virtual ResourceIdType ResourceIdType { get; set; }
 
         public ResourceCatalog ()
         {
