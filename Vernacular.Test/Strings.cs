@@ -46,16 +46,13 @@ namespace Vernacular.Test
 
         public static string GenderSingular (LanguageGender gender)
         {
-            return Catalog.GetGenderString (gender,
-                "GenderSingular:M", "GenderSingular:F",
+            return Catalog.GetGenderString (gender, "GenderSingular",
                 comment: "comment=GenderSingular");
         }
 
         public static string GenderPlural (LanguageGender gender, int n)
         {
-            return Catalog.GetPluralGenderString (gender,
-                "GenderPlural:P0:M", "GenderPlural:P1:M",
-                "GenderPlural:P0:F", "GenderPlural:P1:F",
+            return Catalog.GetPluralGenderString (gender, "GenderPlural:P0", "GenderPlural:P1",
                 n, comment: "comment=GenderPlural");
         }
     }
