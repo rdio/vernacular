@@ -200,6 +200,10 @@ namespace Vernacular
         public static string GetResourceId (ResourceIdType resourceIdType,
             string context, string message, LanguageGender gender, int pluralOrder)
         {
+            if (message == null) {
+                throw new ArgumentNullException ("message");
+            }
+
             var builder = new StringBuilder ("Vernacular_P");
 
             if (!String.IsNullOrEmpty (context)) {
