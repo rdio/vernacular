@@ -1,0 +1,133 @@
+//
+// CatalogTests.cs
+//
+// Author:
+//   Aaron Bockover <abock@rd.io>
+//
+// Copyright 2012 Rdio, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using System;
+using System.IO;
+using System.Collections.Generic;
+
+using NUnit.Framework;
+
+using Vernacular.Parsers;
+
+namespace Vernacular.Test
+{
+    [TestFixture]
+    public class CatalogTests
+    {
+        private Dictionary<string, ParserResourceCatalog> catalogs = new Dictionary<string, ParserResourceCatalog> ();
+
+        [TestFixtureSetUp]
+        public void SetUp ()
+        {
+            foreach (var path in Directory.GetFiles ("../../Catalog", "*.po")) {
+                var parser = new PoParser ();
+                parser.Add (path);
+                var lang = Path.GetFileNameWithoutExtension (path);
+                catalogs.Add (lang, new ParserResourceCatalog (parser) { CurrentIsoLanguageCode = lang });
+            }
+        }
+
+        private string GenderTag (LanguageGender gender)
+        {
+            switch (gender) {
+                case LanguageGender.Masculine:
+                    return ":M";
+                case LanguageGender.Feminine:
+                    return ":F";
+                default:
+                    return String.Empty;
+            }
+        }
+
+        private void AssertTranslations (string orig, LanguageGender gender, Func<string> messageGetter)
+        {
+            foreach (var catalog in catalogs) {
+                Catalog.Implementation = catalog.Value;
+                Assert.AreEqual (catalog.Key + "|" + orig + GenderTag (gender), messageGetter ());
+            }
+        }
+
+        private void AssertTranslations (string orig, LanguageGender gender, Func<int, string> messageGetter)
+        {
+            foreach (var catalog in catalogs) {
+                Catalog.Implementation = catalog.Value;
+
+                for (int i = 0; i < 10000; i++) {
+                    var order = PluralRules.GetOrder (Catalog.Implementation.CurrentIsoLanguageCode, i);
+                    Assert.AreEqual (catalog.Key + ",P" + order + "|" + orig + GenderTag (gender), messageGetter (i));
+                }
+            }
+        }
+
+        [Test]
+        public void TestNeutralSingular ()
+        {
+            AssertTranslations ("NeutralSingular", LanguageGender.Neutral, () => Strings.NeutralSingular ());
+        }
+
+        [Test]
+        public void TestNeutralPlural ()
+        {
+            AssertTranslations ("NeutralPlural", LanguageGender.Neutral, i => Strings.NeutralPlural (i));
+        }
+
+        [Test]
+        public void TestGenderSingularMasculine ()
+        {
+            AssertTranslations ("GenderSingular", LanguageGender.Masculine, () => Strings.GenderSingular (LanguageGender.Masculine));
+        }
+
+        [Test]
+        public void TestGenderSingularFeminine ()
+        {
+            AssertTranslations ("GenderSingular", LanguageGender.Feminine, () => Strings.GenderSingular (LanguageGender.Feminine));
+        }
+
+        [Test]
+        public void TestGenderSingularNeutral ()
+        {
+            AssertTranslations ("GenderSingular", LanguageGender.Neutral, () => Strings.GenderSingular (LanguageGender.Neutral));
+        }
+
+        [Test]
+        public void TestGenderPluralMasculine ()
+        {
+            AssertTranslations ("GenderPlural", LanguageGender.Masculine, i => Strings.GenderPlural (LanguageGender.Masculine, i));
+        }
+
+        [Test]
+        public void TestGenderPluralFeminine ()
+        {
+            AssertTranslations ("GenderPlural", LanguageGender.Feminine, i => Strings.GenderPlural (LanguageGender.Feminine, i));
+        }
+
+        [Test]
+        public void TestGenderPluralNeutral ()
+        {
+            AssertTranslations ("GenderPlural", LanguageGender.Neutral, i => Strings.GenderPlural (LanguageGender.Neutral, i));
+        }
+    }
+}
