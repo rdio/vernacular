@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3D090372-7612-4777-A208-F8CDE3612738}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Vernacular.Test</RootNamespace>
+    <AssemblyName>Vernacular.Test</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Strings.cs" />
+    <Compile Include="ParserTests.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Vernacular.Catalog\Vernacular.Catalog.csproj">
+      <Project>{BEC7B55D-F922-446D-9BBF-12DB249C4CA4}</Project>
+      <Name>Vernacular.Catalog</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Vernacular.Potato\Vernacular.Potato.csproj">
+      <Project>{8326683D-C60D-42AD-A295-00321AE332A6}</Project>
+      <Name>Vernacular.Potato</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Vernacular.Tool\Vernacular.Tool.csproj">
+      <Project>{FA2384C6-90E1-4419-A3AB-FD3318354B8D}</Project>
+      <Name>Vernacular.Tool</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
