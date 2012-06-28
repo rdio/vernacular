@@ -1,0 +1,51 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"PO-Revision-Date: 2012-06-28 16:10-04\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Vernacular\n"
+
+#. comment=GenderSingular
+#: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:49
+msgctxt "Feminine form"
+msgid "GenderSingular"
+msgstr "pt_BR|GenderSingular:F"
+
+#. comment=GenderSingular
+#: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:49
+msgctxt "Masculine form"
+msgid "GenderSingular"
+msgstr "pt_BR|GenderSingular:M"
+
+#. comment=NeutralSingular
+#: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:37
+msgid "NeutralSingular"
+msgstr "pt_BR|NeutralSingular"
+
+#. comment=GenderPlural
+#: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:56
+msgctxt "Feminine form"
+msgid "GenderPlural:P0"
+msgid_plural "GenderPlural:P1"
+msgstr[0] "pt_BR,P0|GenderPlural:F"
+msgstr[1] "pt_BR,P1|GenderPlural:F"
+
+#. comment=GenderPlural
+#: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:56
+msgctxt "Masculine form"
+msgid "GenderPlural:P0"
+msgid_plural "GenderPlural:P1"
+msgstr[0] "pt_BR,P0|GenderPlural:M"
+msgstr[1] "pt_BR,P1|GenderPlural:M"
+
+#. comment=NeutralPlural
+#: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:43
+msgid "NeutralPlural:P0"
+msgid_plural "NeutralPlural:P1"
+msgstr[0] "pt_BR,P0|NeutralPlural"
+msgstr[1] "pt_BR,P1|NeutralPlural"

@@ -37,6 +37,9 @@
   <ItemGroup>
     <Compile Include="Strings.cs" />
     <Compile Include="ParserTests.cs" />
+    <Compile Include="GeneratorTests.cs" />
+    <Compile Include="ParserResourceCatalog.cs" />
+    <Compile Include="CatalogTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -52,5 +55,13 @@
       <Project>{FA2384C6-90E1-4419-A3AB-FD3318354B8D}</Project>
       <Name>Vernacular.Tool</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Catalog\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Catalog\en_US.pot" />
+    <None Include="Catalog\ga.po" />
+    <None Include="Catalog\pt_BR.po" />
   </ItemGroup>
 </Project>
