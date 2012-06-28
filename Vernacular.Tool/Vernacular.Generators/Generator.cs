@@ -28,7 +28,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
@@ -144,21 +143,6 @@ namespace Vernacular.Generators
             return false;
         }
 
-        protected struct ResourceString
-        {
-            public string Id { get; set; }
-            public string Untranslated { get; set; }
-            public string Translated { get; set; }
-
-            public string SortKey {
-                get {
-                    // We want to chop off the Vernacular_P0_M_ style
-                    // prefixes to keep plurals grouped together.
-                    return Regex.Replace (Id, @"^Vernacular_P\d+(_[FM]{1})?_", "");
-                }
-            }
-        }
-
         protected IEnumerable<ResourceString> GetAllResourceStrings ()
         {
             var resource_strings = new Dictionary<string, ResourceString> ();
@@ -181,36 +165,7 @@ namespace Vernacular.Generators
 
         protected IEnumerable<ResourceString> GetResourceStrings (LocalizedString localizedString)
         {
-            string [] translated;
-
-            if (localizedString.HasValidTranslations) {
-                translated = localizedString.TranslatedValues;
-            } else {
-                translated = new [] {
-                    localizedString.UntranslatedSingularValue,
-                    localizedString.UntranslatedPluralValue
-                };
-            }
-
-            for (int i = 0; i < translated.Length; i++) {
-                if (translated [i] == null) {
-                    continue;
-                }
-
-                var untranslated = localizedString.UntranslatedSingularValue;
-
-                if (i == 0 && String.IsNullOrWhiteSpace (untranslated)) {
-                    continue;
-                }
-
-                yield return new ResourceString {
-                    Id = Catalog.GetResourceId (ResourceIdType,
-                        localizedString.Context, untranslated,
-                        localizedString.Gender, i),
-                    Untranslated = untranslated,
-                    Translated = translated [i]
-                };
-            }
+            return ResourceString.Generate (ResourceIdType, localizedString);
         }
 
         protected abstract void Generate ();

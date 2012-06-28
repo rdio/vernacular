@@ -91,6 +91,7 @@
     <Compile Include="Vernacular.Tool\ConsoleCrayon.cs" />
     <Compile Include="Vernacular.Analyzers\Hunspell.cs" />
     <Compile Include="Vernacular.Parsers\PoParser.cs" />
+    <Compile Include="Vernacular.Generators\ResourceString.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
