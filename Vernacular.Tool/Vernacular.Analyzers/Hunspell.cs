@@ -37,15 +37,19 @@ namespace Vernacular.Analyzers
     // as well (UTF-8).
     public class Hunspell
     {
+#if WIN32
+        private const string LIBHUNSPELL = "libhunspell";
+#else
         private const string LIBHUNSPELL = "libhunspell-1.2";
+#endif
 
-        [DllImport (LIBHUNSPELL)]
+        [DllImport (LIBHUNSPELL, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr Hunspell_create (string affpath, string dicpath);
 
-        [DllImport (LIBHUNSPELL)]
+        [DllImport (LIBHUNSPELL, CallingConvention = CallingConvention.Cdecl)]
         private static extern int Hunspell_spell (IntPtr handle, string word);
 
-        [DllImport (LIBHUNSPELL)]
+        [DllImport (LIBHUNSPELL, CallingConvention = CallingConvention.Cdecl)]
         private static extern int Hunspell_add (IntPtr handle, string word);
 
         private IntPtr handle;
