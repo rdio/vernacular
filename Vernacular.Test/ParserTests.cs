@@ -48,11 +48,33 @@ namespace Vernacular.Test
         [Test]
         public void TestParseAssembly ()
         {
-            var localization_units = ParseAssembly ();
+            AssertUnits (ParseAssembly ());
+        }
 
-            Assert.AreEqual (6, localization_units.Count);
+        [Test]
+        public void TestParsePo ()
+        {
+            var po_parser = new PoParser ();
+            po_parser.Add ("../../Catalog/en_US.pot");
+            AssertUnits (new List<ILocalizationUnit> (po_parser.Parse ()));
+        }
 
-            foreach (var unit in localization_units) {
+        private void AssertUnits (List<ILocalizationUnit> units)
+        {
+            if (units [0] is LocalizationMetadata) {
+                units.RemoveAt (0);
+            }
+
+            Assert.AreEqual (6, units.Count);
+
+            int gs_m_count = 0;
+            int gs_f_count = 0;
+            int gs_n_count = 0;
+            int gp_m_count = 0;
+            int gp_f_count = 0;
+            int gp_n_count = 0;
+
+            foreach (var unit in units) {
                 var str = unit as LocalizedString;
                 Assert.IsNotNull (str);
 
@@ -68,25 +90,37 @@ namespace Vernacular.Test
                         Assert.AreEqual (LanguageGender.Neutral, str.Gender);
                         Assert.AreEqual ("NeutralPlural:P1", str.UntranslatedPluralValue);
                         break;
-                    case "GenderSingular:M":
-                        Assert.AreEqual (LanguageGender.Masculine, str.Gender);
+                    case "GenderSingular":
+                        switch (str.Gender) {
+                            case LanguageGender.Masculine: gs_m_count++; break;
+                            case LanguageGender.Feminine: gs_f_count++; break;
+                            case LanguageGender.Neutral: gs_n_count++; break;
+                            default: Assert.Fail ("invalid LanguageGender, should never be reached"); break;
+                        }
                         break;
-                    case "GenderSingular:F":
-                        Assert.AreEqual (LanguageGender.Feminine, str.Gender);
-                        break;
-                    case "GenderPlural:P0:M":
-                        Assert.AreEqual (LanguageGender.Masculine, str.Gender);
-                        Assert.AreEqual ("GenderPlural:P1:M", str.UntranslatedPluralValue);
-                        break;
-                    case "GenderPlural:P0:F":
-                        Assert.AreEqual (LanguageGender.Feminine, str.Gender);
-                        Assert.AreEqual ("GenderPlural:P1:F", str.UntranslatedPluralValue);
+                    case "GenderPlural:P0":
+                        Assert.AreEqual ("GenderPlural:P1", str.UntranslatedPluralValue);
+
+                        switch (str.Gender) {
+                            case LanguageGender.Masculine: gp_m_count++; break;
+                            case LanguageGender.Feminine: gp_f_count++; break;
+                            case LanguageGender.Neutral: gp_n_count++; break;
+                            default: Assert.Fail ("invalid LanguageGender, should never be reached"); break;
+                        }
                         break;
                     default:
                         Assert.Fail ("unexpected localization unit message: " + message);
                         break;
                 }
+
             }
+
+            Assert.AreEqual (1, gs_m_count, "gs_m_count");
+            Assert.AreEqual (1, gs_f_count, "gs_f_count");
+            Assert.AreEqual (1, gs_n_count, "gs_n_count");
+            Assert.AreEqual (1, gp_m_count, "gp_m_count");
+            Assert.AreEqual (1, gp_f_count, "gp_f_count");
+            Assert.AreEqual (1, gp_n_count, "gp_n_count");
         }
     }
 }
