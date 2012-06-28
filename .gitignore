@@ -3,3 +3,5 @@
 *.user*
 bin/
 obj/
+test-results/
+TestResult.xml
