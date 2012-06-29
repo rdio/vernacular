@@ -62,24 +62,27 @@ namespace Vernacular.Test
             }
         }
 
-        private void AssertTranslations (string orig, LanguageGender gender, Func<string> messageGetter)
+        private void ForEachCatalog (Action<string> action)
         {
             foreach (var catalog in catalogs) {
                 Catalog.Implementation = catalog.Value;
-                Assert.AreEqual (catalog.Key + "|" + orig + GenderTag (gender), messageGetter ());
+                action (catalog.Key);
             }
+        }
+
+        private void AssertTranslations (string orig, LanguageGender gender, Func<string> messageGetter)
+        {
+            ForEachCatalog (lang => Assert.AreEqual (lang + "|" + orig + GenderTag (gender), messageGetter ()));
         }
 
         private void AssertTranslations (string orig, LanguageGender gender, Func<int, string> messageGetter)
         {
-            foreach (var catalog in catalogs) {
-                Catalog.Implementation = catalog.Value;
-
+            ForEachCatalog (lang => {
                 for (int i = 0; i < 10000; i++) {
                     var order = PluralRules.GetOrder (Catalog.Implementation.CurrentIsoLanguageCode, i);
-                    Assert.AreEqual (catalog.Key + ",P" + order + "|" + orig + GenderTag (gender), messageGetter (i));
+                    Assert.AreEqual (lang + ",P" + order + "|" + orig + GenderTag (gender), messageGetter (i));
                 }
-            }
+            });
         }
 
         [Test]
@@ -128,6 +131,41 @@ namespace Vernacular.Test
         public void TestGenderPluralNeutral ()
         {
             AssertTranslations ("GenderPlural", LanguageGender.Neutral, i => Strings.GenderPlural (LanguageGender.Neutral, i));
+        }
+
+        [Test]
+        public void TestNested1 ()
+        {
+            ForEachCatalog (lang => Assert.AreEqual ("$_Nested", Strings.Nested1 ()));
+        }
+
+        [Test]
+        public void TestNested2 ()
+        {
+            ForEachCatalog (lang => {
+                for (int i = 0; i < 10000; i++) {
+                    Assert.AreEqual (String.Format ("a$_B$_C$_D:P{0}$_Ef$_Ghi",
+                        PluralRules.GetOrder (lang, i)), Strings.Nested2 (i));
+                }
+            });
+        }
+
+        [Test]
+        public void TestStaticCtorMessage ()
+        {
+            ForEachCatalog (lang => Assert.AreEqual ("$_StaticCtorMessage", Strings.StaticCtorMessage));
+        }
+
+        [Test]
+        public void TestFieldMessage ()
+        {
+            ForEachCatalog (lang => Assert.AreEqual ("$_FieldMessage", Strings.FieldMessage));
+        }
+
+        [Test]
+        public void TestPropertyMessage ()
+        {
+            ForEachCatalog (lang => Assert.AreEqual ("$_PropertyMessage", Strings.PropertyMessage));
         }
     }
 }

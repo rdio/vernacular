@@ -10,6 +10,42 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Vernacular\n"
 
+#: Users/aaron/src/vernacular/Vernacular.Test/AssemblyParserTestStrings.cs:54
+msgid "$b"
+msgstr "$_B"
+
+msgid "$c"
+msgstr "$_C"
+
+#. $e:comment
+msgid "$e"
+msgstr "$_E"
+
+msgid "$FieldMessage"
+msgstr "$_FieldMessage"
+
+#. $g:comment
+msgid "$g"
+msgstr "$_G"
+
+#: Users/aaron/src/vernacular/Vernacular.Test/AssemblyParserTestStrings.cs:47
+msgid "$Nested"
+msgstr "$_Nested"
+
+#: Users/aaron/src/vernacular/Vernacular.Test/AssemblyParserTestStrings.cs:36
+msgid "$PropertyMessage"
+msgstr "$_PropertyMessage"
+
+#: Users/aaron/src/vernacular/Vernacular.Test/AssemblyParserTestStrings.cs:41
+msgid "$StaticCtorMessage"
+msgstr "$_StaticCtorMessage"
+
+#. $d:comment
+msgid "$d:P0"
+msgid_plural "$d:P1"
+msgstr[0] "$_D:P0"
+msgstr[1] "$_D:P1"
+
 #. comment=GenderSingular
 #: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:49
 msgid "GenderSingular"

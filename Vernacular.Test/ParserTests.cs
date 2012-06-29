@@ -65,7 +65,7 @@ namespace Vernacular.Test
                 units.RemoveAt (0);
             }
 
-            Assert.AreEqual (8, units.Count);
+            Assert.AreEqual (17, units.Count);
 
             int gs_m_count = 0;
             int gs_f_count = 0;
@@ -107,6 +107,16 @@ namespace Vernacular.Test
                             case LanguageGender.Neutral: gp_n_count++; break;
                             default: Assert.Fail ("invalid LanguageGender, should never be reached"); break;
                         }
+                        break;
+                    case "$b":
+                    case "$c":
+                    case "$d:P0":
+                    case "$e":
+                    case "$g":
+                    case "$Nested":
+                    case "$FieldMessage":
+                    case "$PropertyMessage":
+                    case "$StaticCtorMessage":
                         break;
                     default:
                         Assert.Fail ("unexpected localization unit message: " + message);

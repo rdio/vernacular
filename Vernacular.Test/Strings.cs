@@ -55,5 +55,47 @@ namespace Vernacular.Test
             return Catalog.GetPluralGenderString (gender, "GenderPlural:P0", "GenderPlural:P1",
                 n, comment: "comment=GenderPlural");
         }
+
+        public static readonly string FieldMessage = Catalog.GetString ("$FieldMessage", comment: "comment=$FieldMessage");
+
+        public static string PropertyMessage {
+            get { return Catalog.GetString ("$PropertyMessage", comment: "comment=$PropertyMessage"); }
+        }
+
+        public static readonly string StaticCtorMessage;
+
+        static Strings ()
+        {
+            StaticCtorMessage = Catalog.GetString ("$StaticCtorMessage", comment: "comment=$StaticCtorMessage");
+        }
+
+        public static string Nested1 ()
+        {
+            Func<string, string> n = s => s;
+            return n (n (n (n (n (n (n (n (Catalog.GetString ("$Nested", comment: "comment=$Nested")))))))));
+        }
+
+        public static string Nested2 (int i)
+        {
+            Func<string, string, string, string> n = (s1, s2, s3) => s1 + s2 + s3;
+
+            return n (
+                "a",
+                Catalog.GetString ("$b", comment: "comment=$b"),
+                n (
+                    Catalog.GetString ("$c", comment: "comment=$c"),
+                    n (
+                        Catalog.GetPluralString ("$d:P0", "$d:P1", i, comment: "comment=$d"),
+                        Catalog.GetString ("$e", comment: "comment=$e"),
+                        n (
+                            "f",
+                            Catalog.GetString ("$g", comment: "comment=$g"),
+                            "h"
+                        )
+                    ),
+                    "i"
+                )
+            );
+        }
     }
 }

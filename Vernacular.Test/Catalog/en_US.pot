@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2012-06-28 17:40-04\n"
+"PO-Revision-Date: 2012-06-29 12:44-04\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -9,6 +9,42 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Vernacular\n"
+
+#. comment=$b
+#: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:82
+msgid "$b"
+msgstr "$b"
+
+#. comment=$c
+msgid "$c"
+msgstr "$c"
+
+#. comment=$e
+msgid "$e"
+msgstr "$e"
+
+#. comment=$FieldMessage
+msgid "$FieldMessage"
+msgstr "$FieldMessage"
+
+#. comment=$g
+msgid "$g"
+msgstr "$g"
+
+#. comment=$Nested
+#: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:75
+msgid "$Nested"
+msgstr "$Nested"
+
+#. comment=$PropertyMessage
+#: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:62
+msgid "$PropertyMessage"
+msgstr "$PropertyMessage"
+
+#. comment=$StaticCtorMessage
+#: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:69
+msgid "$StaticCtorMessage"
+msgstr "$StaticCtorMessage"
 
 #. comment=GenderSingular
 #: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:49
@@ -31,6 +67,12 @@ msgstr "GenderSingular"
 #: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:37
 msgid "NeutralSingular"
 msgstr "NeutralSingular"
+
+#. comment=$d
+msgid "$d:P0"
+msgid_plural "$d:P1"
+msgstr[0] "$d:P0"
+msgstr[1] "$d:P1"
 
 #. comment=GenderPlural
 #: Users/aaron/src/vernacular/Vernacular.Test/Strings.cs:55
