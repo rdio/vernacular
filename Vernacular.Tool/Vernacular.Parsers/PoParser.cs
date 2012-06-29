@@ -188,7 +188,9 @@ namespace Vernacular.Parsers
                 var parser = new Vernacular.Potato.Internal.Parser ();
                 foreach (var part in parser.Parse (path)) {
                     var unit = Parse (part);
-                    if (unit != null) {
+                    if (unit is LocalizationMetadata && Path.GetExtension (path) == ".pot") {
+                        continue;
+                    } else if (unit != null) {
                         yield return unit;
                     }
                 }
