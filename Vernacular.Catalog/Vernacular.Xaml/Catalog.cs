@@ -172,10 +172,6 @@ namespace Vernacular.Xaml
 
             if (e is TextBlock) {
                 return TextBlock.TextProperty;
-            } else if (e is Button) {
-                return Button.ContentProperty;
-            } else if (e is CheckBox) {
-                return Button.ContentProperty;
 #if WINDOWS_PHONE
             } else if (e is PanoramaItem) {
                 return PanoramaItem.HeaderProperty;
@@ -186,6 +182,8 @@ namespace Vernacular.Xaml
             } else if (e is ListPicker) {
                 return ListPicker.HeaderProperty;
 #endif
+            } else if (e is ContentControl) {
+                return ContentControl.ContentProperty;
             } else if (e is TextBox) {
                 return TextBox.TextProperty;
             }
