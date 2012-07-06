@@ -3,8 +3,10 @@
 //
 // Author:
 //   Aaron Bockover <abock@rd.io>
+//   Stephane Delcroix <stephane@delcroix.org>
 //
 // Copyright 2012 Rdio, Inc.
+// Copyright 2012 S. Delcroix
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -189,6 +191,36 @@ namespace Vernacular.Xaml
             }
 
             return null;
+        }
+
+        public static readonly DependencyProperty ToolTipProperty = DependencyProperty.RegisterAttached(
+            "ToolTip",
+            typeof (string),
+            typeof (Catalog),
+            new PropertyMetadata(OnToolTipPropertyChanged));
+
+        public static string GetToolTip (DependencyObject o) {
+            return (string)o.GetValue (ToolTipProperty);
+        }
+
+        public static void SetToolTip (DependencyObject o, string value) {
+            o.SetValue (ToolTipProperty, value);
+        }
+
+        private static void OnToolTipPropertyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e) {
+            var framework_element = sender as FrameworkElement;
+            if (framework_element == null) {
+                return;
+            }
+
+            var tooltip = sender.GetValue (ToolTipProperty) as string;
+
+            if (tooltip == null) {
+                return;
+            }
+
+            var localized = Vernacular.Catalog.GetString (tooltip);
+            ToolTipService.SetToolTip (framework_element, localized);
         }
 
         private static string ModifyString (string value, string modifier)
