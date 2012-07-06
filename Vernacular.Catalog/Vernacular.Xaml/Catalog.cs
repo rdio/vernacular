@@ -49,7 +49,7 @@ namespace Vernacular.Xaml
 
     public static class Catalog
     {
-        public static Func<FrameworkElement, DependencyProperty> FindMessageDependencyProperty { get; set; }
+        public static Func<DependencyObject, DependencyProperty> FindMessageDependencyProperty { get; set; }
 
         public static readonly DependencyProperty CommentProperty = DependencyProperty.RegisterAttached (
             "Comment",
@@ -133,11 +133,6 @@ namespace Vernacular.Xaml
 
         private static void OnPropertyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var framework_element = sender as FrameworkElement;
-            if (framework_element == null) {
-                return;
-            }
-
             var message = sender.GetValue (MessageProperty) as string;
             var plural_message = sender.GetValue (PluralMessageProperty) as string;
             var modifier = (StringModifier)sender.GetValue (ModifierProperty);
@@ -155,13 +150,15 @@ namespace Vernacular.Xaml
 
             localized = ModifyString (localized, modifier);
             localized = Format(localized, count);
-            var property = FindMessageProperty (framework_element);
+            var property = FindMessageProperty (sender);
             if (property != null) {
-                framework_element.SetValue (property, localized);
+                sender.SetValue (property, localized);
+            } else if (sender is Run) {
+                (sender as Run).Text = localized;
             }
         }
 
-        private static DependencyProperty FindMessageProperty (FrameworkElement e)
+        private static DependencyProperty FindMessageProperty (DependencyObject e)
         {
             if (FindMessageDependencyProperty != null) {
                 var property = FindMessageDependencyProperty (e);
