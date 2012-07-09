@@ -54,10 +54,12 @@ namespace Vernacular.Parsers
             var memory_stream = new MemoryStream ();
             int size;
             var buffer = new byte[2048];
+
             do {
                 size = stream.Read (buffer, 0, buffer.Length);
-                memory_stream.Write (buffer,0,size);
+                memory_stream.Write (buffer, 0, size);
             } while (size > 0);
+
             memory_stream.Seek (0, SeekOrigin.Begin);
 
             xaml_streams.Add (new Tuple<string, Stream> (path, memory_stream));
@@ -89,7 +91,7 @@ namespace Vernacular.Parsers
                 }
 
                 var localized_string = new LocalizedString ();
-                bool is_binding = false;
+                var is_binding = false;
 
                 while (reader.MoveToNextAttribute ()) {
                     if (!in_app_bar && !reader.NamespaceURI.Contains ("clr-namespace:Vernacular.Xaml")) {
@@ -105,23 +107,23 @@ namespace Vernacular.Parsers
                         case "Catalog.Message":
                             var value = reader.Value;
                             is_binding = IsBinding (value);
-                            localized_string.UntranslatedSingularValue = UnEscape (value);
-                            if (reader.HasLineInfo ()) {
-                                localized_string.AddReference (RelativeDocumentUrl (xamlPath), reader.LineNumber);
-                            }
+                            localized_string.UntranslatedSingularValue = Unescape (value);
+                            AddReference (localized_string, reader, xamlPath);
                             break;
                         case "Catalog.PluralMessage":
-                            localized_string.UntranslatedPluralValue = UnEscape(reader.Value);
+                            localized_string.UntranslatedPluralValue = Unescape (reader.Value);
                             break;
                         case "Catalog.Comment":
                             localized_string.DeveloperComments = reader.Value;
                             break;
                         case "Catalog.ToolTip":
-                            var tooltip_localized_string = new LocalizedString {UntranslatedSingularValue = UnEscape(reader.Value)};
-                            if (reader.HasLineInfo()) {
-                                tooltip_localized_string.AddReference(RelativeDocumentUrl(xamlPath), reader.LineNumber);
-                            }
-                            yield return tooltip_localized_string;
+                            // Here we want to yield a new string directly since
+                            // this could be mixed with other Catalog attributes
+                            // on the element (e.g. two separate localized strings
+                            // could be returned for the element)
+                            yield return AddReference (new LocalizedString {
+                                UntranslatedSingularValue = Unescape (reader.Value)
+                            }, reader, xamlPath);
                             break;
                     }
                 }
@@ -134,8 +136,32 @@ namespace Vernacular.Parsers
             }
         }
 
+        private LocalizedString AddReference (LocalizedString localizedString, XmlTextReader reader, string xamlPath)
+        {
+            if (reader.HasLineInfo ()) {
+                localizedString.AddReference (RelativeDocumentUrl (xamlPath), reader.LineNumber);
+            }
+
+            return localizedString;
+        }
+
+        private IEnumerable<LocalizedString> Parse (Stream stream, string xamlPath)
+        {
+            using (var reader = new XmlTextReader (stream)) {
+                return Parse (reader, xamlPath);
+            }
+        }
+
+        private IEnumerable<LocalizedString> Parse (string xamlPath)
+        {
+            using (var reader = new XmlTextReader (xamlPath)) {
+                return Parse (reader, xamlPath);
+            }
+        }
+
         /// <summary>
-        /// Detects if "text" is a a Binding expression. Make sure it doesn't match the escpae sequence {}.
+        /// Detects if <param name="text">text</param> is a a Binding expression.
+        /// Make sure it doesn't match the escpae sequence "{}"
         /// </summary>
         private bool IsBinding (string text)
         {
@@ -146,23 +172,9 @@ namespace Vernacular.Parsers
         /// <summary>
         /// Unescape xaml positional parameters (i.e. removes all occurences of "{}")
         /// </summary>
-        private string UnEscape(string value)
+        private string Unescape (string value)
         {
-            return value.Replace("{}{", "{");
-        }
-
-        private IEnumerable<LocalizedString> Parse (Stream stream, string xamlPath)
-        {
-            using (var reader = new XmlTextReader (stream)) {
-                return Parse (reader, xamlPath).ToList();
-            }
-        }
-
-        private IEnumerable<LocalizedString> Parse (string xamlPath)
-        {
-            using (var reader = new XmlTextReader (xamlPath)) {
-                return Parse (reader, xamlPath).ToList();
-            }
+            return value.Replace ("{}{", "{");
         }
     }
 }
