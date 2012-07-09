@@ -38,7 +38,7 @@ namespace Vernacular.Parsers
     public sealed class XamlParser : Parser
     {
         private readonly List<string> xaml_paths = new List<string> ();
-        private readonly Dictionary<string, Stream> xaml_streams = new Dictionary<string, Stream> (); 
+        private readonly List<Tuple<string, Stream>> xaml_streams = new List<Tuple<string, Stream>> ();
 
         public override IEnumerable<string> SupportedFileExtensions {
             get { yield return ".xaml"; }
@@ -60,16 +60,16 @@ namespace Vernacular.Parsers
             } while (size > 0);
             memory_stream.Seek (0, SeekOrigin.Begin);
 
-            xaml_streams.Add (path, memory_stream);
+            xaml_streams.Add (new Tuple<string, Stream> (path, memory_stream));
         }
 
         public override IEnumerable<ILocalizationUnit> Parse ()
         {
             var from_paths = from xaml_path in xaml_paths
-                             from localization_unit in Parse(xaml_path)
+                             from localization_unit in Parse (xaml_path)
                              select localization_unit;
             var from_streams = from xaml_stream in xaml_streams
-                              from localization_unit in Parse(xaml_stream.Value, xaml_stream.Key)
+                              from localization_unit in Parse (xaml_stream.Item2, xaml_stream.Item1)
                               select localization_unit;
             return from_paths.Concat (from_streams);            
         }
