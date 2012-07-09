@@ -116,6 +116,13 @@ namespace Vernacular.Parsers
                         case "Catalog.Comment":
                             localized_string.DeveloperComments = reader.Value;
                             break;
+                        case "Catalog.ToolTip":
+                            var tooltip_localized_string = new LocalizedString {UntranslatedSingularValue = UnEscape(reader.Value)};
+                            if (reader.HasLineInfo()) {
+                                tooltip_localized_string.AddReference(RelativeDocumentUrl(xamlPath), reader.LineNumber);
+                            }
+                            yield return tooltip_localized_string;
+                            break;
                     }
                 }
 
