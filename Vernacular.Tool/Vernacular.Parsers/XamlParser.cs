@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,6 +89,7 @@ namespace Vernacular.Parsers
                 }
 
                 var localized_string = new LocalizedString ();
+                bool is_binding = false;
 
                 while (reader.MoveToNextAttribute ()) {
                     if (!in_app_bar && !reader.NamespaceURI.Contains ("clr-namespace:Vernacular.Xaml")) {
@@ -101,7 +103,9 @@ namespace Vernacular.Parsers
                     switch (name) {
                         case "Text": // only valid when in_app_bar is true
                         case "Catalog.Message":
-                            localized_string.UntranslatedSingularValue = UnEscape(reader.Value);
+                            var value = reader.Value;
+                            is_binding = IsBinding (value);
+                            localized_string.UntranslatedSingularValue = UnEscape (value);
                             if (reader.HasLineInfo ()) {
                                 localized_string.AddReference (RelativeDocumentUrl (xamlPath), reader.LineNumber);
                             }
@@ -115,12 +119,21 @@ namespace Vernacular.Parsers
                     }
                 }
 
-                if (localized_string.IsDefined) {
+                if (localized_string.IsDefined && !is_binding) {
                     yield return localized_string;
                 }
 
                 reader.MoveToElement ();
             }
+        }
+
+        /// <summary>
+        /// Detects if "text" is a a Binding expression. Make sure it doesn't match the escpae sequence {}.
+        /// </summary>
+        private bool IsBinding (string text)
+        {
+            const string regex = @"^\s*\{[^\}]";
+            return Regex.Match (text, regex).Success;
         }
 
         /// <summary>
