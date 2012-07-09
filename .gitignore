@@ -5,3 +5,5 @@ bin/
 obj/
 test-results/
 TestResult.xml
+packages/
+packages.config
