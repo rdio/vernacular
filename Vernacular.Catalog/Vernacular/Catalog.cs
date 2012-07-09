@@ -73,15 +73,29 @@ namespace Vernacular
         }
 
         private string current_iso_language_code;
+        /// <summary>
+        /// The current 2-letters ISO language code. <seealso cref="http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes"/>
+        /// </summary>
         public virtual string CurrentIsoLanguageCode {
             get { return current_iso_language_code ?? CultureInfo.CurrentCulture.TwoLetterISOLanguageName; }
             set { current_iso_language_code = value; }
         }
 
         #region Implementation Abstract Methods
-
+        /// <summary>
+        /// When overridden in a derived class, gets the localized version of <param name="message"/>.
+        /// </summary>
+        /// <param name="message">The original message</param>
+        /// <returns>The localized message</returns>
         public abstract string CoreGetString (string message);
 
+        /// <summary>
+        /// When overridden in a derived class, gets the localized singular or plural message, depending on n
+        /// </summary>
+        /// <param name="singularMessage">The singular message</param>
+        /// <param name="pluralMessage">The plural message</param>
+        /// <param name="n">The plural count</param>
+        /// <returns>The localized and pluralized message</returns>
         public abstract string CoreGetPluralString (string singularMessage, string pluralMessage, int n);
 
         public abstract string CoreGetGenderString (LanguageGender gender, string masculineMessage, string feminineMessage);
@@ -101,16 +115,34 @@ namespace Vernacular
         }
 
         #region Public GetString Methods
-
+        /// <summary>
+        /// Return the localized translation of message, based on the current <see cref="Implementation">Catalog Implementation</see>
+        /// and <see cref="CurrentIsoLanguageCode">ISO language code</see>>.
+        /// </summary>
+        /// <param name="message">The message to be localized</param>
+        /// <param name="comment">Developer's comment, only visible by translators</param>
+        /// <returns></returns>
         public static string GetString (string message, string comment = null)
         {
             if (Implementation == null) {
                 return message;
             }
-
+            
             return Implementation.CoreGetString (message);
         }
 
+        /// <summary>
+        /// Like <see cref="GetString(string, string)"/>, but consider plural forms. If a translation is found, apply the plural 
+        /// formula to <param name="n"/>, and return the resulting message (some languages have more than two plural forms).
+        /// If no translation is found, return <param name="singularMessage"/> if <param name="n"> is 1; return <param name="pluralMessage"> otherwise.
+        /// 
+        /// The Plural formula is computed from the <see cref="CurrentIsoLanguageCode"/>
+        /// </summary>
+        /// <param name="singularMessage">The singular message</param>
+        /// <param name="pluralMessage">The plural message</param>
+        /// <param name="n">The plural count</param>
+        /// <param name="comment">Developer's comment, only visible by translators</param>
+        /// <returns>The localized message, pluralized if required</returns>
         public static string GetPluralString (string singularMessage, string pluralMessage,
             int n, string comment = null)
         {
@@ -182,7 +214,10 @@ namespace Vernacular
         #endregion
 
         #region Utilities
-
+        /// <summary>
+        /// An error handler for the FormatExceptions caught by Catalog.Format on translated strings. 
+        /// It is recommended that you log those and reports the issue to the translator.
+        /// </summary>
         public static Action<Exception, string> ErrorHandler;
 
         public static string Format (string format, params object [] args)
