@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using NUnit.Framework;
 
 using Vernacular.Tool;
@@ -45,6 +45,14 @@ namespace Vernacular.Test
             return new List<ILocalizationUnit> (asm_parser.Parse ());
         }
 
+        public static List<ILocalizationUnit> ParseXap ()
+        {
+            var aggregate_parser = new AggregateParser ();
+            var xap_parser = new XapParser(aggregate_parser);
+            xap_parser.Add ("../../Xaps/XapStrings.xap");
+            return new List<ILocalizationUnit> (aggregate_parser.Parse ());
+        }
+
         [Test]
         public void TestParseAssembly ()
         {
@@ -59,8 +67,15 @@ namespace Vernacular.Test
             AssertUnits (new List<ILocalizationUnit> (po_parser.Parse ()));
         }
 
+        [Test]
+        public void TestParseXap ()
+        {
+            AssertUnits (ParseXap ());
+        }
+
         private void AssertUnits (List<ILocalizationUnit> units)
         {
+            Assert.IsTrue (units.Any ());
             if (units [0] is LocalizationMetadata) {
                 units.RemoveAt (0);
             }
