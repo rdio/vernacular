@@ -148,7 +148,7 @@ namespace Vernacular.Parsers
         private IEnumerable<LocalizedString> Parse (Stream stream, string xamlPath)
         {
             using (var reader = new XmlTextReader (stream)) {
-                return Parse (reader, xamlPath);
+                return Parse (reader, xamlPath).ToList ();
             }
         }
 
