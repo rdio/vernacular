@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.Options\Options.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vernacular.Analyzers\AnalyzerConfiguration.cs" />
     <Compile Include="Vernacular.Generators\PoGenerator.cs" />
     <Compile Include="Vernacular.Parsers\AggregateParser.cs" />
