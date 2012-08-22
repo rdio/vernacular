@@ -42,7 +42,8 @@ namespace Vernacular.Generators
             { "po", typeof (PoGenerator) },
             { "ios", typeof (IosGenerator) },
             { "android", typeof (AndroidGenerator) },
-            { "resx", typeof (ResxGenerator) }
+            { "resx", typeof (ResxGenerator) },
+            { "mo", typeof (MoGenerator) },
         };
 
         public static IEnumerable<string> GeneratorNames {
