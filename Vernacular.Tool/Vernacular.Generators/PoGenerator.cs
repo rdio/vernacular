@@ -35,7 +35,7 @@ using Vernacular.Potato;
 
 namespace Vernacular.Generators
 {
-    public sealed class PoGenerator : Generator
+    public sealed class PoGenerator : StreamGenerator
     {
         public bool PotMode { get; set; }
         public bool ExcludeHeaderMetadata { get; set; }

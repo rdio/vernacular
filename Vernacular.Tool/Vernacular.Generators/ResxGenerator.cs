@@ -30,7 +30,7 @@ using System.Resources;
 
 namespace Vernacular.Generators
 {
-    public sealed class ResxGenerator : Generator
+    public sealed class ResxGenerator : StreamGenerator
     {
         protected override ResourceIdType ResourceIdType {
             get { return ResourceIdType.Base64; }
