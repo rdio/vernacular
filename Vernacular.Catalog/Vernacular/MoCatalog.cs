@@ -92,10 +92,10 @@ namespace Vernacular
                         var translation_offset = reader.ReadUInt32 ();
                         reader.BaseStream.Seek (original_string_offset, SeekOrigin.Begin);
                         var original_string_bytes = reader.ReadBytes((int)original_string_length);
-                        var original_string = Encoding.UTF8.GetString (original_string_bytes).Split ('\0');
+                        var original_string = Encoding.UTF8.GetString (original_string_bytes, 0, original_string_bytes.Length).Split ('\0');
                         reader.BaseStream.Seek (translation_offset, SeekOrigin.Begin);
                         var translation_bytes = reader.ReadBytes((int) translation_length);
-                        var translation = Encoding.UTF8.GetString (translation_bytes).Split('\0');
+                        var translation = Encoding.UTF8.GetString (translation_bytes, 0, translation_bytes.Length).Split('\0');
 
                         localized_string.UntranslatedSingularValue = original_string[0];
                         if (original_string.Count () == 2) {
