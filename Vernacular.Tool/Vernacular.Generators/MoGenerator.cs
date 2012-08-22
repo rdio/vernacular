@@ -11,7 +11,7 @@ namespace Vernacular.Generators
         protected override void Generate()
         {
             StringList = Strings.OrderBy (ls=>ls.UntranslatedSingularValue).ToList ();
-            NumberOfStrings = StringList.Count ();
+            NumberOfStrings = (uint) StringList.Count ();
             OriginalStringsTableOffset = 28;
             TranslationsTableOffset = OriginalStringsTableOffset + NumberOfStrings * 8;
             HashTableSize = 0; //we don't implement (optional) hash table here
@@ -24,11 +24,11 @@ namespace Vernacular.Generators
         }
 
         List<LocalizedString> StringList { get; set; }
-        int NumberOfStrings { get; set; }
-        int OriginalStringsTableOffset { get; set; }
-        int TranslationsTableOffset { get; set; }
-        int HashTableSize { get; set; }
-        int HashTableOffset { get; set; }
+        uint NumberOfStrings { get; set; }
+        uint OriginalStringsTableOffset { get; set; }
+        uint TranslationsTableOffset { get; set; }
+        uint HashTableSize { get; set; }
+        uint HashTableOffset { get; set; }
 
         private void WriteHeaderTo (BinaryWriter writer)
         {
@@ -54,7 +54,7 @@ namespace Vernacular.Generators
             //             |                                          |                                          
 
             writer.Write (0x950412de);
-            writer.Write (0x0);
+            writer.Write ((uint)0x0);
             writer.Write (NumberOfStrings);
             writer.Write (OriginalStringsTableOffset);
             writer.Write (TranslationsTableOffset);
@@ -75,7 +75,7 @@ namespace Vernacular.Generators
             //T + ((N-1)*8)| length & offset (N-1)th translation      |  | | | |
             //             |                                          |  | | | |
 
-            var offset = OriginalStringsTableOffset;
+            var offset = HashTableOffset + HashTableSize*4;
             foreach (var localized_string in StringList)
             {
                 var length = Encoding.UTF8.GetByteCount (localized_string.UntranslatedSingularValue);
@@ -85,7 +85,7 @@ namespace Vernacular.Generators
 
                 Writer.Write (length);
                 writer.Write (offset);
-                offset += (length + 1);
+                offset = (uint)(offset + length + 1);
             }
 
             foreach (var localized_string in StringList)
@@ -95,7 +95,7 @@ namespace Vernacular.Generators
 
                 Writer.Write (length);
                 writer.Write (offset);
-                offset += (length + 1);
+                offset = (uint)(offset + length + 1);
             }
         }
 
