@@ -37,7 +37,7 @@ namespace Vernacular.Test
     [TestFixture]
     public class CatalogTests
     {
-        private Dictionary<string, ParserResourceCatalog> catalogs = new Dictionary<string, ParserResourceCatalog> ();
+        private List<Tuple<string, ResourceCatalog>> catalogs = new List<Tuple<string, ResourceCatalog>> ();
 
         [TestFixtureSetUp]
         public void SetUp ()
@@ -46,7 +46,14 @@ namespace Vernacular.Test
                 var parser = new PoParser ();
                 parser.Add (path);
                 var lang = Path.GetFileNameWithoutExtension (path);
-                catalogs.Add (lang, new ParserResourceCatalog (parser) { CurrentIsoLanguageCode = lang });
+                catalogs.Add (new Tuple<string, ResourceCatalog> (lang, new ParserResourceCatalog (parser) { CurrentIsoLanguageCode = lang }));
+            }
+
+            (new GeneratorTests ()).TestMoGenerator ();
+            foreach (var path in Directory.GetFiles ("../../Catalog", "*.mo")) {
+                var lang = Path.GetFileNameWithoutExtension (path);
+                var catalog = new MoCatalog (File.Open (path, FileMode.Open)) { CurrentIsoLanguageCode = lang };
+                catalogs.Add(new Tuple<string, ResourceCatalog> (lang, catalog));                
             }
         }
 
@@ -65,8 +72,8 @@ namespace Vernacular.Test
         private void ForEachCatalog (Action<string> action)
         {
             foreach (var catalog in catalogs) {
-                Catalog.Implementation = catalog.Value;
-                action (catalog.Key);
+                Catalog.Implementation = catalog.Item2;
+                action (catalog.Item1);
             }
         }
 
