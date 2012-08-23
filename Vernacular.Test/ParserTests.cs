@@ -45,6 +45,13 @@ namespace Vernacular.Test
             return new List<ILocalizationUnit> (asm_parser.Parse ());
         }
 
+        public static List<ILocalizationUnit> ParsePo (string po_file)
+        {
+            var po_parser = new PoParser ();
+            po_parser.Add (po_file);
+            return new List<ILocalizationUnit> (po_parser.Parse ());
+        }
+
         [Test]
         public void TestParseAssembly ()
         {
@@ -54,9 +61,7 @@ namespace Vernacular.Test
         [Test]
         public void TestParsePo ()
         {
-            var po_parser = new PoParser ();
-            po_parser.Add ("../../Catalog/en_US.pot");
-            AssertUnits (new List<ILocalizationUnit> (po_parser.Parse ()));
+            AssertUnits (ParsePo ("../../Catalog/en_US.pot"));
         }
 
         private void AssertUnits (List<ILocalizationUnit> units)
