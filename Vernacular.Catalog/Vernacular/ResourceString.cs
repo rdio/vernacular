@@ -28,9 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-using Vernacular.Tool;
-
-namespace Vernacular.Tool
+namespace Vernacular
 {
     public struct ResourceString
     {

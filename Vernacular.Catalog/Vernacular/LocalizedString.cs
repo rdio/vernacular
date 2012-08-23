@@ -28,7 +28,7 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 
-namespace Vernacular.Tool
+namespace Vernacular
 {
     public class LocalizedString : ILocalizationUnit
     {

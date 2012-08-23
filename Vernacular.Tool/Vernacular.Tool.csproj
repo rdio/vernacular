@@ -81,7 +81,6 @@
     <Compile Include="Vernacular.Parsers\CecilExtensions.cs" />
     <Compile Include="Vernacular.Parsers\XapParser.cs" />
     <Compile Include="Vernacular.Tool\Entry.cs" />
-    <Compile Include="Vernacular.Tool\LocalizedString.cs" />
     <Compile Include="Vernacular.Tool\StringExtensions.cs" />
     <Compile Include="Vernacular.Generators\Generator.cs" />
     <Compile Include="Vernacular.Generators\IosGenerator.cs" />
@@ -90,11 +89,9 @@
     <Compile Include="Vernacular.Generators\ResxGenerator.cs" />
     <Compile Include="Vernacular.Parsers\XamlParser.cs" />
     <Compile Include="Vernacular.Tool\LocalizationMetadata.cs" />
-    <Compile Include="Vernacular.Tool\ILocalizationUnit.cs" />
     <Compile Include="Vernacular.Tool\ConsoleCrayon.cs" />
     <Compile Include="Vernacular.Analyzers\Hunspell.cs" />
     <Compile Include="Vernacular.Parsers\PoParser.cs" />
-    <Compile Include="Vernacular.Generators\ResourceString.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
