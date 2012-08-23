@@ -41,25 +41,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Vernacular.Tool\Vernacular.Generators\ResourceString.cs">
-      <Link>Vernacular\ResourceString.cs</Link>
-    </Compile>
-    <Compile Include="..\Vernacular.Tool\Vernacular.Tool\ILocalizationUnit.cs">
-      <Link>Vernacular\ILocalizationUnit.cs</Link>
-    </Compile>
-    <Compile Include="..\Vernacular.Tool\Vernacular.Tool\LocalizedString.cs">
-      <Link>Vernacular\LocalizedString.cs</Link>
-    </Compile>
     <Compile Include="Vernacular\AndroidCatalog.cs" />
     <Compile Include="Vernacular\Catalog.cs" />
     <Compile Include="Vernacular\FieldReflectionResourceCatalog.cs" />
     <Compile Include="Vernacular\GoogleTranslateCatalog.cs" />
+    <Compile Include="Vernacular\ILocalizationUnit.cs" />
     <Compile Include="Vernacular\LanguageGender.cs" />
     <Compile Include="Vernacular.Xaml\Catalog.cs" />
+    <Compile Include="Vernacular\LocalizedString.cs" />
     <Compile Include="Vernacular\MoCatalog.cs" />
     <Compile Include="Vernacular\PluralRules.cs" />
     <Compile Include="Vernacular\ResourceCatalog.cs" />
     <Compile Include="Vernacular\ResourceIdType.cs" />
+    <Compile Include="Vernacular\ResourceString.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
