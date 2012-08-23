@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Vernacular.Parsers;
 using Vernacular.Tool;
 
 namespace Vernacular.Generators
 {
     public sealed class MoGenerator : BinaryGenerator
     {                
-        protected override void Generate()
+        protected override void Generate ()
         {
             StringList = Strings.OrderBy (ls=>ls.UntranslatedSingularValue).ToList ();
             NumberOfStrings = (uint) StringList.Count ();
@@ -76,11 +78,14 @@ namespace Vernacular.Generators
             //             |                                          |  | | | |
 
             var offset = HashTableOffset + HashTableSize*4;
-            foreach (var localized_string in StringList)
-            {
+            foreach (var localized_string in StringList) {
                 var length = Encoding.UTF8.GetByteCount (localized_string.UntranslatedSingularValue);
                 if (!string.IsNullOrEmpty (localized_string.UntranslatedPluralValue)) {
                     length += 1 + Encoding.UTF8.GetByteCount (localized_string.UntranslatedPluralValue);
+                }
+                var context = GetContextAndGender (localized_string);
+                if (!string.IsNullOrEmpty (context)) {
+                    length += 1 + Encoding.UTF8.GetByteCount (context);
                 }
 
                 Writer.Write (length);
@@ -88,10 +93,9 @@ namespace Vernacular.Generators
                 offset = (uint)(offset + length + 1);
             }
 
-            foreach (var localized_string in StringList)
-            {
-                var length = localized_string.TranslatedValues.Sum(tv => Encoding.UTF8.GetByteCount(tv)) +
-                             localized_string.TranslatedValues.Count() - 1;
+            foreach (var localized_string in StringList) {
+                var length = localized_string.TranslatedValues.Sum (tv => Encoding.UTF8.GetByteCount(tv)) +
+                             localized_string.TranslatedValues.Count () - 1;
 
                 Writer.Write (length);
                 writer.Write (offset);
@@ -123,6 +127,12 @@ namespace Vernacular.Generators
             //             |                                          |
             //             +------------------------------------------+
             foreach (var localized_string in StringList) {
+                var context = GetContextAndGender (localized_string);
+                if (!string.IsNullOrEmpty (context)) {
+                    Writer.Write (Encoding.UTF8.GetBytes (context));
+                    writer.Write ((byte)0x4);    
+                }
+
                 Writer.Write (Encoding.UTF8.GetBytes (localized_string.UntranslatedSingularValue));
                 writer.Write ((byte)0x0);
 
@@ -139,6 +149,33 @@ namespace Vernacular.Generators
                     writer.Write ((byte)0x0);
                 }
             }
+        }
+
+        string GetContextAndGender (LocalizedString localized_string)
+        {
+            var context = localized_string.Context;
+            if (localized_string.Gender != LanguageGender.Neutral) {
+                var add_gender_context = true;
+                if (context != null) {
+                    var context_lower = context.ToLower ();
+                    foreach (var gender_context in PoParser.GenderContexts) {
+                        if (context_lower.Contains (gender_context.Key)) {
+                            add_gender_context = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (add_gender_context) {
+                    var gender_context = localized_string.Gender.ToString () + " form";
+                    if (String.IsNullOrEmpty (context)) {
+                        context = gender_context;
+                    } else {
+                        context += ", " + gender_context;
+                    }
+                }
+            }
+            return context;
         }
     }
 }
