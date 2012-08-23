@@ -55,6 +55,13 @@ namespace Vernacular
 
         class MoParser : IDisposable
         {
+            private static readonly Dictionary<string, LanguageGender> GenderContexts = new Dictionary
+                <string, LanguageGender> { 
+            {"masculine form", LanguageGender.Masculine},
+            {"feminine form", LanguageGender.Feminine},
+            {"gender-masculine", LanguageGender.Masculine},
+            {"gender-feminine", LanguageGender.Feminine}};
+
             public Stream MoStream { get; set; }
 
             public MoParser(Stream moStream)
@@ -91,7 +98,15 @@ namespace Vernacular
                         var translation_offset = reader.ReadUInt32 ();
                         reader.BaseStream.Seek (original_string_offset, SeekOrigin.Begin);
                         var original_string_bytes = reader.ReadBytes((int)original_string_length);
-                        var original_string = Encoding.UTF8.GetString (original_string_bytes, 0, original_string_bytes.Length).Split ('\0');
+                        var original_string_and_context = Encoding.UTF8.GetString (original_string_bytes, 0, original_string_bytes.Length).Split ((char)4);
+                        string context = null;
+                        string[] original_string;
+                        if (original_string_and_context.Length > 1) {
+                            context = original_string_and_context[0];
+                            original_string = original_string_and_context[1].Split('\0');
+                        } else {
+                            original_string = original_string_and_context[0].Split ('\0');
+                        }
                         reader.BaseStream.Seek (translation_offset, SeekOrigin.Begin);
                         var translation_bytes = reader.ReadBytes((int) translation_length);
                         var translation = Encoding.UTF8.GetString (translation_bytes, 0, translation_bytes.Length).Split('\0');
@@ -101,6 +116,20 @@ namespace Vernacular
                             localized_string.UntranslatedPluralValue = original_string[1];
                         }
                         localized_string.TranslatedValues = translation;
+                        if (context != null) {
+                            var context_lower = context.ToLower ();
+                            foreach (var gender_context in GenderContexts) {
+                                if (context_lower == gender_context.Key) {
+                                    localized_string.Gender = gender_context.Value;
+                                    context = null;
+                                    break;
+                                } else if (context.Contains (gender_context.Key)) {
+                                    localized_string.Gender = gender_context.Value;
+                                    break;
+                                }
+                            }
+                        }
+                        localized_string.Context = context;
 
                         yield return localized_string;
                     }                
