@@ -40,12 +40,13 @@ namespace Vernacular.Parsers
         public AggregateParser ()
         {
             parsers = new List<Parser> {
-                              new AssemblyParser (this),
-                              new XamlParser (),
-                              new PoParser (),
-                              new AndroidResourceParser (),
-                              new XapParser (this),
-                          };
+                new AssemblyParser (this),
+                new XamlParser (),
+                new PoParser (),
+                new AndroidResourceParser (),
+                new XapParser (this),
+                new ResxParser ()
+            };
         }
         
         public override IEnumerable<string> SupportedFileExtensions {
