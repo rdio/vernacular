@@ -40,6 +40,8 @@ namespace Vernacular.Generators
         public bool PotMode { get; set; }
         public bool ExcludeHeaderMetadata { get; set; }
 
+        public string InitWithLocale { get; set; }        
+
         protected override void Generate ()
         {
             var document = new Document ();
@@ -53,6 +55,9 @@ namespace Vernacular.Generators
 
                 document.Headers.PopulateWithRequiredHeaders ();
                 document.Headers ["X-Generator"] = "Vernacular";
+                if (!String.IsNullOrEmpty(InitWithLocale)) { 
+                    document.Headers["Plural-Forms"] = PluralRules.GetPluralHeader(InitWithLocale);
+                }
             }
 
             var sorted_strings = from localized_string in Strings
@@ -131,6 +136,16 @@ namespace Vernacular.Generators
                 );
 
                 var translated = localized_string.TranslatedValues;
+
+                if (!string.IsNullOrEmpty(InitWithLocale) && plural != null)
+                {
+                    translated = new string[PluralRules.GetNumberOfPlurals (InitWithLocale)];
+                    translated[0] = singular;
+                    if (translated.Length > 1) {
+                        translated[1] = plural;
+                    }
+                }
+
                 if (translated == null) {
                     if (plural == null) {
                         translated = new [] { singular };
@@ -143,7 +158,7 @@ namespace Vernacular.Generators
                     unit.Add (new Message {
                         Type = translated.Length == 1 ? MessageType.SingularString : MessageType.PluralString,
                         PluralOrder = i,
-                        Value = PotMode ? String.Empty : translated [i]
+                        Value = (PotMode || translated[i] == null) ? String.Empty : translated [i] 
                     });
                 }
 

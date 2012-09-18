@@ -49,6 +49,7 @@ namespace Vernacular.Tool
             string android_input_strings_xml = null;
             string android_output_strings_xml = null;
             string analyer_config_path = null;
+            string initWithLocale = null;
             LocalizationMetadata metadata = null;
             bool generate_pot = false;
             bool exclude_po_header = false;
@@ -80,6 +81,7 @@ namespace Vernacular.Tool
                     "for preserving hand-maintained string resources", v => android_input_strings_xml = v },
                 { "android-output-strings-xml=", "Output file of localized Android Strings.xml " +
                     "for preserving hand-maintained string resources", v => android_output_strings_xml = v },
+                { "init-with-locale=", "Init a .po file for the locale", v => initWithLocale = v},
                 { "pot", v => generate_pot = v != null },
                 { "exclude-po-header", v => exclude_po_header = v != null },
                 { "l|log", "Display logging", v => log = v != null },
@@ -126,6 +128,18 @@ namespace Vernacular.Tool
                 if (generator is PoGenerator) {
                     ((PoGenerator)generator).PotMode = generate_pot;
                     ((PoGenerator)generator).ExcludeHeaderMetadata = exclude_po_header;
+                }
+
+                if (initWithLocale != null && !(generator is PoGenerator)) {
+                    throw new OptionException ("locale option only valid with po generator", "locale");
+                }
+
+                if (initWithLocale != null && generate_pot) {
+                    throw new OptionException ("you can not use -locale with -pot", "locale");
+                }
+
+                if (initWithLocale != null) {
+                    (generator as PoGenerator).InitWithLocale = initWithLocale;
                 }
 
                 if (reduce_master_path != null && reduce_retain_path == null) {
