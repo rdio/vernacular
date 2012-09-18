@@ -3,8 +3,10 @@
 //
 // Author:
 //   Aaron Bockover <abock@rd.io>
+//   Stephane Delcroix <stephane@delcroix.org>
 //
 // Copyright 2012 Rdio, Inc.
+// Copyright 2012 S. Delcroix
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +32,29 @@ namespace Vernacular
 {
     public static class PluralRules
     {
+        struct PluralInfo
+        {
+            public int nforms;
+            public string header;
+            public Func<int, int> getOrder;
+        }
+        
         public static int GetOrder (string isoLanguageCode, int n)
+        {
+            return GetPluralInfo(isoLanguageCode).getOrder(n);
+        }
+
+        public static int GetNumberOfPlurals (string isoLanguageCode)
+        {
+            return GetPluralInfo(isoLanguageCode).nforms;
+        }
+
+        public static string GetPluralHeader (string isoLanguageCode)
+        {
+            return GetPluralInfo(isoLanguageCode).header;
+        }
+
+        static PluralInfo GetPluralInfo (string isoLanguageCode)
         {
             switch (isoLanguageCode) {
                 case "ay":  // Aymará
@@ -56,10 +80,19 @@ namespace Vernacular
                 case "vi":  // Vietnamese
                 case "wo":  // Wolof
                     // 1 form
-                    return 0;
+                    return new PluralInfo
+                               {
+                                   nforms = 1,
+                                   header = "Plural-Forms: nplurals=1; plural=0;", 
+                                   getOrder = n => 0
+                               };
                 case "is":  // Icelandic
                     // 2 forms
-                    return (n % 10 != 1 || n % 100 == 11) ? 1 : 0;
+                    return new PluralInfo {
+                        nforms = 2,
+                        header = "Plural-Forms: nplurals=2; plural=(n % 10 != 1 || n % 100 == 11) ? 1 : 0;",
+                        getOrder = n => (n % 10 != 1 || n % 100 == 11) ? 1 : 0
+                    };                    
                 case "af":  // Afrikaans
                 case "an":  // Aragonese
                 case "ast": // Asturian
@@ -124,13 +157,25 @@ namespace Vernacular
                 case "ur":  // Urdu
                 case "yo":  // Yoruba
                     // 2 forms
-                    return n != 1 ? 1 : 0;
+                    return new PluralInfo {
+                        nforms = 2,
+                        header = "Plural-Forms: nplurals=2; plural=n != 1 ? 1 : 0;",
+                        getOrder = n => n != 1 ? 1 : 0
+                    };
                 case "mk":  // Macedonian
                     // 2 forms
-                    return n == 1 || n % 10 == 1 ? 0 : 1;
+                    return new PluralInfo {
+                        nforms = 2,
+                        header = "Plural-Forms: nplurals=2; plural=n == 1 || n % 10 == 1 ? 0 : 1;",
+                        getOrder = n => n == 1 || n % 10 == 1 ? 0 : 1
+                    };
                 case "jv":  // Javanese
                     // 2 forms
-                    return n != 0 ? 1 : 0;
+                    return new PluralInfo {
+                        nforms = 2,
+                        header = "Plural-Forms: nplurals=2; plural=n != 0 ? 1 : 0;",
+                        getOrder = n => n != 0 ? 1 : 0
+                    };
                 case "ach": // Acholi (maybe)
                 case "ak":  // Akan
                 case "am":  // Amharic
@@ -150,23 +195,47 @@ namespace Vernacular
                 case "wa":  // Walloon
                 case "zh":  // Chinese
                     // 2 forms
-                    return n > 1 ? 1 : 0;
+                    return new PluralInfo {
+                        nforms = 2,
+                        header = "Plural-Forms: nplurals=2; plural=n > 1 ? 1 : 0;",
+                        getOrder = n => n > 1 ? 1 : 0
+                    };
                 case "lt":  // Lithuanian
                     // 3 forms
-                    return n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2;
+                    return new PluralInfo {
+                        nforms = 3,
+                        header = "Plural-Forms: nplurals=3; plural=n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2;",
+                        getOrder = n => n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2
+                    };
                 case "cs":  // Czech
                 case "sk":  // Slovak
                     // 3 forms
-                    return n == 1 ? 0 : (n >= 2 && n <= 4) ? 1 : 2;
+                    return new PluralInfo {
+                        nforms = 3,
+                        header = "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : (n >= 2 && n <= 4) ? 1 : 2;",
+                        getOrder = n => n == 1 ? 0 : (n >= 2 && n <= 4) ? 1 : 2
+                    };
                 case "mnk": // Mandinka
                     // 3 forms
-                    return n == 0 ? 0 : n == 1 ? 1 : 2;
+                    return new PluralInfo {
+                        nforms = 3,
+                        header = "Plural-Forms: nplurals=3; plural=n == 0 ? 0 : n == 1 ? 1 : 2;",
+                        getOrder = n => n == 0 ? 0 : n == 1 ? 1 : 2
+                    };
                 case "lv":  // Latvian
                     // 3 forms
-                    return n % 10 == 1 && n % 100 != 11 ? 0 : n != 0 ? 1 : 2;
+                    return new PluralInfo {
+                        nforms = 3,
+                        header = "Plural-Forms: nplurals=3; plural=n % 10 == 1 && n % 100 != 11 ? 0 : n != 0 ? 1 : 2;",
+                        getOrder = n => n % 10 == 1 && n % 100 != 11 ? 0 : n != 0 ? 1 : 2
+                    };                    
                 case "ro":  // Romanian
                     // 3 forms
-                    return n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20)) ? 1 : 2;
+                    return new PluralInfo {
+                        nforms = 3,
+                        header = "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20)) ? 1 : 2;",
+                        getOrder = n => n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20)) ? 1 : 2
+                    };  
                 case "be":  // Belarusian
                 case "bs":  // Bosnian
                 case "hr":  // Croatian
@@ -174,30 +243,66 @@ namespace Vernacular
                 case "sr":  // Serbian
                 case "uk":  // Ukrainian
                     // 3 forms
-                    return n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2;
+                    return new PluralInfo {
+                        nforms = 3,
+                        header = "Plural-Forms: nplurals=3; plural=n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2;",
+                        getOrder = n => n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2
+                    };
                 case "pl":  // Polish
                     // 3 forms
-                    return n == 1 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2;
+                    return new PluralInfo {
+                        nforms = 3,
+                        header = "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2;",
+                        getOrder = n => n == 1 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2
+                    };
                 case "kw":  // Cornish
                     // 4 forms
-                    return n == 1 ? 0 : (n == 2) ? 1 : (n == 3) ? 2 : 3;
+                    return new PluralInfo {
+                        nforms = 4,
+                        header = "Plural-Forms: nplurals=4; plural=n == 1 ? 0 : (n == 2) ? 1 : (n == 3) ? 2 : 3;",
+                        getOrder = n => n == 1 ? 0 : (n == 2) ? 1 : (n == 3) ? 2 : 3
+                    };
                 case "gd":  // Scottish Gaelic
                     // 4 forms
-                    return (n == 1 || n == 11) ? 0 : (n == 2 || n == 12) ? 1 : (n > 2 && n < 20) ? 2 : 3;
+                    return new PluralInfo {
+                        nforms = 4,
+                        header = "Plural-Forms: nplurals=4; plural=(n == 1 || n == 11) ? 0 : (n == 2 || n == 12) ? 1 : (n > 2 && n < 20) ? 2 : 3;",
+                        getOrder = n => (n == 1 || n == 11) ? 0 : (n == 2 || n == 12) ? 1 : (n > 2 && n < 20) ? 2 : 3
+                    };
                 case "mt":  // Maltese
                     // 4 forms
-                    return n == 1 ? 0 : n == 0 || (n % 100 > 1 && n % 100 < 11) ? 1 : (n % 100 > 10 && n % 100 < 20) ? 2 : 3;
+                    return new PluralInfo {
+                        nforms = 4,
+                        header = "Plural-Forms: nplurals=4; plural=n == 1 ? 0 : n == 0 || (n % 100 > 1 && n % 100 < 11) ? 1 : (n % 100 > 10 && n % 100 < 20) ? 2 : 3;",
+                        getOrder = n => n == 1 ? 0 : n == 0 || (n % 100 > 1 && n % 100 < 11) ? 1 : (n % 100 > 10 && n % 100 < 20) ? 2 : 3
+                    };
                 case "cy":  // Welsh
                     // 4 forms
-                    return n == 1 ? 0 : (n == 2) ? 1 : (n != 8 && n != 11) ? 2 : 3;
+                    return new PluralInfo {
+                        nforms = 4,
+                        header = "Plural-Forms: nplurals=4; plural=n == 1 ? 0 : (n == 2) ? 1 : (n != 8 && n != 11) ? 2 : 3;",
+                        getOrder = n => n == 1 ? 0 : (n == 2) ? 1 : (n != 8 && n != 11) ? 2 : 3
+                    };
                 case "sl":  // Slovenian
                     // 4 forms
-                    return n % 100 == 1 ? 1 : n % 100 == 2 ? 2 : n % 100 == 3 || n % 100 == 4 ? 3 : 0;
+                    return new PluralInfo {
+                        nforms = 4,
+                        header = "Plural-Forms: nplurals=4; plural=n % 100 == 1 ? 1 : n % 100 == 2 ? 2 : n % 100 == 3 || n % 100 == 4 ? 3 : 0;",
+                        getOrder = n => n % 100 == 1 ? 1 : n % 100 == 2 ? 2 : n % 100 == 3 || n % 100 == 4 ? 3 : 0
+                    };
                 case "ga":  // Irish
                     // 5 forms
-                    return n == 1 ? 0 : n == 2 ? 1 : n < 7 ? 2 : n < 11 ? 3 : 4;
+                    return new PluralInfo {
+                        nforms = 5,
+                        header = "Plural-Forms: nplurals=5; plural=n == 1 ? 0 : n == 2 ? 1 : n < 7 ? 2 : n < 11 ? 3 : 4;",
+                        getOrder = n => n == 1 ? 0 : n == 2 ? 1 : n < 7 ? 2 : n < 11 ? 3 : 4
+                    };
                 default:
-                    return n != 1 ? 1 : 0;
+                    return new PluralInfo {
+                        nforms = 2,
+                        header = "Plural-Forms: nplurals=2; plural=n != 1 ? 1 : 0;",
+                        getOrder = n => n != 1 ? 1 : 0
+                    };
             }
         }
     }
