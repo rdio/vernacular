@@ -185,6 +185,8 @@ namespace Vernacular.Xaml
                 return ContentControl.ContentProperty;
             } else if (e is TextBox) {
                 return TextBox.TextProperty;
+            } else if (e is DataGridColumn) {
+                return DataGridColumn.HeaderProperty;
             }
 
             return null;
