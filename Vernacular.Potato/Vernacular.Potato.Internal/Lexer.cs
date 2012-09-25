@@ -170,6 +170,7 @@ namespace Vernacular.Potato.Internal
                             case 'f': PushString ('\f'); break;
                             case 'n': PushString ('\n'); break;
                             case 'r': PushString ('\r'); break;
+                            case 't': PushString ('\t'); break;
                             case 'v': PushString ('\v'); break;
                             case '0': PushString ('\0'); break;
                             default: throw new SyntaxException (this, "Invalid string escape sequence");
