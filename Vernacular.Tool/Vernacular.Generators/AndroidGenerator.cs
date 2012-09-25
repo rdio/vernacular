@@ -60,9 +60,10 @@ namespace Vernacular.Generators
 
         private void WriteString (XElement parent, string name, string value, bool formatted = false)
         {
+            value = EncodeValue(value);
             var string_element = XElement.Parse (String.Format ("<string{0}>{1}</string>",
                 formatted ? String.Empty : " formatted=\"false\"",
-                value.Replace ("'", "\\'")));
+                value));
             string_element.SetAttributeValue ("name", name);
             parent.Add (string_element);
         }
@@ -96,6 +97,22 @@ namespace Vernacular.Generators
                     }
                 });
             }
+        }
+
+        string EncodeValue (string value)
+        {
+            if (value.Contains("&"))
+                value = value.Replace("&", "&amp;");
+            if (value.Contains("<"))
+                value = value.Replace("<", "&lt;");
+            if (value.Contains(">"))
+                value = value.Replace(">", "&gt;");
+            if (value.Contains("..."))
+                value = value.Replace("...", "&#8230;");
+            if (value.Contains("'"))
+                value = value.Replace("'", "\\'");
+
+            return value;
         }
     }
 }
