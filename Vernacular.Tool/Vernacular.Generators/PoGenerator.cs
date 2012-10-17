@@ -137,13 +137,8 @@ namespace Vernacular.Generators
 
                 var translated = localized_string.TranslatedValues;
 
-                if (!string.IsNullOrEmpty(InitWithLocale) && plural != null)
-                {
+                if (!string.IsNullOrEmpty(InitWithLocale) && plural != null) {
                     translated = new string[PluralRules.GetNumberOfPlurals (InitWithLocale)];
-                    translated[0] = singular;
-                    if (translated.Length > 1) {
-                        translated[1] = plural;
-                    }
                 }
 
                 if (translated == null) {
