@@ -25,8 +25,10 @@
 // THE SOFTWARE.
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 using Mono.Options;
 
@@ -58,6 +60,8 @@ namespace Vernacular.Tool
             bool verbose = false;
             bool retain_order = false;
             bool show_help = false;
+            bool count_words = false;
+            int word_count = 0;
 
             Generator generator = null;
 
@@ -93,6 +97,7 @@ namespace Vernacular.Tool
                         metadata.Add (parts[0].Trim (), parts[1].Trim ());
                     }
                 } },
+                { "wc", "Count words to translate, output goes in the po header and in the console (with -v)", v => count_words = v != null},
                 { "v|verbose", "Verbose logging", v => verbose = v != null },
                 { "h|help", "Show this help message and exit", v => show_help = v != null }
             };
@@ -198,9 +203,21 @@ namespace Vernacular.Tool
             }
 
             foreach (var localization_unit in parser.Parse ()) {
+                var localized_string = localization_unit as LocalizedString;
+                if (count_words && localized_string!=null) {
+                    var separators = new char[] {'.', '?', '!', ' ', ';', ':', ','};
+                    if(localized_string.UntranslatedSingularValue != null) {
+                        word_count +=
+                            localized_string.UntranslatedSingularValue.Split(separators, StringSplitOptions.RemoveEmptyEntries).
+                                Count();
+                    }
+                    if (localized_string.UntranslatedPluralValue != null) {
+                        word_count +=
+                            localized_string.UntranslatedPluralValue.Split(separators, StringSplitOptions.RemoveEmptyEntries).Count();
+                    }
+                }
                 generator.Add (localization_unit);
 
-                var localized_string = localization_unit as LocalizedString;
                 if (analyzer != null) {
                     analyzer.Add (localized_string);
                 }
@@ -214,10 +231,20 @@ namespace Vernacular.Tool
                 }
             }
 
+            if (count_words) {
+                    var word_count_metadata = new LocalizationMetadata ();
+                    word_count_metadata.Add ("Word-Count", word_count.ToString (CultureInfo.InvariantCulture));
+                    generator.Add (word_count_metadata);
+            }
+
             generator.Generate (output_path);
 
             if (generator is AndroidGenerator && android_input_strings_xml != null && android_output_strings_xml != null) {
                 ((AndroidGenerator)generator).LocalizeManualStringsXml (android_input_strings_xml, android_output_strings_xml);
+            }
+
+            if (verbose && count_words) {
+                Console.WriteLine("Total of words in untranslated messages: {0} words.", word_count);
             }
 
             return 0;
