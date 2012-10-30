@@ -67,7 +67,7 @@ namespace Vernacular.Generators
         protected TextWriter Writer { get; private set; }
 
         protected virtual Encoding Encoding {
-            get { return Encoding.UTF8; }
+            get { return new UTF8Encoding(false); }
         }
 
         protected virtual ResourceIdType ResourceIdType {
