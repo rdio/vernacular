@@ -127,7 +127,7 @@ namespace Vernacular.Parsers
         private IEnumerable<LocalizedString> Parse (ModuleDefinition module)
         {
             return
-                from type in module.Types
+                from type in module.GetTypes()
                 where !LOCALIZATION_TYPES.Contains (type.FullName)
                 from method in type.Methods
                 where method.HasBody && method.Body.Instructions.Count > 0
