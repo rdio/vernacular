@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 
@@ -131,13 +132,16 @@ namespace Vernacular.Potato
             builder.Append (' ');
 
             var lines = Value.Split ('\n');
-            if (lines.Length > 1) {
+            if (lines.Length > 1)
+            {
+                var skip_last_linetermination = !String.IsNullOrEmpty(lines.Last());
                 builder.Append ("\"\"\n");
-                foreach (var line in lines) {
-                    if (!String.IsNullOrEmpty (line)) {
+                for (var i = 0; i < lines.Length;i++ ) {
+                    if (!String.IsNullOrEmpty (lines[i])) {
                         builder.Append ('"');
-                        builder.Append (Escape (line));
-                        builder.Append ("\\n\"");
+                        builder.Append (Escape (lines[i]));
+                        if (i != lines.Length -1 || !skip_last_linetermination)
+                            builder.Append ("\\n\"");
                         builder.Append ('\n');
                     }
                 }
