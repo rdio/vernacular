@@ -140,8 +140,10 @@ namespace Vernacular.Potato
                     if (!String.IsNullOrEmpty (lines[i])) {
                         builder.Append ('"');
                         builder.Append (Escape (lines[i]));
-                        if (i != lines.Length -1 || !skip_last_linetermination)
-                            builder.Append ("\\n\"");
+                        if (i != lines.Length - 1 || !skip_last_linetermination) {
+                            builder.Append("\\n");
+                        }
+                        builder.Append("\"");
                         builder.Append ('\n');
                     }
                 }
