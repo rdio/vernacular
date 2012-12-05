@@ -3,8 +3,10 @@
 //
 // Author:
 //   Aaron Bockover <abock@rd.io>
+//   Stephane Delcroix <stephane@delcroix.org>
 //
 // Copyright 2012 Rdio, Inc.
+// Copyright 2012 S. Delcroix
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -115,20 +117,29 @@ namespace Vernacular
         }
 
         #region Public GetString Methods
+
         /// <summary>
         /// Return the localized translation of message, based on the current <see cref="Implementation">Catalog Implementation</see>
         /// and <see cref="CurrentIsoLanguageCode">ISO language code</see>>.
         /// </summary>
         /// <param name="message">The message to be localized</param>
         /// <param name="comment">Developer's comment, only visible by translators</param>
+        /// <param name="implementation">Optionally provide a catalog implementation valid for this code only </param>
         /// <returns></returns>
-        public static string GetString (string message, string comment = null)
-        {
-            if (Implementation == null) {
-                return message;
-            }
-            
+        public static string GetString (string message, string comment = null) {
             return Implementation.CoreGetString (message);
+        }
+
+        public static string GetString (string message, Catalog implementation) {
+            if (implementation == null)
+                throw new ArgumentNullException("implementation");
+            return implementation.CoreGetString (message);
+        }
+
+        public static string GetString (string message, string comment, Catalog implementation) {
+            if (implementation == null)
+                throw new ArgumentNullException("implementation");
+            return implementation.CoreGetString (message);
         }
 
         /// <summary>
@@ -142,25 +153,33 @@ namespace Vernacular
         /// <param name="pluralMessage">The plural message</param>
         /// <param name="n">The plural count</param>
         /// <param name="comment">Developer's comment, only visible by translators</param>
+        /// <param name="implementation">Optionally provide a catalog implementation valid for this code only </param>
         /// <returns>The localized message, pluralized if required</returns>
         public static string GetPluralString (string singularMessage, string pluralMessage,
-            int n, string comment = null)
-        {
-            if (Implementation == null) {
-                return n == 1 ? singularMessage : pluralMessage;
-            }
-
+            int n, string comment = null) {
             return Implementation.CoreGetPluralString (singularMessage, pluralMessage, n);
         }
 
+        public static string GetPluralString (string singularMessage, string pluralMessage,
+            int n, Catalog implementation) {
+            if (implementation == null)
+                throw new ArgumentNullException("implementation");
+            return implementation.CoreGetPluralString (singularMessage, pluralMessage, n);
+        }
+
+        public static string GetPluralString (string singularMessage, string pluralMessage,
+            int n, string comment, Catalog implementation) {
+            if (implementation==null)
+                throw new ArgumentNullException("implementation");
+            return implementation.CoreGetPluralString (singularMessage, pluralMessage, n);
+        }
+
         public static string GetGenderString (LanguageGender gender, string masculineMessage,
-            string feminineMessage, string comment)
-        {
+            string feminineMessage, string comment = null) {
             return Implementation.CoreGetGenderString (gender, masculineMessage, feminineMessage);
         }
 
-        public static string GetGenderString (LanguageGender gender, string message, string comment)
-        {
+        public static string GetGenderString (LanguageGender gender, string message, string comment = null) {
             return Implementation.CoreGetGenderString (gender, message, message);
         }
 
@@ -176,17 +195,17 @@ namespace Vernacular
         }
 
         public static string GetPluralGenderString (LanguageGender gender, string singularMessage,
-            string pluralMessage, int n, string comment)
+            string pluralMessage, int n, string comment = null)
         {
             return Implementation.CoreGetPluralGenderString (gender, singularMessage, pluralMessage, singularMessage, pluralMessage, n);
         }
 
-        public static string GetGenderString (ILanguageGenderProvider provider, string masculineMessage, string feminineMessage, string comment)
+        public static string GetGenderString (ILanguageGenderProvider provider, string masculineMessage, string feminineMessage, string comment = null)
         {
             return Implementation.CoreGetGenderString (provider.LanguageGender, masculineMessage, feminineMessage);
         }
 
-        public static string GetGenderString (ILanguageGenderProvider provider, string message, string comment)
+        public static string GetGenderString (ILanguageGenderProvider provider, string message, string comment = null)
         {
             return Implementation.CoreGetGenderString (provider.LanguageGender, message, message);
         }
@@ -194,7 +213,7 @@ namespace Vernacular
         public static string GetPluralGenderString (ILanguageGenderProvider provider,
             string singularMasculineMessage, string pluralMasculineMessage,
             string singularFeminineMessage, string pluralFeminineMessage,
-            int n, string comment)
+            int n, string comment = null)
         {
             return Implementation.CoreGetPluralGenderString (provider.LanguageGender,
                 singularMasculineMessage, pluralMasculineMessage,
@@ -203,7 +222,7 @@ namespace Vernacular
         }
 
         public static string GetPluralGenderString (ILanguageGenderProvider provider, string singularMessage,
-            string pluralMessage, int n, string comment)
+            string pluralMessage, int n, string comment = null)
         {
             return Implementation.CoreGetPluralGenderString (provider.LanguageGender,
                 singularMessage, pluralMessage,
