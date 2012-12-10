@@ -131,11 +131,11 @@ namespace Vernacular.Tool
                 }
 
                 if (initWithLocale != null && !(generator is PoGenerator)) {
-                    throw new OptionException ("locale option only valid with po generator", "locale");
+                    throw new OptionException ("init-with-locale option only valid with po generator", "init-with-locale");
                 }
 
                 if (initWithLocale != null && generate_pot) {
-                    throw new OptionException ("you can not use -locale with -pot", "locale");
+                    throw new OptionException ("you can not use init-with-locale with -pot", "init-with-locale");
                 }
 
                 if (initWithLocale != null) {
