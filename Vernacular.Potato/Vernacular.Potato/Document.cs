@@ -31,6 +31,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 
 using Vernacular.Potato.Internal;
 
@@ -109,7 +110,6 @@ namespace Vernacular.Potato
         public override string Generate ()
         {
             var builder = new StringBuilder ();
-
             foreach (var part in GetAllUnits ()) {
                 builder.Append (part.Generate ());
                 builder.Append ("\n\n");
