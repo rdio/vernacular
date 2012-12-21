@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Vernacular.Potato.Internal
@@ -86,9 +87,11 @@ namespace Vernacular.Potato.Internal
             return c;
         }
 
-        private void EatWhitespace ()
+        private void EatWhitespace (char[] except = null)
         {
-            while (!Reader.EndOfStream && Char.IsWhiteSpace (Peek ())) {
+            except = except ?? new char[0];
+
+            while (!Reader.EndOfStream && Char.IsWhiteSpace (Peek ()) && !except.Contains (Peek ())) {
                 Read ();
             }
         }
@@ -141,7 +144,7 @@ namespace Vernacular.Potato.Internal
             }
 
             // Eat whitespace and then start accumulating the comment value
-            EatWhitespace ();
+            EatWhitespace (except:new[] {'\n'});
 
             while ((c = Read ()) != '\n') {
                 PushString (c);
