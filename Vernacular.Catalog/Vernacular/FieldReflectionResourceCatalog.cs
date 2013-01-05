@@ -71,7 +71,7 @@ namespace Vernacular
             reflection_type = reflectionType;
         }
 
-        protected bool GetResource (out T resource, string context, string message,
+        protected bool GetResource (out T resource, string context, string message = null,
             LanguageGender gender = LanguageGender.Neutral, int pluralCount = 1)
         {
             var cached_string = new CachedString {
