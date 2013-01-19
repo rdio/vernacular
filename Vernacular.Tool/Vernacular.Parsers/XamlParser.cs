@@ -134,6 +134,8 @@ namespace Vernacular.Parsers
 
                 reader.MoveToElement ();
             }
+
+            reader.Close();
         }
 
         private LocalizedString AddReference (LocalizedString localizedString, XmlTextReader reader, string xamlPath)
@@ -147,16 +149,12 @@ namespace Vernacular.Parsers
 
         private IEnumerable<LocalizedString> Parse (Stream stream, string xamlPath)
         {
-            using (var reader = new XmlTextReader (stream)) {
-                return Parse (reader, xamlPath);
-            }
+            return Parse(new XmlTextReader(stream), xamlPath);
         }
 
         private IEnumerable<LocalizedString> Parse (string xamlPath)
         {
-            using (var reader = new XmlTextReader (xamlPath)) {
-                return Parse (reader, xamlPath);
-            }
+            return Parse(new XmlTextReader(xamlPath), xamlPath);
         }
 
         /// <summary>
