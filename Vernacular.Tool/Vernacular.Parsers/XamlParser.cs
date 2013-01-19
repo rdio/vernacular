@@ -78,64 +78,66 @@ namespace Vernacular.Parsers
 
         private IEnumerable<LocalizedString> Parse (XmlTextReader reader, string xamlPath)
         {
-            while (reader.Read ()) {
-                if (reader.NodeType != XmlNodeType.Element || !reader.HasAttributes) {
-                    continue;
-                }
-
-                var in_app_bar = false;
-
-                if (reader.NamespaceURI.Contains ("clr-namespace:Microsoft.Phone.Shell")) {
-                    var name = reader.Name.Substring (reader.Prefix.Length + 1);
-                    in_app_bar = name == "ApplicationBarIconButton" || name == "ApplicationBarMenuItem";
-                }
-
-                var localized_string = new LocalizedString ();
-                var is_binding = false;
-
-                while (reader.MoveToNextAttribute ()) {
-                    if (!in_app_bar && !reader.NamespaceURI.Contains ("clr-namespace:Vernacular.Xaml")) {
+            try {
+                while (reader.Read ()) {
+                    if (reader.NodeType != XmlNodeType.Element || !reader.HasAttributes) {
                         continue;
                     }
 
-                    var name = String.IsNullOrEmpty (reader.Prefix)
-                        ? reader.Name
-                        : reader.Name.Substring (reader.Prefix.Length + 1);
+                    var in_app_bar = false;
 
-                    switch (name) {
-                        case "Text": // only valid when in_app_bar is true
-                        case "Catalog.Message":
-                            var value = reader.Value;
-                            is_binding = IsBinding (value);
-                            localized_string.UntranslatedSingularValue = Unescape (value);
-                            AddReference (localized_string, reader, xamlPath);
-                            break;
-                        case "Catalog.PluralMessage":
-                            localized_string.UntranslatedPluralValue = Unescape (reader.Value);
-                            break;
-                        case "Catalog.Comment":
-                            localized_string.DeveloperComments = reader.Value;
-                            break;
-                        case "Catalog.ToolTip":
-                            // Here we want to yield a new string directly since
-                            // this could be mixed with other Catalog attributes
-                            // on the element (e.g. two separate localized strings
-                            // could be returned for the element)
-                            yield return AddReference (new LocalizedString {
-                                UntranslatedSingularValue = Unescape (reader.Value)
-                            }, reader, xamlPath);
-                            break;
+                    if (reader.NamespaceURI.Contains ("clr-namespace:Microsoft.Phone.Shell")) {
+                        var name = reader.Name.Substring (reader.Prefix.Length + 1);
+                        in_app_bar = name == "ApplicationBarIconButton" || name == "ApplicationBarMenuItem";
                     }
-                }
 
-                if (localized_string.IsDefined && !is_binding) {
-                    yield return localized_string;
-                }
+                    var localized_string = new LocalizedString ();
+                    var is_binding = false;
 
-                reader.MoveToElement ();
+                    while (reader.MoveToNextAttribute ()) {
+                        if (!in_app_bar && !reader.NamespaceURI.Contains ("clr-namespace:Vernacular.Xaml")) {
+                            continue;
+                        }
+
+                        var name = String.IsNullOrEmpty (reader.Prefix)
+                            ? reader.Name
+                            : reader.Name.Substring (reader.Prefix.Length + 1);
+
+                        switch (name) {
+                            case "Text": // only valid when in_app_bar is true
+                            case "Catalog.Message":
+                                var value = reader.Value;
+                                is_binding = IsBinding (value);
+                                localized_string.UntranslatedSingularValue = Unescape (value);
+                                AddReference (localized_string, reader, xamlPath);
+                                break;
+                            case "Catalog.PluralMessage":
+                                localized_string.UntranslatedPluralValue = Unescape (reader.Value);
+                                break;
+                            case "Catalog.Comment":
+                                localized_string.DeveloperComments = reader.Value;
+                                break;
+                            case "Catalog.ToolTip":
+                                // Here we want to yield a new string directly since
+                                // this could be mixed with other Catalog attributes
+                                // on the element (e.g. two separate localized strings
+                                // could be returned for the element)
+                                yield return AddReference (new LocalizedString {
+                                    UntranslatedSingularValue = Unescape (reader.Value)
+                                }, reader, xamlPath);
+                                break;
+                        }
+                    }
+
+                    if (localized_string.IsDefined && !is_binding) {
+                        yield return localized_string;
+                    }
+
+                    reader.MoveToElement ();
+                }
+            } finally {
+                reader.Close();
             }
-
-            reader.Close();
         }
 
         private LocalizedString AddReference (LocalizedString localizedString, XmlTextReader reader, string xamlPath)
