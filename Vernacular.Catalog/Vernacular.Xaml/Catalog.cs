@@ -181,6 +181,10 @@ namespace Vernacular.Xaml
             } else if (e is ListPicker) {
                 return ListPicker.HeaderProperty;
 #endif
+#if SILVERLIGHT
+	    } else if (e is TabItem) {
+		return TabItem.HeaderProperty;
+#endif
             } else if (e is ContentControl) {
                 return ContentControl.ContentProperty;
             } else if (e is TextBox) {
