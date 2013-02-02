@@ -29,6 +29,7 @@
 #if WINDOWS_PHONE || SILVERLIGHT
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 using System.Windows;
@@ -51,7 +52,24 @@ namespace Vernacular.Xaml
 
     public static class Catalog
     {
+        static Catalog ()
+        {
+            MessageDependencyPropertyMap = new Dictionary<Type, DependencyProperty> ();
+        }
+
         public static Func<DependencyObject, DependencyProperty> FindMessageDependencyProperty { get; set; }
+
+        /// <summary>
+        /// Contains user-defined mappings between types and DependencyProperties. It's common to add an entry to it
+        /// from the static constructor of a custom control.
+        /// 
+        /// If <see cref="FindMessageDependencyProperty"/> is defined and returns a value, the lookup in this Dictionary is skipped.
+        /// 
+        /// Note: you don't need to add entries for:
+        ///  - existing controls
+        ///  - inheritors from ContentControl, if the target property for the message is ContentControl.ContentProperty
+        /// </summary>
+        public static IDictionary<Type, DependencyProperty> MessageDependencyPropertyMap { get; private set; }
 
         public static readonly DependencyProperty CommentProperty = DependencyProperty.RegisterAttached (
             "Comment",
@@ -162,11 +180,16 @@ namespace Vernacular.Xaml
 
         private static DependencyProperty FindMessageProperty (DependencyObject e)
         {
+            DependencyProperty property;
             if (FindMessageDependencyProperty != null) {
-                var property = FindMessageDependencyProperty (e);
+                property = FindMessageDependencyProperty (e);
                 if (property != null) {
                     return property;
                 }
+            }
+
+            if (MessageDependencyPropertyMap.TryGetValue (e.GetType (), out property)) {
+                return property;
             }
 
             if (e is TextBlock) {
