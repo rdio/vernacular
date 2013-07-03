@@ -26,7 +26,7 @@
 
 using System;
 
-namespace Vernacular.Tool
+namespace Vernacular
 {
     public interface ILocalizationUnit
     {
