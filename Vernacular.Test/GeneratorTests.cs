@@ -46,5 +46,15 @@ namespace Vernacular.Test
             }
             generator.Generate ("../../Catalog/en_US.pot");
         }
+
+        [Test]
+        public void TestMoGenerator ()
+        {
+            var generator = new MoGenerator ();
+            foreach (var unit in ParserTests.ParsePo ("../../Catalog/ga.po") ) {
+                generator.Add (unit);
+            }
+            generator.Generate ("../../Catalog/ga.mo");
+        }
     }
 }

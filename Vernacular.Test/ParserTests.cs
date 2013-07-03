@@ -51,6 +51,12 @@ namespace Vernacular.Test
             var xap_parser = new XapParser(aggregate_parser);
             xap_parser.Add ("../../Xaps/XapStrings.xap");
             return new List<ILocalizationUnit> (aggregate_parser.Parse ());
+
+        public static List<ILocalizationUnit> ParsePo (string po_file)
+        {
+            var po_parser = new PoParser ();
+            po_parser.Add (po_file);
+            return new List<ILocalizationUnit> (po_parser.Parse ());
         }
 
         [Test]
@@ -62,9 +68,7 @@ namespace Vernacular.Test
         [Test]
         public void TestParsePo ()
         {
-            var po_parser = new PoParser ();
-            po_parser.Add ("../../Catalog/en_US.pot");
-            AssertUnits (new List<ILocalizationUnit> (po_parser.Parse ()));
+            AssertUnits (ParsePo ("../../Catalog/en_US.pot"));
         }
 
         [Test]
