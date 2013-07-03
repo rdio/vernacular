@@ -1,10 +1,10 @@
-//
-// ResxGenerator.cs
+﻿//
+// BinaryGenerator.cs
 //
 // Author:
-//   Aaron Bockover <abock@rd.io>
+//   Stephane Delcroix <stephane@delcroix.org>
 //
-// Copyright 2012 Rdio, Inc.
+// Copyright 2012 Stephane Delcroix
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,23 +25,30 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
-using System.Resources;
 
 namespace Vernacular.Generators
 {
-    public sealed class ResxGenerator : StreamGenerator
+    public abstract class BinaryGenerator : Generator
     {
-        protected override ResourceIdType ResourceIdType {
-            get { return ResourceIdType.Base64; }
+        protected BinaryWriter Writer { get; private set; }
+
+        protected virtual Encoding Encoding {
+            get { return Encoding.ASCII; }
         }
 
-        protected override void Generate ()
-        {
-            using (var resx = new ResXResourceWriter (Writer)) {
-                foreach (var resource_string in GetAllResourceStrings ()) {
-                    resx.AddResource (new ResXDataNode (resource_string.Id, resource_string.Translated));
-                }
+        public override void Generate (string path) {
+            Writer = new BinaryWriter(File.Create (path), Encoding);
+
+            try {
+                Generate ();
+            }
+            finally {
+                Writer.Close ();
+                Writer = null;
             }
         }
     }

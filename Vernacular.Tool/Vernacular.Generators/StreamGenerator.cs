@@ -1,4 +1,4 @@
-//
+﻿//
 // ResxGenerator.cs
 //
 // Author:
@@ -25,23 +25,49 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
-using System.Resources;
 
 namespace Vernacular.Generators
 {
-    public sealed class ResxGenerator : StreamGenerator
+    public abstract class StreamGenerator : Generator
     {
-        protected override ResourceIdType ResourceIdType {
-            get { return ResourceIdType.Base64; }
+        protected TextWriter Writer { get; private set; }
+
+        protected virtual Encoding Encoding {
+            get { return Encoding.UTF8; }
         }
 
-        protected override void Generate ()
+        public override void Generate (string path) 
         {
-            using (var resx = new ResXResourceWriter (Writer)) {
-                foreach (var resource_string in GetAllResourceStrings ()) {
-                    resx.AddResource (new ResXDataNode (resource_string.Id, resource_string.Translated));
-                }
+            if (String.IsNullOrEmpty (path) || path == "-") {
+                Writer = Console.Out;
+            } else {
+                Writer = new GeneratorWriter (File.Create (path), Encoding);
+            }
+
+            try {
+                Generate ();
+            }
+            finally {
+                Writer.Close ();
+                Writer = null;
+            }
+        }
+
+        protected sealed class GeneratorWriter : StreamWriter
+        {
+            private Encoding encoding;
+            public override Encoding Encoding {
+                get { return encoding; }
+            }
+
+            public GeneratorWriter (Stream stream, Encoding encoding)
+                : base (stream) {
+                this.encoding = encoding;
+                NewLine = "\n";
             }
         }
     }

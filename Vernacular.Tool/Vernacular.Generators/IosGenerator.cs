@@ -28,7 +28,7 @@ using System;
 
 namespace Vernacular.Generators
 {
-    public sealed class IosGenerator : Generator
+    public sealed class IosGenerator : StreamGenerator
     {
         private static string Escape (string @string)
         {

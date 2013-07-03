@@ -34,7 +34,7 @@ using Vernacular.Parsers;
 
 namespace Vernacular.Generators
 {
-    public sealed class AndroidGenerator : Generator
+    public sealed class AndroidGenerator : StreamGenerator
     {
         protected override void Generate ()
         {
