@@ -64,11 +64,21 @@ namespace Vernacular.Parsers
                 foreach (DictionaryEntry item in reader) {
                     var name = (string)item.Key;
                     var node = (ResXDataNode)item.Value;
-                    yield return new LocalizedString {
+                    var localized_string = new LocalizedString {
                         Name = name,
                         DeveloperComments = node.Comment,
-                        UntranslatedSingularValue = (string)node.GetValue(null as ITypeResolutionService)
+                        UntranslatedSingularValue = name,
+                        TranslatedValues = new string [] {(string)node.GetValue(null as ITypeResolutionService) }
                     };
+
+                    for (int i = 0; i < localized_string.TranslatedValues.Length; i++)
+                    {
+                        var s = localized_string.TranslatedValues [i];
+                        s = s.Replace ("\r", "");
+                        localized_string.TranslatedValues[i] = s;
+                    }
+
+                    yield return localized_string;
                 }
             }
 
