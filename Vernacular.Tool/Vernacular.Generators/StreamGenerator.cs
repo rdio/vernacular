@@ -59,14 +59,8 @@ namespace Vernacular.Generators
 
         protected sealed class GeneratorWriter : StreamWriter
         {
-            private Encoding encoding;
-            public override Encoding Encoding {
-                get { return encoding; }
-            }
-
             public GeneratorWriter (Stream stream, Encoding encoding)
-                : base (stream) {
-                this.encoding = encoding;
+                : base (stream, encoding) {
                 NewLine = "\n";
             }
         }
