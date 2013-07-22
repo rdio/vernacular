@@ -27,6 +27,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Vernacular
 {
@@ -132,8 +133,13 @@ namespace Vernacular
                 TranslatorComments = Join (a.TranslatorComments, b.TranslatorComments)
             };
 
-            var a_translated = new List<string> (a.TranslatedValues ?? new string [0]);
-            var b_translated = new List<string> (b.TranslatedValues ?? new string [0]);
+            var a_translated = a.TranslatedValues != null ?
+                a.TranslatedValues.Where (tr => !String.IsNullOrEmpty (tr)).ToList<string> () :
+                new List<string> ();
+
+            var b_translated = b.TranslatedValues != null ?
+                b.TranslatedValues.Where (tr => !String.IsNullOrEmpty (tr)).ToList<string> () :
+                new List<string> ();
 
             if (b_translated.Count >= a_translated.Count) {
                 a_translated = b_translated;
