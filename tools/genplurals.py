@@ -15,12 +15,13 @@ class Parser(HTMLParser):
     self.data = ''
     self.current_node = []
     self.in_td = False
+    self.below_td = 0
 
     self.rules = {}
 
   def handle_current_node(self):
     code, name, rule = self.current_node
-    m = re.match(r'^ *nplurals *=*(\d+); *plural *=(.*)', rule)
+    m = re.match(r'^ *nplurals *=*(\d+); *plural *=(.*);', rule)
     if not m:
       return
 
@@ -40,9 +41,15 @@ class Parser(HTMLParser):
       self.rules[rule] = [(code, name, nplurals)]
 
   def handle_starttag(self, tag, attrs):
+    if self.in_td:
+      self.below_td += 1
+      return
     self.in_td = tag == 'td'
 
   def handle_endtag(self, tag):
+    if self.below_td:
+      self.below_td -= 1
+      return
     if not self.in_td or tag != 'td':
       return
 
@@ -51,7 +58,7 @@ class Parser(HTMLParser):
 
     field = len(self.current_node)
 
-    if (field == 0 and re.match(r'^[a-zA-Z_]{2,3}$', self.data)) or field in [1, 2]:
+    if (field == 0 and re.match(r'^[a-zA-Z_]{2,5}$', self.data)) or field in [1, 2]:
       self.current_node.append(self.data)
       if field == 2:
         self.handle_current_node()
@@ -62,7 +69,7 @@ class Parser(HTMLParser):
     self.data = ''
 
   def handle_data(self, data):
-    if self.in_td:
+    if self.in_td and self.below_td == 0:
       self.data += data
 
   def handle_entityref(self, name):
@@ -73,11 +80,12 @@ parser = Parser()
 parser.feed(html)
 
 rules = [rule for rule in parser.rules.items()]
-rules.sort(key = lambda rule: rule[1][0][2])
+rules.sort(key = lambda rule: (str(rule[1][0][2]) + rule[0]))
 
 print('switch (isoLanguageCode) {')
 for rule, langs in rules:
   last_forms = 0
+  langs.sort(key = lambda lang: lang[0])
   for code, name, forms in langs:
     last_forms = forms
     space = '  '
