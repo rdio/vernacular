@@ -15,6 +15,7 @@ class Parser(HTMLParser):
     self.data = ''
     self.current_node = []
     self.in_td = False
+    self.below_td = 0
 
     self.rules = {}
 
@@ -40,9 +41,15 @@ class Parser(HTMLParser):
       self.rules[rule] = [(code, name, nplurals)]
 
   def handle_starttag(self, tag, attrs):
+    if self.in_td:
+      self.below_td += 1
+      return
     self.in_td = tag == 'td'
 
   def handle_endtag(self, tag):
+    if self.below_td:
+      self.below_td -= 1
+      return
     if not self.in_td or tag != 'td':
       return
 
@@ -62,7 +69,7 @@ class Parser(HTMLParser):
     self.data = ''
 
   def handle_data(self, data):
-    if self.in_td:
+    if self.in_td and self.below_td == 0:
       self.data += data
 
   def handle_entityref(self, name):
