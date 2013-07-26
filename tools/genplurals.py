@@ -58,7 +58,7 @@ class Parser(HTMLParser):
 
     field = len(self.current_node)
 
-    if (field == 0 and re.match(r'^[a-zA-Z_]{2,3}$', self.data)) or field in [1, 2]:
+    if (field == 0 and re.match(r'^[a-zA-Z_]{2,5}$', self.data)) or field in [1, 2]:
       self.current_node.append(self.data)
       if field == 2:
         self.handle_current_node()
