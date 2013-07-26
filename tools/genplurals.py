@@ -21,7 +21,7 @@ class Parser(HTMLParser):
 
   def handle_current_node(self):
     code, name, rule = self.current_node
-    m = re.match(r'^ *nplurals *=*(\d+); *plural *=(.*)', rule)
+    m = re.match(r'^ *nplurals *=*(\d+); *plural *=(.*);', rule)
     if not m:
       return
 
