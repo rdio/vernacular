@@ -80,11 +80,12 @@ parser = Parser()
 parser.feed(html)
 
 rules = [rule for rule in parser.rules.items()]
-rules.sort(key = lambda rule: rule[1][0][2])
+rules.sort(key = lambda rule: (str(rule[1][0][2]) + rule[0]))
 
 print('switch (isoLanguageCode) {')
 for rule, langs in rules:
   last_forms = 0
+  langs.sort(key = lambda lang: lang[0])
   for code, name, forms in langs:
     last_forms = forms
     space = '  '
