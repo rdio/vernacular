@@ -160,7 +160,6 @@ namespace Vernacular
                 case "tr":  // Turkish
                 case "uz":  // Uzbek
                 case "wa":  // Walloon
-                case "zh":  // Chinese
                     // 2 forms
                     return n > 1 ? 1 : 0;
                 case "lv":  // Latvian
