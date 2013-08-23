@@ -100,8 +100,6 @@ namespace Vernacular
                 uint number_of_strings;
                 uint original_strings_table_offset;
                 uint translations_table_offset;
-                uint hash_table_size;
-                uint hash_table_offset;
                 using (var reader = new BinaryReader (MoStream))
                 {
                     if (reader.ReadUInt32 () != 0x950412de)
@@ -111,8 +109,6 @@ namespace Vernacular
                     number_of_strings = reader.ReadUInt32 ();
                     original_strings_table_offset = reader.ReadUInt32 ();
                     translations_table_offset = reader.ReadUInt32 ();
-                    hash_table_size = reader.ReadUInt32 ();
-                    hash_table_offset = reader.ReadUInt32 ();
 
                     for (var i=0;i<number_of_strings;i++) {
                         var localized_string = new LocalizedString();
