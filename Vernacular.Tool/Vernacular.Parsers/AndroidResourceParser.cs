@@ -58,15 +58,28 @@ namespace Vernacular.Parsers
             throw new NotSupportedException ();
         }
 
+        private static string UnescapeContent(XNode node)
+        {
+            var reader = new StringReader(node.ToString());
+            var settings = new XmlReaderSettings {
+                ConformanceLevel = ConformanceLevel.Fragment
+            };
+
+            using (var xmlReader = XmlReader.Create(reader, settings)) {
+                xmlReader.MoveToContent ();
+                return xmlReader.ReadString();
+            }
+        }
+
         private static string DecodeElement (XElement element)
         {
             StringBuilder builder = null;
 
             foreach (var node in element.Nodes ()) {
                 if (builder == null) {
-                    builder = new StringBuilder (node.ToString ());
+                    builder = new StringBuilder (UnescapeContent(node));
                 } else {
-                    builder.Append (node.ToString ());
+                    builder.Append (UnescapeContent(node));
                 }
             }
 
