@@ -80,7 +80,7 @@ namespace Vernacular.Parsers
             }
 
             foreach (var resource in from res in module.Resources
-                where res.ResourceType == ResourceType.Embedded && Path.GetExtension(res.Name) == ".resources"
+                where res.ResourceType == ResourceType.Embedded
                 select res as EmbeddedResource) {
                 AddResource (resource);
             }
@@ -95,12 +95,16 @@ namespace Vernacular.Parsers
                 return;
             }
 
-            using (var reader = new ResourceReader (resource.GetResourceStream ())) {
-                foreach (DictionaryEntry re in reader) {
-                    if (embedded_resource_parser.SupportedFileExtensions.Contains (Path.GetExtension (re.Key as string))) {
-                        embedded_resource_parser.Add (re.Value as Stream, re.Key as string);
-                    }
-                }        
+            if (Path.GetExtension (resource.Name) == ".resources") {
+                using (var reader = new ResourceReader (resource.GetResourceStream ())) {
+                    foreach (DictionaryEntry re in reader) {
+                        if (embedded_resource_parser.SupportedFileExtensions.Contains (Path.GetExtension (re.Key as string))) {
+                            embedded_resource_parser.Add (re.Value as Stream, re.Key as string);
+                        }
+                    }        
+                }
+            } else if (embedded_resource_parser.SupportedFileExtensions.Contains (Path.GetExtension(resource.Name))) {			
+                embedded_resource_parser.Add (resource.GetResourceStream (), resource.Name);
             }
         }
 
