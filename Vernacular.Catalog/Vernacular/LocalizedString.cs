@@ -109,7 +109,7 @@ namespace Vernacular
                 a = a.Trim ();
                 b = b.Trim ();
 
-                if (String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase)) {
+                if (String.Equals(a, b, StringComparison.OrdinalIgnoreCase)) {
                     return a;
                 } else {
                     return String.Join ("; ", a, b);
