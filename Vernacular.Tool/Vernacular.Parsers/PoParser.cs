@@ -142,7 +142,7 @@ namespace Vernacular.Parsers
             }
 
             if (!String.IsNullOrWhiteSpace (translator_comments)) {
-                localized_string.DeveloperComments = translator_comments;
+                localized_string.TranslatorComments = translator_comments;
             }
 
             if (!String.IsNullOrWhiteSpace (references)) {
