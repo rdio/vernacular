@@ -1,12 +1,13 @@
 //
 // Catalog.cs
 //
-// Author:
+// Author(s):
 //   Aaron Bockover <abock@rd.io>
 //   Stephane Delcroix <stephane@delcroix.org>
 //
 // Copyright 2012 Rdio, Inc.
-// Copyright 2012 S. Delcroix
+// Copyright 2012-2013 S. Delcroix
+// Copyright 2014 Xamarin, Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,20 +27,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if WINDOWS_PHONE || SILVERLIGHT
+#if WINDOWS_PHONE || SILVERLIGHT || XAMARINFORMS
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 
+#if !XAMARINFORMS
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+#endif
 
 #if WINDOWS_PHONE
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 #endif
+
+#if XAMARINFORMS
+using Xamarin.Forms;
+
+using DependencyProperty = Xamarin.Forms.BindableProperty;
+using DependencyObject = Xamarin.Forms.BindableObject;
+using DependencyPropertyChangedEventArgs = System.ComponentModel.PropertyChangedEventArgs;
+#endif
+
 
 namespace Vernacular.Xaml
 {
@@ -71,6 +83,7 @@ namespace Vernacular.Xaml
         /// </summary>
         public static IDictionary<Type, DependencyProperty> MessageDependencyPropertyMap { get; private set; }
 
+#if !XAMARINFORMS
         public static readonly DependencyProperty CommentProperty = DependencyProperty.RegisterAttached (
             "Comment",
             typeof (string),
@@ -150,6 +163,76 @@ namespace Vernacular.Xaml
         {
             o.SetValue (ModifierProperty, value);
         }
+#else
+		public static readonly BindableProperty CommentProperty = 
+			BindableProperty.Create ("Comment", typeof(string), typeof(Catalog), default(string));
+
+		public static string GetComment (BindableObject bindable)
+		{
+			return (string)bindable.GetValue (CommentProperty);
+		}
+
+		public static void SetComment (BindableObject bindable, string value)
+		{
+			bindable.SetValue (CommentProperty, value);
+		}
+
+		public static readonly BindableProperty MessageProperty = 
+			BindableProperty.Create ("Message", typeof(string), typeof(Catalog), default(string),
+				propertyChanged: (bindable, oldValue, newValue) => OnPropertyChanged (bindable, null));
+
+		public static string GetMessage (BindableObject bindable)
+		{
+			return (string)bindable.GetValue (MessageProperty);
+		}
+
+		public static void SetMessage (BindableObject bindable, string value)
+		{
+			bindable.SetValue (MessageProperty, value);
+		}
+
+		public static readonly BindableProperty PluralMessageProperty = 
+			BindableProperty.Create ("PluralMessage", typeof(string), typeof(Catalog), default(string),
+				propertyChanged: (bindable, oldValue, newValue) => OnPropertyChanged (bindable, null));
+
+		public static string GetPluralMessage (BindableObject bindable)
+		{
+			return (string)bindable.GetValue (PluralMessageProperty);
+		}
+
+		public static void SetPluralMessage (BindableObject bindable, string value)
+		{
+			bindable.SetValue (PluralMessageProperty, value);
+		}
+
+		public static readonly BindableProperty PluralCountProperty = 
+			BindableProperty.Create ("PluralCount", typeof(int), typeof(Catalog), default(int),
+				propertyChanged: (bindable, oldValue, newValue) => OnPropertyChanged (bindable, null));
+
+		public static int GetPluralCount (BindableObject bindable)
+		{
+			return (int)bindable.GetValue (PluralCountProperty);
+		}
+
+		public static void SetPluralCount (BindableObject bindable, int value)
+		{
+			bindable.SetValue (PluralCountProperty, value);
+		}
+
+		public static readonly BindableProperty ModifierProperty = 
+			BindableProperty.Create ("Modifier", typeof(StringModifier), typeof(Catalog), default(StringModifier),
+				propertyChanged: (bindable, oldValue, newValue) => OnPropertyChanged (bindable, null));
+
+		public static StringModifier GetModifier (BindableObject bindable)
+		{
+			return (StringModifier)bindable.GetValue (ModifierProperty);
+		}
+
+		public static void SetModifier (BindableObject bindable, StringModifier value)
+		{
+			bindable.SetValue (ModifierProperty, value);
+		}
+#endif
 
         private static void OnPropertyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
@@ -173,9 +256,12 @@ namespace Vernacular.Xaml
             var property = FindMessageProperty (sender);
             if (property != null) {
                 sender.SetValue (property, localized);
-            } else if (sender is Run) {
+            } 
+#if !XAMARINFORMS
+			else if (sender is Run) {
                 (sender as Run).Text = localized;
             }
+#endif
         }
 
         private static DependencyProperty FindMessageProperty (DependencyObject e)
@@ -191,7 +277,7 @@ namespace Vernacular.Xaml
             if (MessageDependencyPropertyMap.TryGetValue (e.GetType (), out property)) {
                 return property;
             }
-
+#if !XAMARINFORMS
             if (e is TextBlock) {
                 return TextBlock.TextProperty;
 #if WINDOWS_PHONE
@@ -213,10 +299,22 @@ namespace Vernacular.Xaml
             } else if (e is TextBox) {
                 return TextBox.TextProperty;
             }
+#else
+		if (e is Label) {
+			return Label.TextProperty;
+		} else if (e is Entry) {
+			return Entry.TextProperty;
+		} else if (e is Page) {
+			return Page.TitleProperty;
+		} else if (e is Button) {
+			return Button.TextProperty;
+		}
+#endif
 
             return null;
         }
 
+#if!XAMARINFORMS
         public static readonly DependencyProperty ToolTipProperty = DependencyProperty.RegisterAttached(
             "ToolTip",
             typeof (string),
@@ -246,6 +344,7 @@ namespace Vernacular.Xaml
             var localized = Vernacular.Catalog.GetString (tooltip);
             ToolTipService.SetToolTip (framework_element, localized);
         }
+#endif
 
         private static string ModifyString (string value, string modifier)
         {
