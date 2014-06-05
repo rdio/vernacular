@@ -54,7 +54,7 @@ namespace Vernacular
         public override string CoreGetString (string message)
         {
             int resource_id;
-            if (GetResource (out resource_id, message)) {
+            if (GetResource (out resource_id, null, message)) {
                 return GetString (resource_id);
             }
 
@@ -64,7 +64,7 @@ namespace Vernacular
         public override string CoreGetPluralString (string singularMessage, string pluralMessage, int n)
         {
             int resource_id;
-            if (GetResource (out resource_id, singularMessage, pluralCount: n)) {
+            if (GetResource (out resource_id, null, singularMessage, pluralCount: n)) {
                 return GetString (resource_id);
             }
 
@@ -75,7 +75,7 @@ namespace Vernacular
         {
             int resource_id;
             var message = gender == LanguageGender.Feminine ? feminineMessage : masculineMessage;
-            if (GetResource (out resource_id, message, gender: gender)) {
+            if (GetResource (out resource_id, null, message, gender: gender)) {
                 return GetString (resource_id);
             }
 
@@ -89,7 +89,7 @@ namespace Vernacular
         {
             int resource_id;
             var message = gender == LanguageGender.Feminine ? singularFeminineMessage : singularMasculineMessage;
-            if (GetResource (out resource_id, message, gender: gender, pluralCount: n)) {
+            if (GetResource (out resource_id, null, message, gender: gender, pluralCount: n)) {
                 return GetString (resource_id);
             }
 
