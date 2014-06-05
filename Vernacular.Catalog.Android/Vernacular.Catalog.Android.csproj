@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BCF7EBC7-6A3C-4388-8A19-63C8FF589D70}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Vernacular.Catalog.Android</RootNamespace>
+    <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
+    <AndroidResgenClass>Resource</AndroidResgenClass>
+    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
+    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+    <AssemblyName>Vernacular.Catalog.Android</AssemblyName>
+    <TargetFrameworkVersion>v4.4</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.Android" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Vernacular.Catalog\Vernacular\AndroidCatalog.cs">
+      <Link>Vernacular\AndroidCatalog.cs</Link>
+    </Compile>
+    <Compile Include="..\Vernacular.Catalog\Vernacular\Catalog.cs">
+      <Link>Vernacular\Catalog.cs</Link>
+    </Compile>
+    <Compile Include="..\Vernacular.Catalog\Vernacular\FieldReflectionResourceCatalog.cs">
+      <Link>Vernacular\FieldReflectionResourceCatalog.cs</Link>
+    </Compile>
+    <Compile Include="..\Vernacular.Catalog\Vernacular\GoogleTranslateCatalog.cs">
+      <Link>Vernacular\GoogleTranslateCatalog.cs</Link>
+    </Compile>
+    <Compile Include="..\Vernacular.Catalog\Vernacular\ILocalizationUnit.cs">
+      <Link>Vernacular\ILocalizationUnit.cs</Link>
+    </Compile>
+    <Compile Include="..\Vernacular.Catalog\Vernacular\LanguageGender.cs">
+      <Link>Vernacular\LanguageGender.cs</Link>
+    </Compile>
+    <Compile Include="..\Vernacular.Catalog\Vernacular\LocalizedString.cs">
+      <Link>Vernacular\LocalizedString.cs</Link>
+    </Compile>
+    <Compile Include="..\Vernacular.Catalog\Vernacular\MoCatalog.cs">
+      <Link>Vernacular\MoCatalog.cs</Link>
+    </Compile>
+    <Compile Include="..\Vernacular.Catalog\Vernacular\PluralRules.cs">
+      <Link>Vernacular\PluralRules.cs</Link>
+    </Compile>
+    <Compile Include="..\Vernacular.Catalog\Vernacular\ResourceCatalog.cs">
+      <Link>Vernacular\ResourceCatalog.cs</Link>
+    </Compile>
+    <Compile Include="..\Vernacular.Catalog\Vernacular\ResourceIdType.cs">
+      <Link>Vernacular\ResourceIdType.cs</Link>
+    </Compile>
+    <Compile Include="..\Vernacular.Catalog\Vernacular\ResourceString.cs">
+      <Link>Vernacular\ResourceString.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\Strings.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Vernacular\" />
+  </ItemGroup>
+</Project>
