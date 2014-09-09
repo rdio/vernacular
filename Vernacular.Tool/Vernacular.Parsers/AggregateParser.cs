@@ -91,12 +91,18 @@ namespace Vernacular.Parsers
             if (path == null)
                 throw new NotSupportedException ();
 
-            foreach (var parser_for_extension in
-                from parser in parsers
-                from ext in parser.SupportedFileExtensions
-                where ext == Path.GetExtension (path)
-                select parser) {                
-                    parser_for_extension.Add (stream, path);
+            try {
+                foreach (var parser_for_extension in
+                    from parser in parsers
+                    from ext in parser.SupportedFileExtensions
+                    where ext == Path.GetExtension (path)
+                    select parser) {
+                        parser_for_extension.Add (stream, path);
+                    };
+            } catch(Exception) {
+                // Ignore exceptions that are caused by supported file extensions
+                // not conforming to the actual expected format
+                return;
             }
         }
 
