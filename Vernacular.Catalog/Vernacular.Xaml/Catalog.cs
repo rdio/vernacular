@@ -308,7 +308,14 @@ namespace Vernacular.Xaml
 			return Page.TitleProperty;
 		} else if (e is Button) {
 			return Button.TextProperty;
+		} else if (e is TextCell) {
+			return TextCell.TextProperty;
+		} else if (e is EntryCell) {
+			return EntryCell.LabelProperty;
+		} else if (e is SwitchCell) {
+			return SwitchCell.TextProperty;
 		}
+
 #endif
 
             return null;
