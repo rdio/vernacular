@@ -8,7 +8,7 @@
     <ProjectGuid>{BEC7B55D-F922-446D-9BBF-12DB249C4CA4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Vernacular.Catalog</RootNamespace>
+    <RootNamespace>Vernacular</RootNamespace>
     <AssemblyName>Vernacular.Catalog</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
