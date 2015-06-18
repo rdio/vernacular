@@ -35,7 +35,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>True</Externalconsole>
     <NoWarn>1685</NoWarn>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.Options\Options.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vernacular.Analyzers\AnalyzerConfiguration.cs" />
     <Compile Include="Vernacular.Generators\BinaryGenerator.cs" />
     <Compile Include="Vernacular.Generators\MoGenerator.cs" />

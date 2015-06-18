@@ -111,6 +111,8 @@ namespace Vernacular.Generators
                 value = value.Replace("...", "&#8230;");
             if (value.Contains("'"))
                 value = value.Replace("'", "\\'");
+            if (value.Contains("\n"))
+                value = value.Replace("\n", "\\n");
 
             return value;
         }
