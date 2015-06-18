@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+   <metadata>
+       <id>Vernacular.Forms</id>
+       <version>1.0.1</version>
+       <title>Vernacular support for Xamarin.Forms</title>
+       <authors>Rdio and Stephane Delcroix</authors>
+       <owners>Stephane Delcroix</owners>
+       <licenseUrl>https://github.com/rdio/vernacular/blob/master/LICENSE</licenseUrl>
+       <projectUrl>https://github.com/rdio/vernacular</projectUrl>
+       <requireLicenseAcceptance>false</requireLicenseAcceptance>
+       <description>
+          Enable Vernacular support in your Xamarin.Forms project.
+       </description>
+       <summary>Enable Vernacular support in your Xamarin.Forms project.</summary>
+       <tags>xamarin, pcl, xam.pcl, windows phone, winphone, wp8, android, xamarin.forms, ios</tags>
+       <copyright>Copyright 2012-2015</copyright>
+       <dependencies>
+         <dependency id="Xamarin.Forms" version="[1.3.4.6332]"/>
+       </dependencies>
+   </metadata>
+   <files>
+     <file src="Vernacular.Catalog/bin/$Configuration$/Vernacular.Catalog.XamarinForms.dll" target="lib/portable-net45+wp8+win8+MonoAndroid10+MonoTouch10+Xamarin.iOS10" />
+     <file src="Vernacular.Tool/bin/$Configuration$/Vernacular.exe" target="tools/Vernacular.exe" />
+     <file src="Vernacular.Tool/bin/$Configuration$/Vernacular.Catalog.dll" target="tools" />
+     <file src="Vernacular.Tool/bin/$Configuration$/Vernacular.Potato.dll" target="tools" />
+     <file src="Vernacular.Tool/bin/$Configuration$/Mono.Cecil.dll" target="tools" />
+     <file src="Vernacular.Tool/bin/$Configuration$/Mono.Cecil.Pdb.dll" target="tools" />
+     <file src="Vernacular.Tool/bin/$Configuration$/Mono.Cecil.Mdb.dll" target="tools" />
+   </files>
+</package>

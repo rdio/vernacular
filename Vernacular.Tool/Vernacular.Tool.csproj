@@ -48,8 +48,15 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>True</Externalconsole>
     <NoWarn>1685</NoWarn>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <AssemblyName>Vernacular</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>LINQ;VERNACULAR_TOOL</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>1685</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
