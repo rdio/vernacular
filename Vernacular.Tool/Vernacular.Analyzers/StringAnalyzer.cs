@@ -228,7 +228,7 @@ namespace Vernacular.Analyzers
                 return false;
             }
 
-            value = Regex.Replace (StringExtensions.Escape (value, decode: true), @"[^A-Za-z\_\']+", " ");
+            value = Regex.Replace (StringExtensions.Escape (value, decode: true), @"[^A-Za-z_\']+", " ");
             foreach (var word in Regex.Split (value, @"\s+")) {
                 var sanitized_word = word;
                 if (sanitized_word.EndsWith ("'s") || sanitized_word.EndsWith ("s'")) {
