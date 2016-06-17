@@ -105,6 +105,9 @@ namespace Vernacular.Generators
 
             var offset = HashTableOffset + HashTableSize*4;
             foreach (var localized_string in StringList) {
+                if (localized_string.UntranslatedSingularValue == null)
+                    continue;
+
                 var length = Encoding.UTF8.GetByteCount (localized_string.UntranslatedSingularValue);
                 if (!string.IsNullOrEmpty (localized_string.UntranslatedPluralValue)) {
                     length += 1 + Encoding.UTF8.GetByteCount (localized_string.UntranslatedPluralValue);
@@ -120,6 +123,9 @@ namespace Vernacular.Generators
             }
 
             foreach (var localized_string in StringList) {
+                if (localized_string.TranslatedValues == null || !localized_string.TranslatedValues.Any ())
+                    continue;
+
                 var length = localized_string.TranslatedValues.Sum (tv => Encoding.UTF8.GetByteCount(tv)) +
                              localized_string.TranslatedValues.Count () - 1;
 
@@ -153,6 +159,9 @@ namespace Vernacular.Generators
             //             |                                          |
             //             +------------------------------------------+
             foreach (var localized_string in StringList) {
+                if (localized_string.UntranslatedSingularValue == null)
+                    continue;
+
                 var context = GetContextAndGender (localized_string);
                 if (!string.IsNullOrEmpty (context)) {
                     Writer.Write (Encoding.UTF8.GetBytes (context));
@@ -169,6 +178,9 @@ namespace Vernacular.Generators
             }
 
             foreach (var localized_string in StringList) {
+                if (localized_string.TranslatedValues == null || !localized_string.TranslatedValues.Any ())
+                    continue;
+
                 foreach (var translatedValue in localized_string.TranslatedValues)
                 {
                     Writer.Write (Encoding.UTF8.GetBytes (translatedValue));
